@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Discord.Net.Commands</name>
+    </assembly>
+    <members>
+        <member name="T:Discord.DiscordBotClient">
+            <summary> A Discord.Net client with extensions for handling common bot operations like text commands. </summary>
+        </member>
+    </members>
+</doc>

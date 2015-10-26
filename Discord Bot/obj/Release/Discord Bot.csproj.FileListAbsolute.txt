@@ -1,0 +1,1 @@
+H:\game dev\mono\Discord Bot\Discord Bot\bin\Release\Discord Bot.exe.config
