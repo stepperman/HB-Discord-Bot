@@ -21,6 +21,8 @@ namespace Discord_Bot
         private static CommandsPlugin _commands;
 
         private static List<User> Admins = new List<User>();
+        private static List<User> SuperAdmins = new List<User>();
+        private static Server Commons;
 
         static void Main(string[] args)
         {
@@ -28,9 +30,6 @@ namespace Discord_Bot
             var client = new DiscordClient();
 
             _client = client;
-            ServicePointManager
-    .ServerCertificateValidationCallback +=
-    (sender, cert, chain, sslPolicyErrors) => true;
             _client.LogMessage += (s, e) => Console.WriteLine($"[{e.Severity}] {e.Source}: {e.Message}");
 
             _commands = new CommandsPlugin(client);
@@ -38,7 +37,26 @@ namespace Discord_Bot
 
             _client.UserAdded += async (s, e) =>
             {
-                await _client.SendMessage(_client.GetChannel("99341276532449280"), $"Holy shit! A new user! Welcome {e.User.Name}");
+                Server Commons = _client.GetServer("99333280020566016");
+                var standardRole = _client.FindRoles(Commons, "Standard");
+
+                if (e.Server != Commons)
+                    return;
+
+                await _client.SendMessage(_client.GetChannel("99341276532449280"), $"Holy shit! A new user! Welcome {Mention.User(e.User)}");
+                await NewUserText(e.User);
+                if(e.User.Roles.Count() == 1)
+                    await _client.EditUser(e.User, null, null, standardRole);
+            };
+
+            _client.Disconnected += async (s, e) =>
+            {
+                while(_client.State == DiscordClientState.Disconnected || _client.State == DiscordClientState.Connecting)
+                {
+                    await _client.Connect("", "");
+
+                    await Task.Delay(30000);
+                }
             };
 
             _commands.CommandError += (s, e) =>
@@ -51,30 +69,57 @@ namespace Discord_Bot
 
             };
 
+
             _client.Run(async () =>
             {
-				//Logs in with email and password.
-                await _client.Connect("hidden", "hidden");
+                await _client.Connect("", "");
 
-                Server Commons = _client.GetServer("99333280020566016");
+                Commons = _client.GetServer("99333280020566016");
 
-                var God = _client.FindRoles(Commons, "The Lone Wanderer").FirstOrDefault();
-                var Demigod = _client.FindRoles(Commons, "Demigod").FirstOrDefault();
-                var RoyalGuard = _client.FindRoles(Commons, "Royal Guard").FirstOrDefault();
-                var Commander = _client.FindRoles(Commons, "Commander").FirstOrDefault();
+                var OwnerRole = _client.GetRole("103573196468404224");
+                var DemiGodRole = _client.GetRole("104390778037481472");
+                var RoyalGuardRole = _client.GetRole("106584302090792960");
+                var CommanderRole = _client.GetRole("99333495347748864");
+                var TrustedRole = _client.GetRole("99834853003886592");
+                var StandardRole = _client.GetRole("99656622212661248");
 
-                foreach (var god in God.Members)
+                Role[] rolesToAdd = { StandardRole };
+                
+                foreach (var god in OwnerRole.Members)
+                {
                     Admins.Add(god);
+                    SuperAdmins.Add(god);
+                }
 
-                foreach (var demiGod in Demigod.Members)
+                foreach (var demiGod in DemiGodRole.Members)
+                {
                     Admins.Add(demiGod);
+                    SuperAdmins.Add(demiGod);
+                }
 
-                foreach (var royalGuard in RoyalGuard.Members)
+                foreach (var royalGuard in RoyalGuardRole.Members)
+                {
                     Admins.Add(royalGuard);
+                    SuperAdmins.Add(royalGuard);
 
-                foreach (var commander in Commander.Members)
+                }
+
+                foreach (var commander in CommanderRole.Members)
                     Admins.Add(commander);
             });
+        }
+
+        protected static async Task NewUserText(User e)
+        {
+            StreamReader streamReader = new StreamReader("../BeginnersText.txt");
+
+            string GettingStarted = await streamReader.ReadToEndAsync();
+            GettingStarted = String.Format(GettingStarted, Mention.User(e), Mention.User(_client.GetUser(Commons, "83677331951976448")));
+            streamReader.Close();
+            string[] reply = GettingStarted.Split(new string[] { "[SPLIT]" }, StringSplitOptions.None);
+            foreach (var message in reply)
+                await _client.SendPrivateMessage(e, message);
+            
         }
 
         private static Random random = new Random();
@@ -262,11 +307,51 @@ namespace Discord_Bot
                     
                     await _client.SendPrivateMessage(e.User, response);
                 });
+            group.CreateCommand("help")
+                .WithPurpose("Show the getting-started guide!")
+                .AnyArgs()
+                .IsHidden()
+                .Do(async e =>
+                {
+                    await NewUserText(e.User);
+                });
+            group.CreateCommand("feedback")
+                .WithPurpose("Give feedback to the bot! Stepper will read it sometime soon.. I think.")
+                .ArgsAtLeast(1)
+                .IsHidden()
+                .Do(async e =>
+                {
+                    StreamWriter fs = new StreamWriter("../feedback.txt", true);
+                    await fs.WriteLineAsync($"{e.User.Name} suggested: {e.ArgText}");
+                    fs.Close();
+                });
+            group.CreateCommand("roulette")
+                .AnyArgs()
+                .MinuteDelay(5)
+                .WithPurpose("have a 50% procent chance of timing yourself out.")
+                .Do(async e =>
+                {
+                    int chance = random.Next(0, 100);
+
+                    if (chance > 50)
+                        await Reply(e, "has not been timed out! Hooray!");
+                    else
+                        await Timeout(e, 2);
+
+                });
+            group.CreateCommand("sepukku")
+                .IsHidden()
+                .AnyArgs()
+                .WithPurpose("Time yourself out for 2 minutes.")
+                .Do(async e =>
+                {
+                    await Timeout(e, 2);
+                });
             group.CreateCommand("admin delete")
                 .ArgsEqual(1)
                 .Do(async e =>
                 {
-                    if (!canUseAdminCommands(e.User))
+                    if (!isAdmin(e.User))
                         return;
                     
                     int deleteNumber = 0;
@@ -282,32 +367,116 @@ namespace Discord_Bot
                 .ArgsEqual(1)
                 .Do(async e =>
                 {
-                    if (!canUseAdminCommands(e.User))
+                    if (!isSuperAdmin(e.User))
+                        return;
+
+
+
+                    User userToKick = GetUser(e.Server, e.Args[0]);
+
+                    if (userToKick == null)
+                        return;
+
+                    if (userToKick == _client.CurrentUser)
+                        return;
+
+                    await _client.SendPrivateMessage(userToKick, $"You've been kicked by {e.User.Name}, you can rejoin by using this url: https://discord.gg/0YOrPxx9u1wtJE0B");
+                    await Reply(e, $"just kicked {userToKick.Name}!");
+                    await _client.KickUser(userToKick);
+                });
+            group.CreateCommand("admin timeout")
+                .ArgsAtLeast(1)
+                .Do(async e =>
+                { 
+                    if(e.Args.Count() < 2)
                     {
-                        await Reply(e, "You're not allowed to kick people!");
+                        await Reply(e, "command was not in the right format. Usage: `/admin timeout {username} {time in minutes}`");
                         return;
                     }
 
-                    string userID = e.Args[0];
-
-                    userID = userID.Substring(1);
-
-                    var Users = _client.FindUsers(e.Server, userID);
-                    var userTokick = Users.FirstOrDefault();
-
-                    if (userTokick == null)
+                    if (!isAdmin(e.User))
                         return;
 
-                    if (userTokick == _client.CurrentUser)
-                        return;
+                    User userToTimeOut = GetUser(e.Server, e.Args[0]);
 
-                    await _client.SendPrivateMessage(userTokick, $"You've been kicked by {e.User.Name}, you can rejoin by using this url: https://discord.gg/0YOrPxx9u1wtJE0B");
-                    await Reply(e, $"just kicked {userTokick.Name}!");
-                    await _client.KickUser(userTokick);
+                    if (userToTimeOut == null || userToTimeOut == _client.CurrentUser)
+                    {
+                        await Reply(e, "Couldn't find user.");
+                        return;
+                    }
+
+                    if(isAdmin(userToTimeOut))
+                    {
+                        await Reply(e, $"{Mention.User(userToTimeOut)} cannot be timed out.");
+                        return;
+                    }
+
+                    int minutes = 0;
+                    try
+                    {
+                        minutes = Int32.Parse(e.Args[1]);
+                    }
+                    catch(FormatException)
+                    {
+                        await Reply(e, "command was not in the right format. Usage: `/admin timeout {username} {time in minutes}`");
+                        return;
+                    }
+
+                    await Timeout(e, userToTimeOut, minutes);
                 });
         }
+
+        protected static async Task Timeout(CommandArgs e, int minutes)
+        {
+            string postfix = "minute";
+            if (minutes > 1)
+                postfix += 's';
+
+            var UserRoles = e.User.Roles;
+
+            await _client.EditUser(e.User, null, null, new Role[] { Commons.EveryoneRole });
+            await Reply(e, $"has been timed out for {minutes} {postfix}!");
+
+            await Task.Delay(minutes * 60000);
+            await _client.EditUser(e.User, false, false, UserRoles);
+        }
+
+        protected static async Task Timeout(CommandArgs e, User user, int minutes)
+        {
+            var UserRoles = user.Roles;
+            await _client.EditUser(user, null, null, new Role[] { Commons.EveryoneRole });
+            await Reply(e, $"has timed out {Mention.User(user)} for {minutes} minutes.");
+            await Task.Delay(minutes * 60000);
+            await _client.EditUser(user, false, false, UserRoles);
+        }
+
+        protected static User GetUser(Server server, string userName)
+        {
+            var userID = userName.Substring(1);
+
+            var Users = _client.FindUsers(server, userID);
+            var user = Users.FirstOrDefault();
+
+            return user;
+        }
+
+        protected static bool isSuperAdmin(User user)
+        {
+            bool canDelete = false;
+
+            foreach (var admin in SuperAdmins)
+            {
+                if (user == admin)
+                {
+                    canDelete = true;
+                    break;
+                }
+            }
+
+            return canDelete;
+        }
         
-        protected static bool canUseAdminCommands(User user)
+        protected static bool isAdmin(User user)
         {
             bool canDelete = false;
 

@@ -1,0 +1,53 @@
+﻿Welcome to the Queens chat, {0}!
+This is a guide for new people. You can ignore this if you've been here before and already know the rules.
+This will tell you all about how Discord works, what's allowed here, etc..
+
+**Purpose of the Text Channels**
+#announcements is for general announcements to everyone in the chat room.
+#anime-discussion is for discussing not only anime, but other types of media too. Like cartoons, manga, tv shows and movies.
+#the-lounge is for general discussions. If you don't see a channel with the purpose of what you want to talk about, just talk here!
+#peasantry is for shitposting, screwing around with most of the rules ignored. (SFW!)
+#music is for 🎼 ♪♪♪♪ ♭. <- good song
+#tts is for /tts. Stands for text to speech. Same rules as #peasantry, but then with /tts
+#complaints Troubles? Come here. If it's an issue that you think is too big to be seen by everyone. PM an admin currently online!
+#games Games? Discuss games!
+#advice Need advice on how to rob a bank? We'll help!
+
+Many channels are subject to change, and this may be outdated in the time being. If you want new information, just ask any of the mods.[SPLIT]
+**What is Discord?**
+Discord is basically Slack for gamers, it features voice chat and a nice dark theme. It's also quite easy to handle for the admins, although you can lock yourself out of editing the permissions for some reason.
+Discord is still under development. Never forget it's an alpha and if you want to recommend stuff, head over to their Twitter, Subreddit or Feedback website.
+We could've used many other IRC programs, but we feel that Discord was a good choice for casual people. It's easy to join, wasn't it?
+
+**Voice Chat**
+If you want to join the voice chat, just click on general under the "voice channels" tabs. If you just want to lurk, you can always mute your mic or deafen your speakers, with icons below.
+Please keep screams, random noises and obnoxious behaviors to a minimum[SPLIT]
+**Color System**
+You may have noticed the color system in play when you entered this chat room. It's for designating stuff like active members, mods, the admins and so forth. Each color typically has a different list of permissions associated with it.
+Red = Primary Owner = @manako, Orange = Proxy Owner = @sabre, @stepper 
+Yellow = Bots, Purple = Admins = @Mika-neko, @Vladmin, @Fleauxy 
+Blue = Standard Mods = @Omociao, @Nuck, @Sammy, @KaneoHunter, @teshro, @Snupti 
+Green = Trusted/Active Members
+White = Lurkers/New/Inactive Members
+
+**_If you can't talk or write, contact any of the admins. This could've happen because one damn person was working on the bot that should set new users over to a role that makes it possible to talk in certain channels._**[SPLIT]
+**Bot**
+We also have a bot now! Actually, I am the bot! I make some tasks easier and I also perform some fun stuff! 
+I'm programmed by {1}. With the help of an API. I am made in the language C#, rewritten from Python because he dislikes it a lot. C# is just superious to Python is every single way ;).
+If you want to know more about me, feel free to ask! Stepper is always ready to answer and help. 
+Check out some of these commands:
+/commands - Check all the current commands, some are hidden, though. ;)
+/feedback - Use this to recommend new features or just what to improve!
+/help - With this you can ge the beginner's guide, which is what you're reading right now.
+
+**The guidelines**
+1. All discussions/arguments about Discord and Slack are highly discouraged. If you really feel the need to continue such things, make it private.
+2. No NSFW in here. There's a NFSW server which you can find a link for on the forums. NSFW is not strictly porn or naked people. NSFW = Not safe for work.
+3. Take it easy. Even though we want to keep it chill and let most things fly, being too offensive or too much of an asshole will be dealt with if needed. If you’re unsure, head over to #peasantry or #tts where we’re even more lenient. 
+4. Don’t take over a complete channel with something. The chat is for dialogues, not long monologues with yourself. If the conversation is personal and only between two parties, consider moving over to direct messages instead.
+5. If you have a problem with a mod, take it up in private with either him/her or someone else from the team.
+6. Complaints in general about the chat should be taken in #complaints.
+7. Selfies are illegal unless asked for by a majority of the people
+
+We're not communistic, you can screw around. But keep these guidelines in mind so that you don't go overboard.
+Have fun!
