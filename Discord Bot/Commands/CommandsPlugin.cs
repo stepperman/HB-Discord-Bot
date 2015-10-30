@@ -9,12 +9,12 @@ namespace Discord_Bot.Commands
     {
         private readonly DiscordClient _client;
         public List<Command> _commands { get; private set; }
-        private Func<User, Server, int> _getPermissions;
+        private Func<User, int> _getPermissions;
 
         public char CommandChar { get; set; }
         public bool UseCommandChar { get; set; }
 
-        public CommandsPlugin(DiscordClient client, Func<User, Server, int> getPermissions = null)
+        public CommandsPlugin(DiscordClient client, Func<User, int> getPermissions = null)
         {
             _client = client;
             _getPermissions = getPermissions;
@@ -86,8 +86,8 @@ namespace Discord_Bot.Commands
                     else
                         argText = msg.Substring(args[command.Parts.Length].Index);
 
-                    //Check Permissions
-                    int permissions = _getPermissions != null ? _getPermissions(e.Message.User, e.Message.Channel?.Server) : 0;
+                    //Check perms
+                    int permissions = getPermissions != null ? getPermissions(e.Message.User) : 0;
                     var eventArgs = new CommandArgs(e.Message, command, msg, argText, permissions, newArgs);
                     if (permissions < command.MinPerms)
                     {
@@ -95,7 +95,8 @@ namespace Discord_Bot.Commands
                         return;
                     }
 
-                    if (command.IsHidden)
+
+                    if (command.IsHidden && !e.Channel.IsPrivate)
                         await _client.DeleteMessage(e.Message);
 
                     //Check if outside of time limit
@@ -121,12 +122,13 @@ namespace Discord_Bot.Commands
                         if (!skipTimeCheck)
                         {
                             time = dict[command];
-
+                            double test = (DateTime.UtcNow - time).TotalSeconds;
                             if ((DateTime.UtcNow - time).TotalSeconds < command.CommandDelay)
                             {
                                 string waitTime = String.Empty;
                                 int seconds = (int)(command.CommandDelay - (DateTime.UtcNow - time).TotalSeconds);
 
+                                #region time calculator
                                 int days, hours, minutes = 0;
 
                                 minutes = seconds / 60;
@@ -135,8 +137,8 @@ namespace Discord_Bot.Commands
                                 minutes %= 60;
                                 days = hours / 24;
                                 hours %= 24;
-                                
-                                if(days > 0)
+
+                                if (days > 0)
                                 {
                                     string postfix;
                                     if (days == 1)
@@ -147,7 +149,7 @@ namespace Discord_Bot.Commands
                                     waitTime += $"{days} {postfix}";
                                 }
 
-                                if(hours > 0)
+                                if (hours > 0)
                                 {
                                     if (waitTime.Length > 0)
                                         waitTime += ", ";
@@ -185,18 +187,20 @@ namespace Discord_Bot.Commands
                                         postfix = "seconds";
                                     waitTime += $"{seconds} {postfix}";
                                 }
+                                #endregion
 
                                 await client.SendMessage(eventArgs.Channel, $"{Mention.User(e.User)}: You need to wait {waitTime} before you can use /{command.Parts[0]}.");
                                 RaiseCommandError(eventArgs, new TimeException());
                                 return;
                             }
-
-                            time = DateTime.UtcNow;
                         }
+
+                        dict[command] = DateTime.UtcNow;
                     }
 
 
                     //Run Command
+                    Console.WriteLine($"[CommandEvent] {e.User.Name} used command: {String.Join("", eventArgs.Command.Parts)}.");
                     RaiseRanCommand(eventArgs);
                     try
                     {

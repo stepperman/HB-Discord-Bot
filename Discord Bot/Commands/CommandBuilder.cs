@@ -158,7 +158,7 @@ namespace Discord_Bot.Commands
             if(cmd != "")
             {
                 if (_prefix != "")
-                    text = _prefix;
+                    text = _prefix + ' ' + cmd;
                 else
                     text = cmd;
             }

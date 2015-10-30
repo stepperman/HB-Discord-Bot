@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using Discord_Bot.Commands;
+using Discord_Bot.Games;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -18,11 +19,20 @@ namespace Discord_Bot
     class Program
     {
         private static DiscordClient _client;
-        private static CommandsPlugin _commands;
+        private static CommandsPlugin _commands, _admincommands;
+        private static GamePlugin _gamePlugin;
 
         private static List<User> Admins = new List<User>();
         private static List<User> SuperAdmins = new List<User>();
+        private static Dictionary<string, UserInfo> userInfo = new Dictionary<string, UserInfo>();
         private static Server Commons;
+
+        private static Role OwnerRole;
+        private static Role DemiGodRole;
+        private static Role RoyalGuardRole;
+        private static Role CommanderRole;
+        private static Role TrustedRole;
+        private static Role StandardRole;
 
         static void Main(string[] args)
         {
@@ -32,8 +42,21 @@ namespace Discord_Bot
             _client = client;
             _client.LogMessage += (s, e) => Console.WriteLine($"[{e.Severity}] {e.Source}: {e.Message}");
 
+            if (File.Exists("../UserInfo.json"))
+            {
+                var sw = new StreamReader("../UserInfo.json");
+
+                string json = sw.ReadToEnd();
+                userInfo = JsonConvert.DeserializeObject<Dictionary<string, UserInfo>>(json);
+                sw.Close();
+            }
+
             _commands = new CommandsPlugin(client);
+            _admincommands = new CommandsPlugin(client, GetPermissions);
             _commands.CreateCommandGroup("", group => BuildCommands(group));
+            _admincommands.CreateCommandGroup("admin", adminGroup => BuildAdminCommands(adminGroup));
+
+            _gamePlugin = new GamePlugin(client);
 
             _client.UserAdded += async (s, e) =>
             {
@@ -51,37 +74,38 @@ namespace Discord_Bot
 
             _client.Disconnected += async (s, e) =>
             {
-                while(_client.State == DiscordClientState.Disconnected || _client.State == DiscordClientState.Connecting)
+                while(_client.State != DiscordClientState.Connected)
                 {
-                    await _client.Connect("", "");
+                    await _client.Connect(".li", "");
 
                     await Task.Delay(30000);
                 }
             };
 
-            _commands.CommandError += (s, e) =>
+            _commands.CommandError += async (s, e) =>
             {
                 var ex = e.Exception.GetBaseException();
                 if (ex is PermissionException)
-                    Reply(e, "Sorry, you do not have the permissions to use this command!");
+                    await Reply(e, "Sorry, you do not have the permissions to use this command!");
+                else if (ex is TimeException)
+                    await Task.Delay(1);
                 else
-                    Reply(e, $"Error: {ex.Message}.");
+                    await Reply(e, $"Error: {ex.Message}.");
 
             };
-
-
+            
             _client.Run(async () =>
             {
-                await _client.Connect("", "");
+                await _client.Connect("hidden :)", "hidden :)");
 
                 Commons = _client.GetServer("99333280020566016");
 
-                var OwnerRole = _client.GetRole("103573196468404224");
-                var DemiGodRole = _client.GetRole("104390778037481472");
-                var RoyalGuardRole = _client.GetRole("106584302090792960");
-                var CommanderRole = _client.GetRole("99333495347748864");
-                var TrustedRole = _client.GetRole("99834853003886592");
-                var StandardRole = _client.GetRole("99656622212661248");
+                OwnerRole = _client.GetRole("103573196468404224");
+                DemiGodRole = _client.GetRole("104390778037481472");
+                RoyalGuardRole = _client.GetRole("106584302090792960");
+                CommanderRole = _client.GetRole("99333495347748864");
+                TrustedRole = _client.GetRole("99834853003886592");
+                StandardRole = _client.GetRole("99656622212661248");
 
                 Role[] rolesToAdd = { StandardRole };
                 
@@ -107,6 +131,14 @@ namespace Discord_Bot
                 foreach (var commander in CommanderRole.Members)
                     Admins.Add(commander);
             });
+        }
+
+        private static int GetPermissions(User u)
+        {
+            if (isAdmin(u))
+                return 10;
+            else
+                return 0;
         }
 
         protected static async Task NewUserText(User e)
@@ -217,7 +249,7 @@ namespace Discord_Bot
             group.CreateCommand("8ball")
                 .WithPurpose("The magic eightball will answer all your doubts and questions!")
                 .AnyArgs()
-                .MinuteDelay(3)
+                .MinuteDelay(1)
                 .Do(async e =>
                 {
                     string[] responses = { "Not so sure", "Most likely", "Absolutely not", "Outlook is good", "Never",
@@ -225,9 +257,9 @@ namespace Discord_Bot
                     string response;
 
 
-                    if (e.ArgText.Length != 0)
+                    if (e.ArgText.Length == 0)
                         response = "I can't do anything with empty prompts.";
-                    if (e.ArgText[e.ArgText.Length - 1] != '?')
+                    else if (e.ArgText[e.ArgText.Length - 1] != '?')
                         response = "Please end your sentence with a question mark appropriately.";
                     else
                         response = responses[random.Next(responses.Length)];
@@ -327,50 +359,91 @@ namespace Discord_Bot
                 });
             group.CreateCommand("roulette")
                 .AnyArgs()
-                .MinuteDelay(5)
+                .MinuteDelay(2)
                 .WithPurpose("have a 50% procent chance of timing yourself out.")
                 .Do(async e =>
                 {
+                    if (e.Channel.IsPrivate)
+                        return;
+
                     int chance = random.Next(0, 100);
 
-                    if (chance > 50)
-                        await Reply(e, "has not been timed out! Hooray!");
-                    else
-                        await Timeout(e, 2);
+                    try
+                    {
+                        if (chance > 50)
+                            await Reply(e, "has not been timed out! Hooray!");
+                        else
+                            await Timeout(e, 2);
+                    }
+                    catch (Exception ex)
+                    {
+                        await Reply(e, ex.Message);
+                    }
 
                 });
-            group.CreateCommand("sepukku")
+            group.CreateCommand("seppuku")
+                .MinuteDelay(2)
                 .IsHidden()
                 .AnyArgs()
                 .WithPurpose("Time yourself out for 2 minutes.")
                 .Do(async e =>
                 {
-                    await Timeout(e, 2);
+                    if (e.Channel.IsPrivate)
+                        return;
+                        
+                    try
+                    {
+                        await Timeout(e, 2);
+                    }
+                    catch(Exception ex)
+                    {
+                        await Reply(e, ex.Message);
+                    }
+                    
                 });
-            group.CreateCommand("admin delete")
+            //group.CreateCommand("")
+            //    .ArgsAtMax(1)
+            //    .IsHidden()
+            //    .Do(async e =>
+            //    {
+            //        User playingUser = GetUser(e.Server, e.Args[0]);
+            //    });
+        }
+
+        private static void BuildAdminCommands(CommandGroupBuilder adminGroup)
+        {
+            adminGroup.DefaultMinPermissions(3);
+
+            adminGroup.CreateCommand("delete")
+                .WithPurpose("Delete messages on this channel. Usage: `/admin delete {number of messages to delete}`.")
                 .ArgsEqual(1)
                 .Do(async e =>
                 {
                     if (!isAdmin(e.User))
                         return;
-                    
+
+                    if (e.Channel.IsPrivate)
+                        return;
+
                     int deleteNumber = 0;
 
                     Int32.TryParse(e.Args[0], out deleteNumber);
 
-                    var messages = await _client.DownloadMessages(e.Channel, deleteNumber);
+                    var messages = await _client.DownloadMessages(e.Channel, deleteNumber + 1);
 
                     await _client.DeleteMessages(messages);
                     await Reply(e, $"just deleted {deleteNumber} messages on this channel!");
                 });
-            group.CreateCommand("admin kick")
+            adminGroup.CreateCommand("kick")
+                .WithPurpose("Only for super admins! Usage: `/admin kick {@username}`")
                 .ArgsEqual(1)
                 .Do(async e =>
                 {
                     if (!isSuperAdmin(e.User))
                         return;
 
-
+                    if (e.Channel.IsPrivate)
+                        return;
 
                     User userToKick = GetUser(e.Server, e.Args[0]);
 
@@ -384,15 +457,19 @@ namespace Discord_Bot
                     await Reply(e, $"just kicked {userToKick.Name}!");
                     await _client.KickUser(userToKick);
                 });
-            group.CreateCommand("admin timeout")
+            adminGroup.CreateCommand("timeout")
+                .WithPurpose("Time out someone. Usage: `/admin timeout {@username} {time in minutes}`.")
                 .ArgsAtLeast(1)
                 .Do(async e =>
-                { 
-                    if(e.Args.Count() < 2)
+                {
+                    if (e.Args.Count() < 2)
                     {
                         await Reply(e, "command was not in the right format. Usage: `/admin timeout {username} {time in minutes}`");
                         return;
                     }
+
+                    if (e.Channel.IsPrivate)
+                        return;
 
                     if (!isAdmin(e.User))
                         return;
@@ -405,7 +482,9 @@ namespace Discord_Bot
                         return;
                     }
 
-                    if(isAdmin(userToTimeOut))
+
+                    //If the user is a super admin or if the user is a commander trying to kick another commander. Stop
+                    if (isSuperAdmin(userToTimeOut) || (e.User.HasRole(CommanderRole) && userToTimeOut.HasRole(CommanderRole)))
                     {
                         await Reply(e, $"{Mention.User(userToTimeOut)} cannot be timed out.");
                         return;
@@ -416,13 +495,38 @@ namespace Discord_Bot
                     {
                         minutes = Int32.Parse(e.Args[1]);
                     }
-                    catch(FormatException)
+                    catch (FormatException)
                     {
                         await Reply(e, "command was not in the right format. Usage: `/admin timeout {username} {time in minutes}`");
                         return;
                     }
 
                     await Timeout(e, userToTimeOut, minutes);
+                });
+            adminGroup.CreateCommand("commands")
+                .IsHidden()
+                .AnyArgs()
+                .Do(async e =>
+                {
+                    string response = $"The character to use a command right now is '{_commands.CommandChar}'.\n";
+                    foreach (var cmd in _admincommands._commands)
+                    {
+                        if (!String.IsNullOrWhiteSpace(cmd.Purpose))
+                        {
+                            string command = "";
+                            foreach (var cmdPart in cmd.Parts)
+                                command += cmdPart + ' ';
+
+                            response += $"**{command}** - {cmd.Purpose}";
+
+                            if (cmd.CommandDelay == null)
+                                response += "\n";
+                            else
+                                response += $" **|** Time limit: once per {cmd.CommandDelayNotify} {cmd.timeType}.\n";
+                        }
+                    }
+
+                    await _client.SendPrivateMessage(e.User, response);
                 });
         }
 
@@ -432,11 +536,24 @@ namespace Discord_Bot
             if (minutes > 1)
                 postfix += 's';
 
+            UserInfo u = null;
+
+            //Timeout caluclator
+            if (!userInfo.ContainsKey(e.User.Id))
+                userInfo.Add(e.User.Id, new UserInfo());
+
+            u = userInfo[e.User.Id];
+            u.TimoutTotalTime += minutes;
+            u.TimeoutNumber += 1;
+
             var UserRoles = e.User.Roles;
 
             await _client.EditUser(e.User, null, null, new Role[] { Commons.EveryoneRole });
-            await Reply(e, $"has been timed out for {minutes} {postfix}!");
-
+            await Reply(e, $"has been timed out for {minutes} {postfix}! He's now been timed out a total of {u.TimeoutNumber} times and a total of {u.TimoutTotalTime} minutes!");
+            string json = JsonConvert.SerializeObject(userInfo);
+            StreamWriter sw = new StreamWriter("../UserInfo.json", false);
+            await sw.WriteAsync(json);
+            sw.Close();
             await Task.Delay(minutes * 60000);
             await _client.EditUser(e.User, false, false, UserRoles);
         }
@@ -452,7 +569,9 @@ namespace Discord_Bot
 
         protected static User GetUser(Server server, string userName)
         {
-            var userID = userName.Substring(1);
+            string userID = userName;
+            if(userName[0] == '@')
+                 userID = userName.Substring(1);
 
             var Users = _client.FindUsers(server, userID);
             var user = Users.FirstOrDefault();
@@ -572,12 +691,8 @@ namespace Discord_Bot
         {
             string hello = String.Empty;
             var client = new HttpClient();
-
-
             url += values.ToString();
-
             hello = await client.GetStringAsync(url);
-
             return hello;
         }
 
@@ -588,11 +703,8 @@ namespace Discord_Bot
             string response;
             var client = new HttpClient();
             var content = new FormUrlEncodedContent(values);
-
             var request = await client.PostAsync(Uri, content);
-
             response = request.ToString();
-
             return response;
 
         }
