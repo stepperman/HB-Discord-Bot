@@ -1,17 +1,16 @@
-﻿Welcome to the Queens chat, {0}!
+﻿Welcome to the Hummingbird chat, {0}!
 This is a guide for new people. You can ignore this if you've been here before and already know the rules.
 This will tell you all about how Discord works, what's allowed here, etc..
 
 **Purpose of the Text Channels**
-#announcements is for general announcements to everyone in the chat room.
-#anime-discussion is for discussing not only anime, but other types of media too. Like cartoons, manga, tv shows and movies.
-#the-lounge is for general discussions. If you don't see a channel with the purpose of what you want to talk about, just talk here!
+#ayy is a cool game! Keep up the /ayy chain as long as possible without it getting interrupted by a goddamn shithead!
+#anime-manga is for discussing not only anime, but other types of media too. Like cartoons, manga, tv shows and movies.
+#lounge is for general discussions. If you don't see a channel with the purpose of what you want to talk about, just talk here!
 #peasantry is for shitposting, screwing around with most of the rules ignored. (SFW!)
+#feedback is pretty general. Need help? Admin abusing you? Want to suggest something? Go right here/
 #music is for 🎼 ♪♪♪♪ ♭. <- good song
-#tts is for /tts. Stands for text to speech. Same rules as #peasantry, but then with /tts
-#complaints Troubles? Come here. If it's an issue that you think is too big to be seen by everyone. PM an admin currently online!
 #games Games? Discuss games!
-#advice Need advice on how to rob a bank? We'll help!
+#voice-chat-text - This is for people who want to speak to people who are already talking in voice, but can't.
 
 Many channels are subject to change, and this may be outdated in the time being. If you want new information, just ask any of the mods.[SPLIT]
 **What is Discord?**
@@ -23,12 +22,10 @@ We could've used many other IRC programs, but we feel that Discord was a good ch
 If you want to join the voice chat, just click on general under the "voice channels" tabs. If you just want to lurk, you can always mute your mic or deafen your speakers, with icons below.
 Please keep screams, random noises and obnoxious behaviors to a minimum[SPLIT]
 **Color System**
-You may have noticed the color system in play when you entered this chat room. It's for designating stuff like active members, mods, the admins and so forth. Each color typically has a different list of permissions associated with it.
-Red = Primary Owner = @manako, Orange = Proxy Owner = @sabre, @stepper 
-Yellow = Bots, Purple = Admins = @Mika-neko, @Vladmin, @Fleauxy 
-Blue = Standard Mods = @Omociao, @Nuck, @Sammy, @KaneoHunter, @teshro, @Snupti 
-Green = Trusted/Active Members
-White = Lurkers/New/Inactive Members
+You may have noticed the color system in play when you entered this chat room. 
+It looks cool, right? Well, they might change depending on how the owners feel. But the hierarchy at the right might help you of knowing which rank the people are.
+@sabre and @stepper are the owners, alongside @manako being the creator but he has since died.
+@stepper (hey, that's me) is the bot creator and if you want to know anything about the bot, ask away!
 
 **_If you can't talk or write, contact any of the admins. This could've happen because one damn person was working on the bot that should set new users over to a role that makes it possible to talk in certain channels._**[SPLIT]
 **Bot**
