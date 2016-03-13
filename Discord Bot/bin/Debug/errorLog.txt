@@ -1,0 +1,2 @@
+[Error] [img] [Exception] Accessed JObject values with invalid key value: 3. Object property name expected.
+[Error] [img] [Exception] Non-invocable member 'Newtonsoft.Json.Linq.JContainer.Count' cannot be used like a method.
