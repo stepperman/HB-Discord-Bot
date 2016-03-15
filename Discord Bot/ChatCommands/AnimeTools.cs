@@ -66,8 +66,8 @@ namespace Discord_Bot
             {
                 using (WebClient client = new WebClient())
                 {
-                    var mallogin = System.Text.Encoding.UTF8.GetBytes(Program.ProgramInfo.mallogin);
-                    var base64 = System.Convert.ToBase64String(mallogin);
+                    var mallogin = System.Text.Encoding.UTF8.GetBytes(System.Convert.ToString(Program.ProgramInfo.mallogin));
+                    string base64 = System.Convert.ToBase64String(mallogin);
                     client.Headers.Add("Authorization", $"Basic {base64}");
                     client.QueryString.Add("q", Uri.EscapeUriString(e.ArgText));
                     string response = await client.DownloadStringTaskAsync("http://myanimelist.net/api/anime/search.xml");
@@ -102,8 +102,8 @@ namespace Discord_Bot
             {
                 using (WebClient client = new WebClient())
                 {
-                    var mallogin = System.Text.Encoding.UTF8.GetBytes(Program.ProgramInfo.mallogin);
-                    var base64 = System.Convert.ToBase64String(mallogin);
+                    var mallogin = System.Text.Encoding.UTF8.GetBytes(System.Convert.ToString(Program.ProgramInfo.mallogin));
+                    string base64 = System.Convert.ToBase64String(mallogin);
                     client.Headers.Add("Authorization", $"Basic {base64}");
                     client.QueryString.Add("q", Uri.EscapeUriString(e.ArgText));
                     string response = await client.DownloadStringTaskAsync("http://myanimelist.net/api/manga/search.xml");
