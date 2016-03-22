@@ -124,8 +124,8 @@ namespace Discord_Bot
                 {
                     client.QueryString.Add("searchType", "image");
                     client.QueryString.Add("q", Uri.EscapeDataString(want));
-                    client.QueryString.Add("key", Uri.EscapeDataString(Program.ProgramInfo.google_key_code));
-                    client.QueryString.Add("cx", Uri.EscapeDataString(Program.ProgramInfo.google_cx_code));
+                    client.QueryString.Add("key", Uri.EscapeDataString((string)Program.ProgramInfo.google_key_code));
+                    client.QueryString.Add("cx", Uri.EscapeDataString((string)Program.ProgramInfo.google_cx_code));
                     client.QueryString.Add("safe", "medium");
                     client.QueryString.Add("num", "10");
                     response = await client.DownloadStringTaskAsync("https://www.googleapis.com/customsearch/v1");
