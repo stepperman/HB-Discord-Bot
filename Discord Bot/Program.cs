@@ -149,6 +149,15 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, "https://www.youtube.com/watch?v=HTLZjhHIEdw");
                 });
+				
+			group.CreateCommand("noice")
+                .AnyArgs()
+                .MinuteDelay(1)
+                .Do(async e =>
+                {
+                    await Tools.Reply(e, "https://youtu.be/a8c5wmeOL9o");
+                });
+				
             group.CreateCommand("no")
                 .SecondDelay(120)
                 .AnyArgs()
@@ -156,6 +165,16 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, "pignig", false);
                 });
+				
+			group.CreateCommand("codekeem")
++                .SecondDelay(120)
++                .AnyArgs()
++                .Do(async e =>
++                {
++                    await e.Channel.SendFile("keemstar.png");
++                    await Tools.Reply(e, "You have used Code Keem", true);
++                });
+
             group.CreateCommand("hello")
                 .AnyArgs()
                 .HourDelay(1)
@@ -163,6 +182,7 @@ namespace Discord_Bot
                 {   
                     await Tools.Reply(e, $"Hello, {e.User.Mention}", false);
                 });
+				
             group.CreateCommand("ayy")
                 .MinuteDelay(2)
                 .AnyArgs()
@@ -199,6 +219,7 @@ namespace Discord_Bot
                     await fs.WriteLineAsync($"{e.User.Name} suggested: {e.ArgText}");
                     fs.Close();
                 });
+				
             group.CreateCommand("img")
                 .MinuteDelay(1)
                 .ArgsAtLeast(1)
