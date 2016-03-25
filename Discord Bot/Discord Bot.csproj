@@ -92,6 +92,8 @@
   <ItemGroup>
     <Compile Include="ChatCommands\AdminCommands.cs" />
     <Compile Include="ChatCommands\Information.cs" />
+    <Compile Include="ChatCommands\Voting\SimulcastVote.cs" />
+    <Compile Include="ChatCommands\Voting\Vote.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandArgs.cs" />
     <Compile Include="Commands\CommandBuilder.cs" />
