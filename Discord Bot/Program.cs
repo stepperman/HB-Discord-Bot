@@ -129,6 +129,12 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, "https://www.youtube.com/watch?v=JCeOf2q6_TA", false);
                 });
+			
+			group.CreateCommand("kazoo")
+                .Do(async e =>
+                {
+                    await Tools.Reply(e, "You need the kazoo, if you can't take part in this episode, you're a fucking faggot, you should just go kill yourself https://youtu.be/g-sgw9bPV4A", false);
+                });
 
             group.CreateCommand("hb")
                 .WithPurpose("Find a User's HummingBird account with it's information!")
