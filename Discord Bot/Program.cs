@@ -129,8 +129,9 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, "https://www.youtube.com/watch?v=JCeOf2q6_TA", false);
                 });
-			
-			group.CreateCommand("kazoo")
+
+            //Added by Will (d0ubtless)
+            group.CreateCommand("kazoo")
                 .Do(async e =>
                 {
                     await Tools.Reply(e, "You need the kazoo, if you can't take part in this episode, you're a fucking faggot, you should just go kill yourself https://youtu.be/g-sgw9bPV4A", false);
@@ -156,6 +157,7 @@ namespace Discord_Bot
                     await Tools.Reply(e, "https://www.youtube.com/watch?v=HTLZjhHIEdw");
                 });
 				
+            //Added by Will (d0ubtless)
 			group.CreateCommand("noice")
                 .AnyArgs()
                 .MinuteDelay(1)
@@ -171,15 +173,16 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, "pignig", false);
                 });
-				
-			group.CreateCommand("codekeem")
-+                .SecondDelay(120)
-+                .AnyArgs()
-+                .Do(async e =>
-+                {
-+                    await e.Channel.SendFile("keemstar.png");
-+                    await Tools.Reply(e, "You have used Code Keem", true);
-+                });
+
+            //Added by Will (d0ubtless)
+            group.CreateCommand("codekeem")
+                .SecondDelay(120)
+                .AnyArgs()
+                .Do(async e =>
+                {
+                    await e.Channel.SendFile("keemstar.png");
+                    await Tools.Reply(e, "You have used Code Keem", true);
+                });
 
             group.CreateCommand("hello")
                 .AnyArgs()
