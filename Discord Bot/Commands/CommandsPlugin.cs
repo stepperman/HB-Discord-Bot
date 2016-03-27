@@ -109,22 +109,21 @@ namespace Discord_Bot.Commands
                         //check if admin, if so he can ignore the time constraint and shit.
                         bool timeCheck = true;
                         var info = Tools.GetServerInfo(e.Server.Id);
-                        if (info.roleImportancy.Count >= 15)
+                        if (info.roleImportancy.Count > 0)
                         {
-                            foreach (var rolid in info.roleImportancy.Keys)
+                            for (int i = 0; i < info.roleImportancy.Count; i++)
                             {
-                                bool brea = false;
-                                foreach (var roleeee in e.Server.Roles)
-                                {
-                                    if (e.User.HasRole(roleeee) && rolid == roleeee.Id.ToString())
-                                    {
-                                        brea = true;
-                                        timeCheck = false;
-                                    }
-                                }
+                                string importantRole = info.roleImportancy.Keys.ToArray()[i];
+                                int importantRoleAmnt = info.roleImportancy.Values.ToArray()[i];
+                                Role role = e.Server.GetRole(ulong.Parse(importantRole));
 
-                                if (brea)
+                                if (role == null) continue;
+
+                                if (e.User.HasRole(role) && importantRoleAmnt >= 15)
+                                {
+                                    timeCheck = false;
                                     break;
+                                }   
                             }
                         }
 
@@ -262,6 +261,7 @@ namespace Discord_Bot.Commands
                 }
                 catch (Exception ex)
                 {
+                    await Tools.Reply(e.User, e.Channel, $"FUCKING PLUGIN ERROR LOL: {ex.Message}", true);
                     Tools.LogError("Error with plugin or something.", ex.Message);
                 }
 
