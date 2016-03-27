@@ -169,7 +169,7 @@ namespace Discord_Bot
                         for (int i = 0; i < mentionedUserCount; i++)
                         {
                             //Add the name to response.
-                            response += e.Message.MentionedUsers.ToArray()[i].Name;
+                            response += e.Message.MentionedUsers.ToArray()[i].Mention;
 
                             //If this is the one to last mentioned user, add a " , ".
                             if (i == mentionedUserCount - 2)
