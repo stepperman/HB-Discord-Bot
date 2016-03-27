@@ -18,6 +18,7 @@ using System.Linq;
 /// Perms:
 /// > 1000 - Sabre and Stepper
 /// > 100 - Mods
+/// > 50 - Allow spamming
 /// > 10 - Users
 /// </summary>
 

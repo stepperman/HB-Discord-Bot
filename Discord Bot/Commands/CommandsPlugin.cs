@@ -109,7 +109,7 @@ namespace Discord_Bot.Commands
                         //check if admin, if so he can ignore the time constraint and shit.
                         bool timeCheck = true;
                         var info = Tools.GetServerInfo(e.Server.Id);
-                        if (info.roleImportancy.Count > 0)
+                        if (info.roleImportancy.Count >= 15)
                         {
                             foreach (var rolid in info.roleImportancy.Keys)
                             {
