@@ -41,7 +41,7 @@ namespace Discord_Bot
         {
             var userpermission = Tools.GetPerms(e, e.User);
 
-            if (userpermission >= 1000)
+            if (userpermission >= 1000 || ulong.Parse((string)Program.ProgramInfo.DevID) == e.User.Id)
             {
                 var serv = Tools.GetServerInfo(e.Server.Id);
 
@@ -83,7 +83,7 @@ namespace Discord_Bot
         {
             var userpermission = Tools.GetPerms(e, e.User);
 
-            if (userpermission >= 1000)
+            if (userpermission >= 1000 || ulong.Parse((string)Program.ProgramInfo.DevID) == e.User.Id)
             {
                 try
                 {
