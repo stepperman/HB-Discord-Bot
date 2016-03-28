@@ -105,9 +105,9 @@ namespace Discord_Bot
             {
                 var username = ProgramInfo.username;
                 var password = ProgramInfo.password;
-                var nottoken = ProgramInfo.token;
+                var nottoken = Convert.ToString(ProgramInfo.token);
 
-                string token = await _client.Connect(Convert.ToString(nottoken));
+                await _client.Connect(nottoken);
                 timeout = new Timeout(_client);
             });
         }
