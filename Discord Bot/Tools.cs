@@ -204,6 +204,35 @@ namespace Discord_Bot
         }
         #endregion
 
+        #region StreamReader/Writer
+
+        public static string ReadFile(string Path)
+        {
+            if (!File.Exists(Path))
+                return null;
+
+            using (StreamReader sr = new StreamReader(Path))
+            {
+                
+                return sr.ReadToEnd();
+            }
+        }
+
+        public static void CreateFile(string Path)
+        {
+            File.Create(Path);
+        }
+
+        public static void SaveFile(string content, string Path, bool append)
+        {
+            using (StreamWriter sw = new StreamWriter(Path, append))
+            {
+                sw.WriteLine(content);
+            }
+        }
+
+        #endregion
+
         public static async Task OfflineMessage(MessageEventArgs e)
         {
             if (e.User.Id == Program.Client.CurrentUser.Id)

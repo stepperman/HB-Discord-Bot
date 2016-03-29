@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.IO;
 using System.Threading.Tasks;
 using Discord_Bot.Commands;
 using Discord;
@@ -11,8 +12,20 @@ namespace Discord_Bot
 {
     class Fun
     {
+        static Fun()
+        {
+            if (!File.Exists(PathToKillScore))
+                Tools.CreateFile(PathToKillScore);
+            else
+            {
+                string json = Tools.ReadFile(PathToKillScore);
+                MostKills = JsonConvert.DeserializeObject<Dictionary<ulong, uint>>(json);
+            }
+        }
+
         private static int ayyscore = 0;
-        private static Dictionary<ulong, uint> MostKills;
+        private static Dictionary<ulong, uint> MostKills = new Dictionary<ulong, uint>();
+        private static string PathToKillScore = "../LocalFiles/killscore.json";
 
         public static Func<CommandArgs, Task> EightBall = async e =>
         {
@@ -184,6 +197,23 @@ namespace Discord_Bot
 
         public static Func<CommandArgs, Task> ShootUser = async e =>
         {
+            //Prematurely check if the user exists in the dictionary, if not, create the fuck.
+            if (!MostKills.ContainsKey(e.User.Id))
+                MostKills.Add(e.User.Id, 0);
+
+            var arg = e.Args[0];
+            if (arg == "stats")
+            {
+                uint score = MostKills[e.User.Id];
+                await Tools.Reply(e, $"Your killed {score} people.");
+                return;
+            }
+            else if (arg == "top")
+            {
+                await Tools.Reply(e, "This doesn't do anything yet. Annoy Stepper, not me. This ");
+                return;
+            }
+
             //Get count of all the mentioned users. Can be multiple. Count starts at one, an array starts at 0. So if you'd want to access
             //the first occurence in an array. You'd use e.Message.MentionedUsers[0].
             //Actually e.Message.MentionedUsers.ToArray()[0] because it's an IEnumerable but that's fuck.
@@ -212,7 +242,7 @@ namespace Discord_Bot
                 //return.
                 if (mentionedUserCount == 1)
                 {
-                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Name} to a fucking pulp", false);
+                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Name} to fucking death.", false);
                     return;
                 }
 
@@ -231,6 +261,13 @@ namespace Discord_Bot
 
                 //response.
                 await Tools.Reply(e, $"{response} to a fucking pulp", false);
+
+                //aaand save the kills he has.
+                MostKills[e.User.Id] += (uint)mentionedUserCount;
+
+                //Serialize it so that it exists even after the bot is down.
+                string json = JsonConvert.SerializeObject(MostKills);
+                Tools.SaveFile(json, PathToKillScore, false); //Save it to disk.
             }
         };
 
