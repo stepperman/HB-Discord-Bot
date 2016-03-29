@@ -64,6 +64,7 @@ namespace Discord_Bot
                 {
                     users.Remove(info);
                     await user.Edit(null, null, null, info.roles);
+                    info.timer = null;
                 };
                 await user.Edit(null, null, user.VoiceChannel, new Role[] { e.Server.EveryoneRole });
                 info.timer.Start();
@@ -96,6 +97,8 @@ namespace Discord_Bot
                 return 2; // Time added
             }
         }
+
+
     }
 
     class TimedoutUser
