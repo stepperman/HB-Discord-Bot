@@ -213,7 +213,6 @@ namespace Discord_Bot
 
             using (StreamReader sr = new StreamReader(Path))
             {
-                
                 return sr.ReadToEnd();
             }
         }

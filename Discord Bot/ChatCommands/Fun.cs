@@ -4,28 +4,35 @@ using System.Linq;
 using System.Net;
 using System.IO;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Discord_Bot.Commands;
 using Discord;
 using Newtonsoft.Json;
 
 namespace Discord_Bot
 {
-    class Fun
+    static class Fun
     {
+        private static int ayyscore = 0;
+        private static Dictionary<ulong, uint> MostKills;
+        private static string PathToKillScore = "../LocalFiles/killscore.json";
+
         static Fun()
         {
             if (!File.Exists(PathToKillScore))
+            {
                 Tools.CreateFile(PathToKillScore);
+                MostKills = new Dictionary<ulong, uint>();
+            }
             else
             {
                 string json = Tools.ReadFile(PathToKillScore);
                 MostKills = JsonConvert.DeserializeObject<Dictionary<ulong, uint>>(json);
+                if(MostKills == null)
+                    MostKills = new Dictionary<ulong, uint>();
+
             }
         }
-
-        private static int ayyscore = 0;
-        private static Dictionary<ulong, uint> MostKills = new Dictionary<ulong, uint>();
-        private static string PathToKillScore = "../LocalFiles/killscore.json";
 
         public static Func<CommandArgs, Task> EightBall = async e =>
         {
@@ -201,11 +208,18 @@ namespace Discord_Bot
             if (!MostKills.ContainsKey(e.User.Id))
                 MostKills.Add(e.User.Id, 0);
 
+            foreach (var value in MostKills.Keys)
+            {
+                Console.WriteLine(e.Server.GetUser(value).Name);
+            }
+
+            Console.WriteLine(MostKills[e.User.Id]);
+
             var arg = e.Args[0];
             if (arg == "stats")
             {
                 uint score = MostKills[e.User.Id];
-                await Tools.Reply(e, $"Your killed {score} people.");
+                await Tools.Reply(e, $"You killed {score} people.");
                 return;
             }
             else if (arg == "top")
@@ -238,32 +252,33 @@ namespace Discord_Bot
                 //Already create the premade response
                 string response = $"{e.User.Mention} just shot ";
 
-                //if only one user is mentioned, fucking reply that thing and just
-                //return.
-                if (mentionedUserCount == 1)
-                {
-                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Name} to fucking death.", false);
-                    return;
-                }
 
-                for (int i = 0; i < mentionedUserCount; i++)
+                if (mentionedUserCount != 1)
                 {
-                    //Add the name to response.
-                    response += e.Message.MentionedUsers.ToArray()[i].Mention;
+                    for (int i = 0; i < mentionedUserCount; i++)
+                    {
+                        //Add the name to response.
+                        response += e.Message.MentionedUsers.ToArray()[i].Mention;
 
-                    //If this is the one to last mentioned user, add a " , ".
-                    if (i == mentionedUserCount - 2)
-                        response += " , ";
-                    //Otherwise if it's less than the one to last mentioned user, add an " and ".
-                    else if (i < mentionedUserCount - 2)
-                        response += " and ";
+                        //If this is the one to last mentioned user, add a " , ".
+                        if (i == mentionedUserCount - 2)
+                            response += " , ";
+                        //Otherwise if it's less than the one to last mentioned user, add an " and ".
+                        else if (i < mentionedUserCount - 2)
+                            response += " and ";
+                    }
                 }
 
                 //response.
-                await Tools.Reply(e, $"{response} to a fucking pulp", false);
+                if (mentionedUserCount == 1)
+                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Name} to fucking death.", false);
+                else
+                    await Tools.Reply(e, $"{response} to a fucking death", false);
 
                 //aaand save the kills he has.
+                Console.WriteLine(MostKills[e.User.Id]);
                 MostKills[e.User.Id] += (uint)mentionedUserCount;
+                Console.WriteLine(MostKills[e.User.Id]);
 
                 //Serialize it so that it exists even after the bot is down.
                 string json = JsonConvert.SerializeObject(MostKills);
