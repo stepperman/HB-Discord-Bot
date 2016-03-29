@@ -229,7 +229,7 @@ namespace Discord_Bot
                     return;
                 }
 
-                string reply = await Program.timeout.TimeoutUser(e, minutes, userToTimeOut);
+                string reply = await Program.timeout.Admin_TimeoutUser(e, minutes, userToTimeOut);
                 await Tools.Reply(e, reply);
             }
         };

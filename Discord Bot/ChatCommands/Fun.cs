@@ -180,5 +180,68 @@ namespace Discord_Bot
                 catch (Exception) { }
             }
         }
+
+        public static Func<CommandArgs, Task> ShootUser = async e =>
+        {
+            //Get count of all the mentioned users. Can be multiple. Count starts at one, an array starts at 0. So if you'd want to access
+            //the first occurence in an array. You'd use e.Message.MentionedUsers[0].
+            //Actually e.Message.MentionedUsers.ToArray()[0] because it's an IEnumerable but that's fuck.
+            int mentionedUserCount = e.Message.MentionedUsers.Count();
+
+            var chance = Tools.random.Next(101); // 0 to 100
+            var hitChance = chance - (5 * mentionedUserCount);
+
+            if (hitChance < 50)
+            {
+                Array x = Enum.GetValues(typeof(BodyParts));
+                var bodypart = x.GetValue(Tools.random.Next(x.Length));
+
+                await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart}! You've been timed out for {(int)bodypart} minutes!");
+                await Program.timeout.TimeoutUser(e, (double)((int)bodypart), e.User);
+                return;
+            }
+
+            //No mentioned users? Fuck off.
+            if (mentionedUserCount > 0)
+            {
+                //Already create the premade response
+                string response = $"{e.User.Mention} just shot ";
+
+                //if only one user is mentioned, fucking reply that thing and just
+                //return.
+                if (mentionedUserCount == 1)
+                {
+                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Name} to a fucking pulp", false);
+                    return;
+                }
+
+                for (int i = 0; i < mentionedUserCount; i++)
+                {
+                    //Add the name to response.
+                    response += e.Message.MentionedUsers.ToArray()[i].Mention;
+
+                    //If this is the one to last mentioned user, add a " , ".
+                    if (i == mentionedUserCount - 2)
+                        response += " , ";
+                    //Otherwise if it's less than the one to last mentioned user, add an " and ".
+                    else if (i < mentionedUserCount - 2)
+                        response += " and ";
+                }
+
+                //response.
+                await Tools.Reply(e, $"{response} to a fucking pulp", false);
+            }
+        };
+
+        enum BodyParts
+        {
+            Foot = 1,
+            Knee = 2,
+            Leg = 3,
+            Stomach = 4,
+            Heart = 5,
+            Mouth = 6,
+            Head = 10
+        }
     }
 }

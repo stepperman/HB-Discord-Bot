@@ -145,44 +145,8 @@ namespace Discord_Bot
                 .Do(AnimeTools.GetHBUser);
 
             group.CreateCommand("shoot")
-                .Do(async e =>
-                {
-                    //Get count of all the mentioned users. Can be multiple. Count starts at one, an array starts at 0. So if you'd want to access
-                    //the first occurence in an array. You'd use e.Message.MentionedUsers[0].
-                    //Actually e.Message.MentionedUsers.ToArray()[0] because it's an IEnumerable but that's fuck.
-                    int mentionedUserCount = e.Message.MentionedUsers.Count();
-
-                    //No mentioned users? Fuck off.
-                    if (mentionedUserCount > 0)
-                    {
-                        //Already create the premade response
-                        string response = $"{e.User.Mention} just shot ";
-
-                        //if only one user is mentioned, fucking reply that thing and just
-                        //return.
-                        if (mentionedUserCount == 1)
-                        {
-                            await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Name} to a fucking pulp", false);
-                            return;
-                        }
-
-                        for (int i = 0; i < mentionedUserCount; i++)
-                        {
-                            //Add the name to response.
-                            response += e.Message.MentionedUsers.ToArray()[i].Mention;
-
-                            //If this is the one to last mentioned user, add a " , ".
-                            if (i == mentionedUserCount - 2)
-                                response += " , ";
-                            //Otherwise if it's less than the one to last mentioned user, add an " and ".
-                            else if (i < mentionedUserCount - 2)
-                                response += " and ";
-                        }
-
-                        //response.
-                        await Tools.Reply(e, $"{response} to a fucking pulp", false);
-                    }
-                });
+                .WithPurpose("shoot a user, with a chance to miss!")
+                .Do(Fun.ShootUser);
 
             group.CreateCommand("8ball")
                 .WithPurpose("The magic eightball will answer all your doubts and questions!")

@@ -23,22 +23,40 @@ namespace Discord_Bot
             }
         }
 
-        public async Task<string> TimeoutUser (CommandArgs e, double minutes, User user)
+        public async Task<string> Admin_TimeoutUser (CommandArgs e, double minutes, User user)
+        {
+            var response = await TimeoutUser(e, minutes, user);
+
+            if (response == 1)
+                return $"timed out {user.Mention} for {minutes}";
+            else if (response == 2)
+                return $"added {minutes} more minutes to {user.Mention}'s timeout.";
+            else if (response == 3)
+                return $"removed {user.Mention}'s time out. Hooray!";
+            else
+                return $"failed to time out {user.Mention}. You might be a noob.";
+        }
+
+        /// <summary>
+        /// Times out a user.
+        /// </summary>
+        /// <param name="minutes">How long to time the user out.</param>
+        /// <param name="user">User to time out</param>
+        /// <returns>0, 1, 2 or 3 if the timing out failed, succeeded, time was added or the time out was removed. Respectively.</returns>
+        public async Task<int> TimeoutUser(CommandArgs e, double minutes, User user)
         {
             List<TimedoutUser> users;
             timedoutUsers.TryGetValue(e.Server.Id.ToString(), out users);
 
             var userTimeout = users.FirstOrDefault(x => x.userID == user.Id.ToString());
 
-            if(userTimeout == null)
+            if (userTimeout == null)
             {
                 if (minutes <= 0)
-                {
-                    return $"You can't timeout someone for negative minutes!";
-                }
+                    return 0; //Failed
                 users.Add(new TimedoutUser(user));
                 var info = users[users.Count - 1];
-                
+
                 info.timer.Interval = minutes * 1000 * 60;
                 info.t = DateTime.Now;
                 info.timeoutTime = minutes;
@@ -49,7 +67,7 @@ namespace Discord_Bot
                 };
                 await user.Edit(null, null, user.VoiceChannel, new Role[] { e.Server.EveryoneRole });
                 info.timer.Start();
-                return $"timed out {user.Mention} for {minutes} minutes.";
+                return 1;
             }
             else
             {
@@ -58,7 +76,7 @@ namespace Discord_Bot
                 {
                     users.Remove(info);
                     await user.Edit(null, null, user.VoiceChannel, info.roles);
-                    return $"removed {user.Mention}'s timeout! Hooray!";
+                    return 3;//Timeout removed
                 }
 
                 var timeToAdd = (DateTime.Now - info.t).TotalMinutes;
@@ -75,9 +93,8 @@ namespace Discord_Bot
 
                 };
                 info.timer.Start();
-                return $"added {minutes} minutes to {user.Mention}'s timeout. Totalling to a timeout of {Math.Round(timeToAdd + minutes).ToString()} minutes!";
+                return 2; // Time added
             }
-            
         }
     }
 
