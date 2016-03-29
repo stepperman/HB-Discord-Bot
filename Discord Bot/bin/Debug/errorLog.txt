@@ -5,3 +5,5 @@
 Parameter name: role
 [Error] Error with plugin or something. [Exception] Value cannot be null.
 Parameter name: role
+[Error] Error with plugin or something. [Exception] Object reference not set to an instance of an object.
+[Error] Error with plugin or something. [Exception] Object reference not set to an instance of an object.

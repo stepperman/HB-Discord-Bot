@@ -106,141 +106,143 @@ namespace Discord_Bot.Commands
                         }
                         catch (Exception) { }
 
-                        //check if admin, if so he can ignore the time constraint and shit.
-                        bool timeCheck = true;
-                        var info = Tools.GetServerInfo(e.Server.Id);
-                        if (info.roleImportancy.Count > 0)
+                        if (!e.Channel.IsPrivate)
                         {
-                            for (int i = 0; i < info.roleImportancy.Count; i++)
+                            //check if admin, if so he can ignore the time constraint and shit.
+                            bool timeCheck = true;
+                            var info = Tools.GetServerInfo(e.Server.Id);
+                            if (info.roleImportancy.Count > 0)
                             {
-                                string importantRole = info.roleImportancy.Keys.ToArray()[i];
-                                int importantRoleAmnt = info.roleImportancy.Values.ToArray()[i];
-                                Role role = e.Server.GetRole(ulong.Parse(importantRole));
-
-                                if (role == null) continue;
-
-                                if (e.User.HasRole(role) && importantRoleAmnt >= 15)
+                                for (int i = 0; i < info.roleImportancy.Count; i++)
                                 {
-                                    timeCheck = false;
-                                    break;
-                                }   
-                            }
-                        }
+                                    string importantRole = info.roleImportancy.Keys.ToArray()[i];
+                                    int importantRoleAmnt = info.roleImportancy.Values.ToArray()[i];
+                                    Role role = e.Server.GetRole(ulong.Parse(importantRole));
 
+                                    if (role == null) continue;
 
-                        //Check if outside of time limit
-                        if (command.CommandDelay != null)
-                        {
-                            if (timeCheck)
-                            {
-                                Dictionary<Command, DateTime> dict;
-                                DateTime time;
-
-                                //if the user does not have a key, make one. Then get the key.
-                                if (!timeValues.ContainsKey(e.User))
-                                    timeValues.Add(e.User, new Dictionary<Command, DateTime>());
-
-                                dict = timeValues[e.User];
-
-                                bool skipTimeCheck = false;
-                                //The above gets the time, and if that returns null it adds the current command with the current time to the dict. Then exit the while function.
-                                if (!dict.ContainsKey(command))
-                                {
-                                    dict.Add(command, DateTime.UtcNow);
-                                    skipTimeCheck = true;
-                                }
-
-                                if (!skipTimeCheck)
-                                {
-                                    time = dict[command];
-                                    double test = (DateTime.UtcNow - time).TotalSeconds;
-                                    if ((DateTime.UtcNow - time).TotalSeconds < command.CommandDelay)
+                                    if (e.User.HasRole(role) && importantRoleAmnt >= 15)
                                     {
-                                        string waitTime = String.Empty;
-                                        int seconds = (int)(command.CommandDelay - (DateTime.UtcNow - time).TotalSeconds);
-
-                                        #region time calculator
-                                        int days, hours, minutes = 0;
-
-                                        minutes = seconds / 60;
-                                        seconds %= 60;
-                                        hours = minutes / 60;
-                                        minutes %= 60;
-                                        days = hours / 24;
-                                        hours %= 24;
-
-                                        if (days > 0)
-                                        {
-                                            string postfix;
-                                            if (days == 1)
-                                                postfix = "day";
-                                            else
-                                                postfix = "days";
-
-                                            waitTime += $"{days} {postfix}";
-                                        }
-
-                                        if (hours > 0)
-                                        {
-                                            if (waitTime.Length > 0)
-                                                waitTime += ", ";
-
-                                            string postfix;
-                                            if (hours == 1)
-                                                postfix = "hour";
-                                            else
-                                                postfix = "hours";
-                                            waitTime += $"{hours} {postfix}";
-                                        }
-
-                                        if (minutes > 0)
-                                        {
-                                            if (waitTime.Length > 0)
-                                                waitTime += ", ";
-
-                                            string postfix;
-                                            if (minutes == 1)
-                                                postfix = "minute";
-                                            else
-                                                postfix = "minutes";
-                                            waitTime += $"{minutes} {postfix}";
-                                        }
-
-                                        if (seconds > 0)
-                                        {
-                                            if (waitTime.Length > 0)
-                                                waitTime += " and ";
-
-                                            string postfix;
-                                            if (seconds == 1)
-                                                postfix = "second";
-                                            else
-                                                postfix = "seconds";
-                                            waitTime += $"{seconds} {postfix}";
-                                        }
-                                        #endregion
-
-                                        if (command.FailHandler == null)
-                                            await eventArgs.Channel.SendMessage($"{e.User.Mention}: You need to wait {waitTime} before you can use /{command.Parts[0]}.");
-                                        else
-                                        {
-                                            try
-                                            {
-
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                RaiseCommandError(eventArgs, ex);
-                                            }
-                                        }
-                                        return;
+                                        timeCheck = false;
+                                        break;
                                     }
                                 }
+                            }
 
-                                dict[command] = DateTime.UtcNow;
+
+                            //Check if outside of time limit
+                            if (command.CommandDelay != null)
+                            {
+                                if (timeCheck)
+                                {
+                                    Dictionary<Command, DateTime> dict;
+                                    DateTime time;
+
+                                    //if the user does not have a key, make one. Then get the key.
+                                    if (!timeValues.ContainsKey(e.User))
+                                        timeValues.Add(e.User, new Dictionary<Command, DateTime>());
+
+                                    dict = timeValues[e.User];
+
+                                    bool skipTimeCheck = false;
+                                    //The above gets the time, and if that returns null it adds the current command with the current time to the dict. Then exit the while function.
+                                    if (!dict.ContainsKey(command))
+                                    {
+                                        dict.Add(command, DateTime.UtcNow);
+                                        skipTimeCheck = true;
+                                    }
+
+                                    if (!skipTimeCheck)
+                                    {
+                                        time = dict[command];
+                                        double test = (DateTime.UtcNow - time).TotalSeconds;
+                                        if ((DateTime.UtcNow - time).TotalSeconds < command.CommandDelay)
+                                        {
+                                            string waitTime = String.Empty;
+                                            int seconds = (int)(command.CommandDelay - (DateTime.UtcNow - time).TotalSeconds);
+
+                                            #region time calculator
+                                            int days, hours, minutes = 0;
+
+                                            minutes = seconds / 60;
+                                            seconds %= 60;
+                                            hours = minutes / 60;
+                                            minutes %= 60;
+                                            days = hours / 24;
+                                            hours %= 24;
+
+                                            if (days > 0)
+                                            {
+                                                string postfix;
+                                                if (days == 1)
+                                                    postfix = "day";
+                                                else
+                                                    postfix = "days";
+
+                                                waitTime += $"{days} {postfix}";
+                                            }
+
+                                            if (hours > 0)
+                                            {
+                                                if (waitTime.Length > 0)
+                                                    waitTime += ", ";
+
+                                                string postfix;
+                                                if (hours == 1)
+                                                    postfix = "hour";
+                                                else
+                                                    postfix = "hours";
+                                                waitTime += $"{hours} {postfix}";
+                                            }
+
+                                            if (minutes > 0)
+                                            {
+                                                if (waitTime.Length > 0)
+                                                    waitTime += ", ";
+
+                                                string postfix;
+                                                if (minutes == 1)
+                                                    postfix = "minute";
+                                                else
+                                                    postfix = "minutes";
+                                                waitTime += $"{minutes} {postfix}";
+                                            }
+
+                                            if (seconds > 0)
+                                            {
+                                                if (waitTime.Length > 0)
+                                                    waitTime += " and ";
+
+                                                string postfix;
+                                                if (seconds == 1)
+                                                    postfix = "second";
+                                                else
+                                                    postfix = "seconds";
+                                                waitTime += $"{seconds} {postfix}";
+                                            }
+                                            #endregion
+
+                                            if (command.FailHandler == null)
+                                                await eventArgs.Channel.SendMessage($"{e.User.Mention}: You need to wait {waitTime} before you can use /{command.Parts[0]}.");
+                                            else
+                                            {
+                                                try
+                                                {
+
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    RaiseCommandError(eventArgs, ex);
+                                                }
+                                            }
+                                            return;
+                                        }
+                                    }
+
+                                    dict[command] = DateTime.UtcNow;
+                                }
                             }
                         }
-
 
                         //Run Command
                         Console.WriteLine($"[CommandEvent] {e.User.Name} used command: {String.Join("", eventArgs.Command.Parts)}.");
@@ -270,6 +272,7 @@ namespace Discord_Bot.Commands
         }
         public void CreateCommandGroup(string cmd, Action<CommandGroupBuilder> config = null)
             => config(new CommandGroupBuilder(this, cmd, 0));
+
         public CommandBuilder CreateCommand(string cmd)
         {
             var command = new Command(cmd);
