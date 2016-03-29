@@ -101,16 +101,28 @@ namespace Discord_Bot
                     await Tools.Reply(e, $"Error: {ex.Message}.");
 
             };
-            _client.ExecuteAndWait(async () =>
+            try
             {
-                var username = ProgramInfo.username;
-                var password = ProgramInfo.password;
-                var nottoken = Convert.ToString(ProgramInfo.bot_token);
+                _client.ExecuteAndWait(async () =>
+                {
+                    var username = ProgramInfo.username;
+                    var password = ProgramInfo.password;
+                    var nottoken = Convert.ToString(ProgramInfo.bot_token);
 
-                await _client.Connect(nottoken);
-                timeout = new Timeout(_client);
-            });
+                    await _client.Connect(nottoken);
+                    timeout = new Timeout(_client);
+                });
+            }
+            catch (Discord.Net.HttpException)
+            {
+                while (client.Status != UserStatus.Online)
+                {
+
+                }
+            }
         }
+
+
 
         #region New Users
         
@@ -144,6 +156,7 @@ namespace Discord_Bot
                 .IsHidden()
                 .Do(AnimeTools.GetHBUser);
 
+            //Idea by Will but I perfected it and it's a fucking game now, who would've thought.
             group.CreateCommand("shoot")
                 .WithPurpose("shoot a user, with a chance to miss! Usage: type /shoot and tag any amount of users you want.\n`/shoot stats` for your personal score\n`/shoot top` for the top 5 killers!")
                 .Do(Fun.ShootUser);
@@ -239,10 +252,12 @@ namespace Discord_Bot
                 .ArgsAtLeast(1)
                 .WithPurpose("Get an image of Google. (100 per day pls)")
                 .Do(Fun.GetImageFromGoogleDotCom);
+
             group.CreateCommand("mala")
                 .ArgsAtLeast(1)
                 .WithPurpose("Find an anime of MAL and Link it together with it's synopsis.")
                 .Do(AnimeTools.GetAnimeFromMAL);
+
             group.CreateCommand("malm")
                 .ArgsAtLeast(1)
                 .WithPurpose("Find a manga of MAL and Link it together with it's synopsis.")
