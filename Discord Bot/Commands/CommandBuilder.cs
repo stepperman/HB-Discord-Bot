@@ -115,6 +115,12 @@ namespace Discord_Bot.Commands
             return this;
         }
 
+        public CommandBuilder DelayIsUnignorable()
+        {
+            _command.DelayUnignorable = true;
+            return this;
+        }
+
         public CommandBuilder Do(Func<CommandArgs, Task> func)
         {
             _command.Handler = func;

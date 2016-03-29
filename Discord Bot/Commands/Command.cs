@@ -18,6 +18,7 @@ namespace Discord_Bot.Commands
         public string Purpose { get; internal set; }
         public int MinPerms { get; internal set; }
         public bool IsHidden { get; internal set; }
+        public bool DelayUnignorable { get; internal set; }
         public string timeType { get; internal set; }
         public int? CommandDelayNotify { get; internal set; }
         public int? CommandDelay { get; internal set; }

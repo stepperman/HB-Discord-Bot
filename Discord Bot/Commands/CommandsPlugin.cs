@@ -110,21 +110,24 @@ namespace Discord_Bot.Commands
                         {
                             //check if admin, if so he can ignore the time constraint and shit.
                             bool timeCheck = true;
-                            var info = Tools.GetServerInfo(e.Server.Id);
-                            if (info.roleImportancy.Count > 0)
+                            if (!command.DelayUnignorable)
                             {
-                                for (int i = 0; i < info.roleImportancy.Count; i++)
+                                var info = Tools.GetServerInfo(e.Server.Id);
+                                if (info.roleImportancy.Count > 0)
                                 {
-                                    string importantRole = info.roleImportancy.Keys.ToArray()[i];
-                                    int importantRoleAmnt = info.roleImportancy.Values.ToArray()[i];
-                                    Role role = e.Server.GetRole(ulong.Parse(importantRole));
-
-                                    if (role == null) continue;
-
-                                    if (e.User.HasRole(role) && importantRoleAmnt >= 15)
+                                    for (int i = 0; i < info.roleImportancy.Count; i++)
                                     {
-                                        timeCheck = false;
-                                        break;
+                                        string importantRole = info.roleImportancy.Keys.ToArray()[i];
+                                        int importantRoleAmnt = info.roleImportancy.Values.ToArray()[i];
+                                        Role role = e.Server.GetRole(ulong.Parse(importantRole));
+
+                                        if (role == null) continue;
+
+                                        if (e.User.HasRole(role) && importantRoleAmnt >= 15)
+                                        {
+                                            timeCheck = false;
+                                            break;
+                                        }
                                     }
                                 }
                             }
