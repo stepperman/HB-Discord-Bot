@@ -12,6 +12,7 @@ namespace Discord_Bot
     class Fun
     {
         private static int ayyscore = 0;
+        private static Dictionary<ulong, uint> MostKills;
 
         public static Func<CommandArgs, Task> EightBall = async e =>
         {
@@ -191,12 +192,12 @@ namespace Discord_Bot
             var chance = Tools.random.Next(101); // 0 to 100
             var hitChance = chance - (5 * mentionedUserCount);
 
-            if (hitChance < 50)
+            if (mentionedUserCount != 0 && (hitChance < 50 || e.Message.MentionedUsers.Contains(e.User)))
             {
                 Array x = Enum.GetValues(typeof(BodyParts));
                 var bodypart = x.GetValue(Tools.random.Next(x.Length));
 
-                await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart}! You've been timed out for {(int)bodypart} minutes!");
+                await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes!");
                 await Program.timeout.TimeoutUser(e, (double)((int)bodypart), e.User);
                 return;
             }
