@@ -145,7 +145,7 @@ namespace Discord_Bot
                 .Do(AnimeTools.GetHBUser);
 
             group.CreateCommand("shoot")
-                .WithPurpose("shoot a user, with a chance to miss!")
+                .WithPurpose("shoot a user, with a chance to miss! Usage: type /shoot and tag any amount of users you want.\n`/shoot stats` for your personal score\n`/shoot top` for the top 5 killers!")
                 .Do(Fun.ShootUser);
 
             group.CreateCommand("8ball")

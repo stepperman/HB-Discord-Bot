@@ -224,7 +224,22 @@ namespace Discord_Bot
             }
             else if (arg == "top")
             {
-                await Tools.Reply(e, "This doesn't do anything yet. Annoy Stepper, not me. This ");
+                var list = MostKills.ToList();
+                list.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
+                list.Reverse();
+
+                string topresponse = "Top 5 players:";
+                for (int i = 0; i < 6; i++)
+                {
+                    if (i == list.Count())
+                        break;
+
+                    User user = e.Server.GetUser(list[i].Key);
+                    var userScore = list[i].Value;
+                    topresponse += $"\n#{i+1}: {user.Mention} with a killcount of {userScore}!";
+                }
+
+                await Tools.Reply(e, topresponse, false);
                 return;
             }
 
