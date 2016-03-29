@@ -251,12 +251,12 @@ namespace Discord_Bot
             var chance = Tools.random.Next(101); // 0 to 100
             var hitChance = chance - (5 * mentionedUserCount);
 
-            if (mentionedUserCount != 0 && (hitChance < 50 || e.Message.MentionedUsers.Contains(e.User)))
+            if (mentionedUserCount != 0 && (hitChance < 25 || e.Message.MentionedUsers.Contains(e.User)))
             {
                 Array x = Enum.GetValues(typeof(BodyParts));
                 var bodypart = x.GetValue(Tools.random.Next(x.Length));
 
-                await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes!");
+                await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes! Your chance was {hitChance}. (need > 25 to murder)");
                 await Program.timeout.TimeoutUser(e, (double)((int)bodypart), e.User);
                 return;
             }
