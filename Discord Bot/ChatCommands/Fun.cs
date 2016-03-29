@@ -217,12 +217,7 @@ namespace Discord_Bot
             //Prematurely check if the user exists in the dictionary, if not, create the fuck.
             if (!MostKills.ContainsKey(e.User.Id))
                 MostKills.Add(e.User.Id, 0);
-
-            foreach (var value in MostKills.Keys)
-            {
-                Console.WriteLine(e.Server.GetUser(value).Name);
-            }
-
+            
             Console.WriteLine(MostKills[e.User.Id]);
 
             var arg = e.Args[0];
