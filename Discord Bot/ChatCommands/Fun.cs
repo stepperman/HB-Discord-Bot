@@ -229,7 +229,7 @@ namespace Discord_Bot
                 list.Reverse();
 
                 string topresponse = "Top 5 players:";
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     if (i == list.Count())
                         break;
