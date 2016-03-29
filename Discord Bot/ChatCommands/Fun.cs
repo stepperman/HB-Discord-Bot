@@ -202,6 +202,16 @@ namespace Discord_Bot
             }
         }
 
+        /// <summary>
+        /// Alright so how this game works is that you can shoot a user, or multiple users.
+        /// If you shoot someone, you have chance to shoot yourself in a certain body part. (<seealso cref="BodyParts"/>)
+        /// If that happens, you get timed out for the minutes it has. I think it's one of the funniest commands I've made yet for some reason.
+        /// But well you can tag multiple! For every person you tag it increases the chance of hitting yourself by 5 procent.
+        /// Or well, it decreases the chance of hitting them by 5 percent to better associate it as it is in the code.
+        /// There's 2 commands with this as well, /shoot top and /shoot stats
+        /// with /shoot stats you can see your own score. The amount of people you've brutally murdered you sick fuck.
+        /// with /shoot top you can see the top 5 scores of other people. They're the most brutal murderers on this server!
+        /// </summary>
         public static Func<CommandArgs, Task> ShootUser = async e =>
         {
             //Prematurely check if the user exists in the dictionary, if not, create the fuck.
