@@ -258,7 +258,7 @@ namespace Discord_Bot
             //Actually e.Message.MentionedUsers.ToArray()[0] because it's an IEnumerable but that's fuck.
             int mentionedUserCount = e.Message.MentionedUsers.Count();
 
-            var chance = Tools.random.Next(101); // 0 to 100
+            var chance = Tools.random.Next(151); // 0 to 100
             var hitChance = chance - (5 * mentionedUserCount);
 
             if (mentionedUserCount != 0 && (hitChance < 25 || e.Message.MentionedUsers.Contains(e.User)))
@@ -316,10 +316,8 @@ namespace Discord_Bot
             Foot = 1,
             Knee = 2,
             Leg = 3,
-            Stomach = 4,
-            Heart = 5,
-            Mouth = 6,
-            Head = 10
+            Heart = 4,
+            Head = 5
         }
     }
 }
