@@ -310,7 +310,7 @@ namespace Discord_Bot
                     }
                 }
                 else
-                    names = e.Message.MentionedUsers.ToArray()[0].Name;
+                    names = e.Message.MentionedUsers.ToArray()[0].Mention;
 
                 string response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
                 //response.
