@@ -314,7 +314,7 @@ namespace Discord_Bot
 
                 string response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
                 //response.
-                await Tools.Reply(e, $"{response}. Your chance was {chance} (need > 25)", false);
+                await Tools.Reply(e, $"{response} Your chance was {chance} (need > 25)", false);
 
                 //aaand save the kills he has.
                 Console.WriteLine(MostKills[e.User.Id]);
