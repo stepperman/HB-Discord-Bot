@@ -127,12 +127,6 @@ namespace Discord_Bot.Commands
             return this;
         }
 
-        public CommandBuilder Do(Action<CommandArgs> func)
-        {
-            _command.Handler = e => { func(e); return Task.Delay(0); };
-            return this;
-        }
-
         public CommandBuilder OnFail(Func<CommandArgs, Task> func)
         {
             _command.FailHandler = func;

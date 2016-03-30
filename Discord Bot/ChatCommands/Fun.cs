@@ -241,7 +241,7 @@ namespace Discord_Bot
 
                     User user = e.Server.GetUser(list[i].Key);
                     var userScore = list[i].Value;
-                    topresponse += $"\n#{i+1}: {user.Mention} with a killcount of {userScore}!";
+                    topresponse += $"\n#{i+1}: **{user.Name}** with a killcount of {userScore}!";
                 }
 
                 await Tools.Reply(e, topresponse, false);
@@ -291,9 +291,9 @@ namespace Discord_Bot
 
                 //response.
                 if (mentionedUserCount == 1)
-                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Name} to fucking death.", false);
+                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Mention} to fucking death. Your chance was {chance} (need > 25)", false);
                 else
-                    await Tools.Reply(e, $"{response} to a fucking death", false);
+                    await Tools.Reply(e, $"{response} to a fucking death. Your chance was {chance} (need > 25)", false);
 
                 //aaand save the kills he has.
                 Console.WriteLine(MostKills[e.User.Id]);
