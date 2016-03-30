@@ -201,7 +201,7 @@ namespace Discord_Bot
                 .Do(async e =>
                 {
                     await e.Channel.SendFile("keemstar.png");
-                    await Tools.Reply(e, "You have used Code Keem", true);
+                    await Tools.Reply(e, "You have used code 'KEEM'", true);
                 });
 
             group.CreateCommand("hello")

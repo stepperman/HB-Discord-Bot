@@ -256,6 +256,27 @@ namespace Discord_Bot
             var chance = Tools.random.Next(151); // 0 to 100
             var hitChance = chance - (5 * mentionedUserCount);
 
+            //All the responses. {0} is the shooter, {1} the victim
+            string[] responses =
+            {
+                "{0} just killed {1} to death.",
+                "{0} just fucking murdered {1}.",
+                "{0} exploded {1}.",
+                "{1} is now dead. {0} didn't do it, I swear.",
+                "{0} test fired his gun. The bullet ricochet to {1}. Woops.",
+                "{0} assassinated {1}.",
+                "{0} sprayed {1}.",
+                "{0} no-scoped {1} to another dimension.",
+                "{0} shot {1} to a fucking pulp.",
+                "{0} didn't shoot {1} to death, but fucked {1} to death!",
+                "I don't even want to say what {0} did to {1}.",
+                "{0} quickscoped {1}.",
+                "{0} invited {1} to 1v1 Rust. He won.",
+                "{1} killed himself after years of bullying by {0}.",
+                "{0} locked up {1} in a cell and forgot to feed him.",
+                "{0} ripped {1}."
+            };
+
             if (mentionedUserCount != 0 && (hitChance < 25 || e.Message.MentionedUsers.Contains(e.User)))
             {
                 Array x = Enum.GetValues(typeof(BodyParts));
@@ -270,7 +291,7 @@ namespace Discord_Bot
             if (mentionedUserCount > 0)
             {
                 //Already create the premade response
-                string response = $"{e.User.Mention} just shot ";
+                string names = $"";
 
 
                 if (mentionedUserCount != 1)
@@ -278,22 +299,22 @@ namespace Discord_Bot
                     for (int i = 0; i < mentionedUserCount; i++)
                     {
                         //Add the name to response.
-                        response += e.Message.MentionedUsers.ToArray()[i].Mention;
+                        names += e.Message.MentionedUsers.ToArray()[i].Mention;
 
                         //If this is the one to last mentioned user, add a " , ".
                         if (i == mentionedUserCount - 2)
-                            response += " , ";
+                            names += " , ";
                         //Otherwise if it's less than the one to last mentioned user, add an " and ".
                         else if (i < mentionedUserCount - 2)
-                            response += " and ";
+                            names += " and ";
                     }
                 }
-
-                //response.
-                if (mentionedUserCount == 1)
-                    await Tools.Reply(e, $"{response}{e.Message.MentionedUsers.ToArray()[0].Mention} to fucking death. Your chance was {chance} (need > 25)", false);
                 else
-                    await Tools.Reply(e, $"{response} to a fucking death. Your chance was {chance} (need > 25)", false);
+                    names = e.Message.MentionedUsers.ToArray()[0].Name;
+
+                string response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
+                //response.
+                await Tools.Reply(e, $"{names}. Your chance was {chance} (need > 25)", false);
 
                 //aaand save the kills he has.
                 Console.WriteLine(MostKills[e.User.Id]);
