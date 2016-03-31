@@ -28,13 +28,13 @@ namespace Discord_Bot
             var response = await TimeoutUser(e, minutes, user);
 
             if (response == 1)
-                return $"timed out {user.Mention} for {minutes}";
+                return $"timed out {user.Mention} for {minutes} minutes.";
             else if (response == 2)
                 return $"added {minutes} more minutes to {user.Mention}'s timeout.";
             else if (response == 3)
                 return $"removed {user.Mention}'s time out. Hooray!";
             else
-                return $"failed to time out {user.Mention}. You might be a noob.";
+                return $"failed to time out {user.Mention}. You might stupid.";
         }
 
         /// <summary>
@@ -54,50 +54,56 @@ namespace Discord_Bot
             {
                 if (minutes <= 0)
                     return 0; //Failed
-                users.Add(new TimedoutUser(user));
-                var info = users[users.Count - 1];
 
-                info.timer.Interval = minutes * 1000 * 60;
-                info.t = DateTime.Now;
-                info.timeoutTime = minutes;
-                info.timer.Elapsed += async (s, te) =>
-                {
-                    users.Remove(info);
-                    Console.WriteLine($"{e.User}'s time out has been removed!");
-                    await user.Edit(null, null, null, info.roles);
-                    info.timer = null;
-                };
-                await user.Edit(null, null, user.VoiceChannel, new Role[] { e.Server.EveryoneRole });
-                info.timer.Start();
+                await StartTimeout(e, minutes, user, users);
+
                 return 1;
             }
             else
             {
-                var info = userTimeout;
                 if (minutes <= 0)
                 {
-                    users.Remove(info);
-                    Console.WriteLine($"{e.User}'s time out has been removed!");
-                    await user.Edit(null, null, user.VoiceChannel, info.roles);
-                    return 3;//Timeout removed
+                    await StopTimeout(users, userTimeout, user);
+                    return 3;
                 }
 
-                var timeToAdd = (DateTime.Now - info.t).TotalMinutes;
-                timeToAdd = info.timeoutTime - timeToAdd;
+                var timeToAdd = (DateTime.Now - userTimeout.t).TotalMinutes;
+                timeToAdd = userTimeout.timeoutTime - timeToAdd;
 
-                info.t = DateTime.Now;
-                info.timer = new Timer((timeToAdd + minutes) * 1000 * 60);
+                await StartTimeout(e, timeToAdd + minutes, user, users);
 
-                info.timer.Elapsed += async (s, te) =>
-                {
-                    users.Remove(info);
-                    await user.Edit(null, null, user.VoiceChannel, info.roles);
-                    info.timer = null;
-
-                };
-                info.timer.Start();
                 return 2; // Time added
             }
+        }
+
+        private async Task StartTimeout(CommandArgs e, double minutes, User user, List<TimedoutUser> users)
+        {
+            users.Add(new TimedoutUser(user));
+            var info = users[users.Count - 1];
+
+            info.timer.Interval = minutes * 1000 * 60;
+            info.t = DateTime.Now;
+            info.timeoutTime = minutes;
+
+            info.timer.Elapsed += async (s, te) =>
+            {
+                users.Remove(info);
+                Console.WriteLine($"{user.Name}'s time out has been removed!");
+                await user.Edit(null, null, null, info.roles);
+                info.timer = null;
+            };
+
+            await user.Edit(null, null, user.VoiceChannel, new Role[] { e.Server.EveryoneRole });
+            info.timer.Start();
+            return;
+        }
+
+        private async Task StopTimeout(List<TimedoutUser> users, TimedoutUser info, User user)
+        {
+            users.Remove(info);
+            Console.WriteLine($"{user.Name}'s time out has been removed!");
+            await user.Edit(null, null, user.VoiceChannel, info.roles);
+            return;
         }
 
 
