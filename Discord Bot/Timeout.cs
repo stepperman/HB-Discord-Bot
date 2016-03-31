@@ -71,6 +71,7 @@ namespace Discord_Bot
                 timeToAdd = userTimeout.timeoutTime - timeToAdd;
 
                 Console.WriteLine($"{user.Name}'s timeout has been lengthed to {timeToAdd + minutes}");
+                await StopTimeout(users, userTimeout, user);
                 await StartTimeout(e, timeToAdd + minutes, user, users);
 
                 return 2; // Time added
