@@ -25,7 +25,7 @@ namespace Discord_Bot
         public static Timeout timeout;
         public static dynamic ProgramInfo = null;
 
-        private static ChatterBotFactory factory;
+        private static ChatterBotFactory factory = new ChatterBotFactory();
         private static ChatterBotSession session;
 
         public static DiscordClient Client
