@@ -253,8 +253,12 @@ namespace Discord_Bot
             //Actually e.Message.MentionedUsers.ToArray()[0] because it's an IEnumerable but that's fuck.
             int mentionedUserCount = e.Message.MentionedUsers.Count();
 
-            var chance = Tools.random.Next(151); // 0 to 100
+            var chance = Tools.random.Next(151); // 0 to 150
             var hitChance = chance - (5 * mentionedUserCount);
+
+            //Here you go fuckhead will
+            if (hitChance < 0)
+                hitChance = -1500000;
 
             //All the responses. {0} is the shooter, {1} the victim
             string[] responses =
@@ -274,7 +278,12 @@ namespace Discord_Bot
                 "{0} invited {1} to 1v1 Rust. He won.",
                 "{1} killed himself after years of bullying by {0}.",
                 "{0} locked up {1} in a cell and forgot to feed him.",
-                "{0} ripped {1}."
+                "{0} ripped {1}.",
+                "{0} talked to {1}, and {1} died.",
+                "{0} had a nice bath with {1}.",
+                "{0} installed Windows 10 on {1}'s computer",
+                "{1} has no idea what this has to do with the /shoot command that {0} initiated.", //courtesy to Will :*
+                "{1} proposed to {0}. They said no." 
             };
 
             if (mentionedUserCount != 0 && (hitChance < 25 || e.Message.MentionedUsers.Contains(e.User)))
