@@ -76,7 +76,7 @@ namespace Discord_Bot
                 await Tools.OfflineMessage(e);
                 await Fun.AyyGame(e);
 
-                if (e.Message.Text.StartsWith($"@{client.CurrentUser.Name}") && e.Message.Text.EndsWith($"@{client.CurrentUser.Name}"))
+                if (e.Message.Text.StartsWith($"@{client.CurrentUser.Name}") && !e.Message.Text.EndsWith($"@{client.CurrentUser.Name}"))
                 {
                     int msgrm = client.CurrentUser.Name.Length + 1;
                     await Chatterbot(e.Message.Text.Remove(msgrm), e.User, e.Channel);
