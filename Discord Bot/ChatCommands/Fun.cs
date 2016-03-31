@@ -286,12 +286,16 @@ namespace Discord_Bot
                 "{1} proposed to {0}. They said no." 
             };
 
-            if (mentionedUserCount != 0 && (hitChance < 25 || e.Message.MentionedUsers.Contains(e.User)))
+            bool shotHimself = e.Message.MentionedUsers.Contains(e.User);
+            if (mentionedUserCount != 0 && (hitChance < 25 || shotHimself))
             {
                 Array x = Enum.GetValues(typeof(BodyParts));
                 var bodypart = x.GetValue(Tools.random.Next(x.Length));
 
-                await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes! Your chance was {hitChance}. (need > 25 to murder)");
+                if (shotHimself)
+                    await Tools.Reply(e, $"Dude! You just fucking shot yourself in the {bodypart.ToString().ToLower()}! Why would you do that? You've been timed out for {(int)bodypart} minutes!");
+                else
+                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes! Your chance was {hitChance}. (need > 25 to murder)");
                 await Program.timeout.TimeoutUser(e, (double)((int)bodypart), e.User);
                 return;
             }
