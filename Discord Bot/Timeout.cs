@@ -70,6 +70,7 @@ namespace Discord_Bot
                 var timeToAdd = (DateTime.Now - userTimeout.t).TotalMinutes;
                 timeToAdd = userTimeout.timeoutTime - timeToAdd;
 
+                Console.WriteLine($"{user.Name}'s timeout has been lengthed to {timeToAdd + minutes}");
                 await StartTimeout(e, timeToAdd + minutes, user, users);
 
                 return 2; // Time added
@@ -90,7 +91,7 @@ namespace Discord_Bot
                 users.Remove(info);
                 Console.WriteLine($"{user.Name}'s time out has been removed!");
                 await user.Edit(null, null, null, info.roles);
-                info.timer = null;
+                info.timer.Dispose() ;
             };
 
             await user.Edit(null, null, user.VoiceChannel, new Role[] { e.Server.EveryoneRole });
@@ -103,6 +104,7 @@ namespace Discord_Bot
             users.Remove(info);
             Console.WriteLine($"{user.Name}'s time out has been removed!");
             await user.Edit(null, null, user.VoiceChannel, info.roles);
+            info.timer.Dispose();
             return;
         }
 
