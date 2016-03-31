@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Timers;
 using System.IO;
-using ChatterBotAPI;
 
 /// <summary>
 /// Perms:
@@ -24,9 +23,6 @@ namespace Discord_Bot
         public static CommandsPlugin _commands, _admincommands;
         public static Timeout timeout;
         public static dynamic ProgramInfo = null;
-
-        private static ChatterBotFactory factory = new ChatterBotFactory();
-        private static ChatterBotSession session;
 
         public static DiscordClient Client
         {
@@ -48,10 +44,7 @@ namespace Discord_Bot
             _admincommands = new CommandsPlugin(client);
             _commands.CreateCommandGroup("", group => BuildCommands(group));
             _admincommands.CreateCommandGroup("admin", adminGroup => BuildAdminCommands(adminGroup));
-
-            var bot1 = factory.Create(ChatterBotType.CLEVERBOT);
-            session = bot1.CreateSession();
-
+            
             //Get Programinfo
             if(File.Exists("./../LocalFiles/ProgramInfo.json"))
             {
@@ -75,12 +68,6 @@ namespace Discord_Bot
             {
                 await Tools.OfflineMessage(e);
                 await Fun.AyyGame(e);
-
-                if (e.Message.Text.StartsWith($"@{client.CurrentUser.Name}") && !e.Message.Text.EndsWith($"@{client.CurrentUser.Name}"))
-                {
-                    int msgrm = client.CurrentUser.Name.Length + 1;
-                    await Chatterbot(e.Message.Text.Remove(msgrm), e.User, e.Channel);
-                }
             };
             _client.GatewaySocket.Disconnected += async (s, e) =>
             {
@@ -136,13 +123,6 @@ namespace Discord_Bot
 
 
         #endregion
-
-
-        private static async Task Chatterbot(string x, User user, Channel channel)
-        {
-            var y = session.Think(x);
-            await Tools.Reply(user, channel, y, true);
-        }
 
         #region commands
         private static void BuildCommands(CommandGroupBuilder group)

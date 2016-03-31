@@ -50,10 +50,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ChatterBotAPI, Version=1.1.5934.40004, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ChatterBotApi-master\dotnet\ChatterBotAPI\bin\Release\ChatterBotAPI.dll</HintPath>
-    </Reference>
     <Reference Include="Discord.Net, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Discord.Net.0.9.0-rc3-3\lib\net45\Discord.Net.dll</HintPath>
       <Private>True</Private>
