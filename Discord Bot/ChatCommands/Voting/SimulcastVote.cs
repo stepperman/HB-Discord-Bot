@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Discord_Bot.ChatCommands.Voting
+namespace Discord_Bot.Voting
 {
     class SimulcastVote
     {
