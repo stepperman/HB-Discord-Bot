@@ -64,6 +64,17 @@ namespace Discord_Bot
                 //await WelcomeUser(e.User, e.Server.Id);
             };
 
+            _client.UserLeft += async (s, e) =>
+            {
+                var server = Tools.GetServerInfo(e.Server.Id);
+
+                if (server.welcomingChannel == 0)
+                    return;
+
+                await Tools.Reply(e.User, client.GetChannel(server.welcomingChannel), $"Goodbye, **{e.User.Name}**. It was nice having you here.", false);
+
+            };
+
             _client.MessageReceived += async (s, e) =>
             {
                 await Tools.OfflineMessage(e);
