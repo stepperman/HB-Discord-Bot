@@ -256,10 +256,6 @@ namespace Discord_Bot
             var chance = Tools.random.Next(101); // 0 to 100
             var hitChance = chance - (5 * mentionedUserCount);
 
-            //Here you go fuckhead will
-            if (hitChance < 0)
-                hitChance = -1500000;
-
             //All the responses. {0} is the shooter, {1} the victim
             string[] responses =
             {
