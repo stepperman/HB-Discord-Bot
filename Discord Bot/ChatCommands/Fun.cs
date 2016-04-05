@@ -321,7 +321,13 @@ namespace Discord_Bot
                 else
                     names = e.Message.MentionedUsers.ToArray()[0].Mention;
 
-                string response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
+                string response = "";
+
+                if (e.Message.MentionedUsers.Any(u => u.Id == 99511799421861888))
+                    response = "{0} had a nice bath with {1}.";
+                else
+                    response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
+
                 //response.
                 await Tools.Reply(e, $"{response} Your chance was {chance} (need > 25/100)", false);
 
