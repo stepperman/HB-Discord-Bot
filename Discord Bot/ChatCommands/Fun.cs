@@ -324,7 +324,7 @@ namespace Discord_Bot
                 string response = "";
 
                 if (e.Message.MentionedUsers.Any(u => u.Id == 99511799421861888))
-                    response = "{0} had a nice bath with {1}.";
+                    response = "{0} had a nice bath with {1}.".Replace("{0}", e.User.Mention).Replace("{1}", names);
                 else
                     response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
 
