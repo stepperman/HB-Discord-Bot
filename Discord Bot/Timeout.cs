@@ -48,6 +48,12 @@ namespace Discord_Bot
             List<TimedoutUser> users;
             timedoutUsers.TryGetValue(e.Server.Id.ToString(), out users);
 
+            if (users == null)
+            {
+                users = new List<TimedoutUser>();
+                timedoutUsers.Add(e.Server.Id.ToString(), users);
+            }
+
             var userTimeout = users.FirstOrDefault(x => x.userID == user.Id.ToString());
 
             if (userTimeout == null)
