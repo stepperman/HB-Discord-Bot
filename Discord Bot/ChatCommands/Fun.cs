@@ -253,7 +253,7 @@ namespace Discord_Bot
             //Actually e.Message.MentionedUsers.ToArray()[0] because it's an IEnumerable but that's fuck.
             int mentionedUserCount = e.Message.MentionedUsers.Count();
 
-            var chance = Tools.random.Next(151); // 0 to 150
+            var chance = Tools.random.Next(101); // 0 to 100
             var hitChance = chance - (5 * mentionedUserCount);
 
             //Here you go fuckhead will
@@ -272,7 +272,7 @@ namespace Discord_Bot
                 "{0} sprayed {1}.",
                 "{0} no-scoped {1} to another dimension.",
                 "{0} shot {1} to a fucking pulp.",
-                "{0} didn't shoot {1} to death, but fucked {1} to death!",
+                "{0} didn't shoot {1} to death, but fucked them to death!",
                 "I don't even want to say what {0} did to {1}.",
                 "{0} quickscoped {1}.",
                 "{0} invited {1} to 1v1 Rust. He won.",
@@ -295,7 +295,7 @@ namespace Discord_Bot
                 if (shotHimself)
                     await Tools.Reply(e, $"Dude! You just fucking shot yourself in the {bodypart.ToString().ToLower()}! Why would you do that? You've been timed out for {(int)bodypart} minutes!");
                 else
-                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes! Your chance was {hitChance}. (need > 25 to murder)");
+                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes! Your chance was {hitChance}. (need > 25/100 to murder)");
                 await Program.timeout.TimeoutUser(e, (double)((int)bodypart), e.User);
                 return;
             }
@@ -316,10 +316,10 @@ namespace Discord_Bot
 
                         //If this is the one to last mentioned user, add a " , ".
                         if (i == mentionedUserCount - 2)
-                            names += " , ";
+                            names += " and ";
                         //Otherwise if it's less than the one to last mentioned user, add an " and ".
                         else if (i < mentionedUserCount - 2)
-                            names += " and ";
+                            names += ", ";
                     }
                 }
                 else
@@ -327,12 +327,10 @@ namespace Discord_Bot
 
                 string response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
                 //response.
-                await Tools.Reply(e, $"{response} Your chance was {chance} (need > 25)", false);
+                await Tools.Reply(e, $"{response} Your chance was {chance} (need > 25/100)", false);
 
                 //aaand save the kills he has.
-                Console.WriteLine(MostKills[e.User.Id]);
                 MostKills[e.User.Id] += (uint)mentionedUserCount;
-                Console.WriteLine(MostKills[e.User.Id]);
 
                 //Serialize it so that it exists even after the bot is down.
                 string json = JsonConvert.SerializeObject(MostKills);
