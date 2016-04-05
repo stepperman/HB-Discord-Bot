@@ -188,7 +188,7 @@ namespace Discord_Bot
                     if (msg[0] == '/')
                         msg = msg.Substring(1);
 
-                    if (msg.ToLower().Replace(" ", "").EndsWith("ayy"))
+                    if (!msg.ToLower().Replace(" ", "").EndsWith("ayy"))
                     {
                         var info = Tools.GetServerInfo(e.Server.Id);
                         string text = "get as long a chain of /ayy 's before it gets broken. High Score: {0} Current Score: {1}";
