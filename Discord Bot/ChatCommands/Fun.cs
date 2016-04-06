@@ -204,7 +204,7 @@ namespace Discord_Bot
 
         /// <summary>
         /// Alright so how this game works is that you can shoot a user, or multiple users.
-        /// If you shoot someone, you have chance to shoot yourself in a certain body part. (<seealso cref="BodyParts"/>)
+        /// If you shoot someone, you have chance to shoot yourself in a certain body part. (<seealso cref="BodyPart"/>)
         /// If that happens, you get timed out for the minutes it has. I think it's one of the funniest commands I've made yet for some reason.
         /// But well you can tag multiple! For every person you tag it increases the chance of hitting yourself by 5 procent.
         /// Or well, it decreases the chance of hitting them by 5 percent to better associate it as it is in the code.
@@ -282,54 +282,78 @@ namespace Discord_Bot
                 "{1} proposed to {0}. They said no." 
             };
 
-            bool shotHimself = e.Message.MentionedUsers.Contains(e.User);
-            if (mentionedUserCount != 0 && (hitChance < 25 || shotHimself))
+            //Bodyparts
+            Dictionary<string, double> BodyParts = new Dictionary<string, double>()
             {
-                Array x = Enum.GetValues(typeof(BodyParts));
-                var bodypart = x.GetValue(Tools.random.Next(x.Length));
+                { "Foot", 0.5 },
+                { "Stomach", 1 },
+                { "Heart", 1.5 },
+                { "Head", 2 }
+            };
+
+            if (mentionedUserCount == 0)
+                return;
+
+            bool shotHimself = e.Message.MentionedUsers.Contains(e.User);
+
+            //Already create the premade response
+            string names = $"";
+
+            if (mentionedUserCount != 1)
+            {
+                for (int i = 0; i < mentionedUserCount; i++)
+                {
+                    //Add the name to response.
+                    names += e.Message.MentionedUsers.ToArray()[i].Mention;
+
+                    //If this is the one to last mentioned user, add a " , ".
+                    if (i == mentionedUserCount - 2)
+                        names += " and ";
+                    //Otherwise if it's less than the one to last mentioned user, add an " and ".
+                    else if (i < mentionedUserCount - 2)
+                        names += ", ";
+                }
+            }
+            else
+                names = e.Message.MentionedUsers.ToArray()[0].Mention;
+
+            //Suicide
+            if (mentionedUserCount != 0 && (hitChance < 25 || shotHimself)) 
+            {
+                var bodypart = BodyParts.ElementAt(Tools.random.Next(BodyParts.Count));
+
+                string s = bodypart.Value == 1 ? "s" : "";
 
                 if (shotHimself)
-                    await Tools.Reply(e, $"Dude! You just fucking shot yourself in the {bodypart.ToString().ToLower()}! Why would you do that? You've been timed out for {(int)bodypart} minutes!");
+                    await Tools.Reply(e, $"Dude! You just fucking shot yourself in the {bodypart.Key.ToLower()}! Why would you do that? You've been timed out for {bodypart.Value} minute{s}!");
                 else
-                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.ToString().ToLower()}! You've been timed out for {(int)bodypart} minutes! Your chance was {hitChance}. (need > 25/100 to murder)");
-                await Program.timeout.TimeoutUser(e, (double)((int)bodypart), e.User);
+                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.Key.ToLower()}! You've been timed out for {bodypart.Value} minute{s}! Your chance was {hitChance}. (need > 50/100)");
+                await Program.timeout.TimeoutUser(e, bodypart.Value, e.User);
                 return;
             }
-
-            //No mentioned users? Fuck off.
-            if (mentionedUserCount > 0)
+            //Missed shot.
+            else if (Tools.InRange(hitChance, 25, 50))
             {
-                //Already create the premade response
-                string names = $"";
-
-
-                if (mentionedUserCount != 1)
-                {
-                    for (int i = 0; i < mentionedUserCount; i++)
-                    {
-                        //Add the name to response.
-                        names += e.Message.MentionedUsers.ToArray()[i].Mention;
-
-                        //If this is the one to last mentioned user, add a " , ".
-                        if (i == mentionedUserCount - 2)
-                            names += " and ";
-                        //Otherwise if it's less than the one to last mentioned user, add an " and ".
-                        else if (i < mentionedUserCount - 2)
-                            names += ", ";
-                    }
-                }
+                if (shotHimself)
+                    await Tools.Reply(e, $"Wow! You almost shot yourself to death! For some reason, you missed. (need > 50/100)");
                 else
-                    names = e.Message.MentionedUsers.ToArray()[0].Mention;
+                    await Tools.Reply(e, $"{e.User.Name} missed {names}. Your chance was {hitChance}. (need > 50/100)", false);
 
+                return;
+            }
+            //If not any of that, it's a hit!
+            else
+            {
                 string response = "";
 
+                //This is to cheat the system so that Aowashi always has a bath. Always.
                 if (e.Message.MentionedUsers.Any(u => u.Id == 99511799421861888))
                     response = "{0} had a nice bath with {1}.".Replace("{0}", e.User.Mention).Replace("{1}", names);
                 else
                     response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
 
                 //response.
-                await Tools.Reply(e, $"{response} Your chance was {chance} (need > 25/100)", false);
+                await Tools.Reply(e, $"{response} Your chance was {chance} (need > 50/100)", false);
 
                 //aaand save the kills he has.
                 MostKills[e.User.Id] += (uint)mentionedUserCount;
@@ -339,14 +363,6 @@ namespace Discord_Bot
                 Tools.SaveFile(json, PathToKillScore, false); //Save it to disk.
             }
         };
-
-        enum BodyParts
-        {
-            Foot = 1,
-            Knee = 2,
-            Leg = 3,
-            Heart = 4,
-            Head = 5
-        }
+        
     }
 }

@@ -275,6 +275,13 @@ namespace Discord_Bot
             }
             catch (Exception) { }
         }
+
+        public static bool InRange(double val, double min, double max)
+        {
+            if (val >= min && val <= max)
+                return true; 
+            return false;
+        }
     }
 
 

@@ -70,7 +70,7 @@ namespace Discord_Bot
 
                 if (server.welcomingChannel == 0)
                     return;
-
+                
                 await Tools.Reply(e.User, client.GetChannel(server.welcomingChannel), $"Goodbye, **{e.User.Name}**. It was nice having you here.", false);
             };
 

@@ -11,7 +11,8 @@ namespace Discord_Bot
     class AdminCommands
     {
         /// <summary>
-        /// Todo: Make this better! This needs to have stuff like 
+        /// Todo: Make the DeleteMessage command better! 
+        /// This needs to have stuff like 
         /// deleting a user's message, checking for content and if it contains that, delete it,
         /// deleting images, deleting links, it's all cool! 
         /// Sometime later.
