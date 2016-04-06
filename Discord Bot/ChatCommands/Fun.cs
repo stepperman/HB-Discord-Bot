@@ -239,7 +239,7 @@ namespace Discord_Bot
             //TODO: Tag users to get their score. (1 user or more?)
             if (arg == "stats")
             {
-                if (e.Message.MentionedUsers.Count() > 1)
+                if (e.Message.MentionedUsers.Count() > 0)
                 {
                     var user = e.Message.MentionedUsers.ToArray()[0];
                     uint sc = MostKills[user.Id].kills;
