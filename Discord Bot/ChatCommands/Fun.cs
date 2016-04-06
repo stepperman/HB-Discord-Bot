@@ -357,7 +357,15 @@ namespace Discord_Bot
                 if (shotHimself)
                     await Tools.Reply(e, $"Dude! You just fucking shot yourself in the {bodypart.Key.ToLower()}! Why would you do that? You've been timed out for {bodypart.Value} minute{s}!");
                 else
-                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.Key.ToLower()}! You've been timed out for {bodypart.Value} minute{s}! Your chance was {hitChance}. (need > {suicideChance}/100)");
+                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.Key.ToLower()}! You've been timed out for {bodypart.Value} minute{s}! Your chance was {hitChance}. (need > {missChance}/100)");
+
+                //Save the suicide to the deaths
+                MostKills[e.User.Id].deaths += 1;
+
+                //Serialize it so that it exists even after the bot is down.
+                string json = JsonConvert.SerializeObject(MostKills);
+                Tools.SaveFile(json, PathToKillScore, false); //Save it to disk.
+
                 await Program.timeout.TimeoutUser(e, bodypart.Value, e.User);
                 return;
             }
@@ -387,6 +395,12 @@ namespace Discord_Bot
 
                 //aaand save the kills he has.
                 MostKills[e.User.Id].kills += (uint)mentionedUserCount;
+
+                //Save the deaths of the people that the user has killed.
+                foreach (var user in e.Message.MentionedUsers)
+                {
+                    MostKills[user.Id].deaths += 1;
+                }
 
                 //Serialize it so that it exists even after the bot is down.
                 string json = JsonConvert.SerializeObject(MostKills);
