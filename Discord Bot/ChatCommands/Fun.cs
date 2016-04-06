@@ -5,6 +5,7 @@ using System.Net;
 using System.IO;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Discord_Bot.Commands;
 using Discord;
 using Newtonsoft.Json;
@@ -270,7 +271,7 @@ namespace Discord_Bot
                 var list = ShootTopPlayers(5, orderType);
 
                 string players = "Top 5 murderers:\n";
-                players += String.Format("**{0,-25}{1,18}{2,18}{3,18}**\n", "Name", "Kills", "Deaths", "K/D ratio");
+                players += String.Format("{0,-25}{1,-18}{2,-20}{3,-12}\n", "Name", "Kills", "Deaths", "K/D ratio");
 
                 int i = 1;
                 foreach (var element in list)
@@ -280,12 +281,14 @@ namespace Discord_Bot
                     var userDeaths = element.Value.deaths;
                     var kd = element.Value.kdRatio;
 
-                    players += String.Format("{0,-25}{1,18}{2,18}{3,12}.\n", $"#{i} **{username}**", userKills, userDeaths, kd);
+                    players += String.Format("{0,-25}{1,-18}{2,-20}{3,-12}\n", $"#{i} {username}", userKills, userDeaths, kd);
                     //players += $"#{i}: **{username,8}** Kills: {userKills,8}. Deaths: {userDeaths,8}. k/d ratio: {kd}\n";
                     i++;
                 }
 
-                await Tools.Reply(e, players, false);
+                Regex regex = new Regex(@"[^\u0000-\u007F]");
+                players = regex.Replace(players, "?");
+                await Tools.Reply(e, $"```{players}```", false);
                 return;
 
             }
