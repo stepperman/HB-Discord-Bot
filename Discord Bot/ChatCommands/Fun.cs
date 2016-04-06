@@ -449,7 +449,7 @@ namespace Discord_Bot
                     if (kills == 0 || deaths == 0)
                         return -1;
 
-                    return (decimal)kills / (decimal)deaths;
+                    return Math.Round((decimal)kills / (decimal)deaths, 3);
                 }
             }
         }
