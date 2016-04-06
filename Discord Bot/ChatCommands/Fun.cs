@@ -262,7 +262,7 @@ namespace Discord_Bot
             //Get top players
             else if (arg == "top")
             {
-                var list = ShootTopPlayers(5);
+                var list = ShootTopPlayers(5, e.Args[1]);
 
                 string players = "Top 5 murderers:\n";
 
@@ -274,7 +274,7 @@ namespace Discord_Bot
                     var userDeaths = element.Value.deaths;
                     var kd = element.Value.kdRatio;
 
-                    players += $"#{i}: **{username}** Kills: {userKills}. Deaths: {userDeaths}. k/d ratio: {kd}\n";
+                    players += $"#{i}: **{username,8}** Kills: {userKills,8}. Deaths: {userDeaths,8}. k/d ratio: {kd}\n";
                     i++;
                 }
 
@@ -430,10 +430,28 @@ namespace Discord_Bot
             }
         };
 
-        private static Dictionary<ulong, ShootPlayer> ShootTopPlayers(int amount)
+        private static Dictionary<ulong, ShootPlayer> ShootTopPlayers(int amount, string type = "kills")
         {
             var list = MostKills.ToList();
-            list.Sort((pair1, pair2) => pair1.Value.kills.CompareTo(pair2.Value.kills));
+
+            switch (type)
+            {
+                case "death":
+                case "deaths":
+                case "d":
+                case "noobs":
+                case "deadest":
+                    list.Sort((pair1, pair2) => pair1.Value.deaths.CompareTo(pair2.Value.deaths));
+                    break;
+                case "killdeath":
+                case "kd":
+                    list.Sort((pair1, pair2) => pair1.Value.kdRatio.CompareTo(pair2.Value.kdRatio));
+                    break;
+                default:
+                    list.Sort((pair1, pair2) => pair1.Value.kills.CompareTo(pair2.Value.kills));
+                    break;
+            }
+            
             list.Reverse();
             return list.Take(amount).ToDictionary(x => x.Key, x => x.Value);
         }

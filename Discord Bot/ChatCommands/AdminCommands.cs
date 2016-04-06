@@ -10,13 +10,6 @@ namespace Discord_Bot
 {
     class AdminCommands
     {
-        /// <summary>
-        /// Todo: Make the DeleteMessage command better! 
-        /// This needs to have stuff like 
-        /// deleting a user's message, checking for content and if it contains that, delete it,
-        /// deleting images, deleting links, it's all cool! 
-        /// Sometime later.
-        /// </summary>
         public static Func<CommandArgs, Task> DeleteMessages = async e =>
         {
             if (!(Tools.GetPerms(e, e.User) > 1))
