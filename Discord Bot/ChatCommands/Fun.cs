@@ -220,6 +220,16 @@ namespace Discord_Bot
             //Prematurely check if the user exists in the dictionary, if not, create the fuck.
             if (!MostKills.ContainsKey(e.User.Id))
                 MostKills.Add(e.User.Id, new ShootPlayer());
+
+            //check if the mentioned users do not exists, if not, create the fuck(s)
+            if (e.Message.MentionedUsers.Count() > 1)
+            {
+                foreach (var user in e.Message.MentionedUsers)
+                {
+                    if (!MostKills.ContainsKey(user.Id))
+                        MostKills.Add(user.Id, new ShootPlayer());
+                }
+            }
             
             Console.WriteLine(MostKills[e.User.Id]);
 
@@ -229,6 +239,18 @@ namespace Discord_Bot
             //TODO: Tag users to get their score. (1 user or more?)
             if (arg == "stats")
             {
+                if (e.Message.MentionedUsers.Count() > 1)
+                {
+                    var user = e.Message.MentionedUsers.ToArray()[0];
+                    uint sc = MostKills[user.Id].kills;
+                    uint de = MostKills[user.Id].deaths;
+                    double k = MostKills[user.Id].kdRatio;
+
+                    await Tools.Reply(e, $"{user.Name} has killed {sc} people, died {de} times. Their k/d ratio is {k}");
+
+                    return;
+                }
+
                 uint score = MostKills[e.User.Id].kills;
                 uint deaths = MostKills[e.User.Id].deaths;
                 double kd = MostKills[e.User.Id].kdRatio;
