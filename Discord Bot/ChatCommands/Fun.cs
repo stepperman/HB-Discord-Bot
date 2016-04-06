@@ -280,7 +280,7 @@ namespace Discord_Bot
                     var userDeaths = element.Value.deaths;
                     var kd = element.Value.kdRatio;
 
-                    players += String.Format("{0,-25}{1,18}{2,18}{3,12}.", $"#{i} **{username}**", userKills, userDeaths, kd);
+                    players += String.Format("{0,-25}{1,18}{2,18}{3,12}.\n", $"#{i} **{username}**", userKills, userDeaths, kd);
                     //players += $"#{i}: **{username,8}** Kills: {userKills,8}. Deaths: {userDeaths,8}. k/d ratio: {kd}\n";
                     i++;
                 }
