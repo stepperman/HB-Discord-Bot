@@ -211,6 +211,9 @@ namespace Discord_Bot
         /// There's 2 commands with this as well, /shoot top and /shoot stats
         /// with /shoot stats you can see your own score. The amount of people you've brutally murdered you sick fuck.
         /// with /shoot top you can see the top 5 scores of other people. They're the most brutal murderers on this server!
+        /// 
+        /// TODO: Add death counter.
+        /// TODO: Add Kill/Death ratio.
         /// </summary>
         public static Func<CommandArgs, Task> ShootUser = async e =>
         {
@@ -221,41 +224,42 @@ namespace Discord_Bot
             Console.WriteLine(MostKills[e.User.Id]);
 
             var arg = e.Args[0];
+
+            //Get your own score
+            //TODO: Tag users to get their score.
             if (arg == "stats")
             {
                 uint score = MostKills[e.User.Id];
                 await Tools.Reply(e, $"You killed {score} people.");
                 return;
             }
+
+            //Get top players
             else if (arg == "top")
             {
-                var list = MostKills.ToList();
-                list.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
-                list.Reverse();
+                var list = ShootTopPlayers(5);
 
-                string topresponse = "Top 5 players:";
-                for (int i = 0; i < 5; i++)
+                string players = "Top 5 murderers:\n";
+
+                int i = 1;
+                foreach (var element in list)
                 {
-                    if (i == list.Count())
-                        break;
-
-                    User user = e.Server.GetUser(list[i].Key);
-                    var userScore = list[i].Value;
-                    topresponse += $"\n#{i+1}: **{user.Name}** with a killcount of {userScore}!";
+                    var username = e.Server.GetUser(element.Key).Name;
+                    var userKills = element.Value;
+                    players += $"#{i}: **{username}** with {userKills} kills!\n";
+                    i++;
                 }
 
-                await Tools.Reply(e, topresponse, false);
+                await Tools.Reply(e, players);
                 return;
+
             }
 
             //Get count of all the mentioned users. Can be multiple. Count starts at one, an array starts at 0. So if you'd want to access
             //the first occurence in an array. You'd use e.Message.MentionedUsers[0].
             //Actually e.Message.MentionedUsers.ToArray()[0] because it's an IEnumerable but that's fuck.
             int mentionedUserCount = e.Message.MentionedUsers.Count();
-
-            var chance = Tools.random.Next(101); // 0 to 100
-            var hitChance = chance - (5 * mentionedUserCount);
-
+            
             //All the responses. {0} is the shooter, {1} the victim
             string[] responses =
             {
@@ -291,6 +295,26 @@ namespace Discord_Bot
                 { "Head", 2 }
             };
 
+            //Chance needed
+            double SUICIDE_CHANCE = 12.5;
+            double MISS_CHANCE = 25;
+            double SUICIDE_CHANCE_TOP = 25;
+            double MISS_CHANCE_TOP = 50;
+            int MAX_RAND = 100;
+
+            double suicideChance = SUICIDE_CHANCE;
+            double missChance = MISS_CHANCE;
+
+            var chance = Tools.random.Next(MAX_RAND + 1);
+            var hitChance = chance - (2 * mentionedUserCount);
+
+            //If player is in top 5, set the hit chance to be a harder difficulty.
+            if (ShootTopPlayers(5).Any(u => u.Key == e.User.Id))
+            {
+                suicideChance = SUICIDE_CHANCE_TOP;
+                missChance = MISS_CHANCE_TOP;
+            }
+
             if (mentionedUserCount == 0)
                 return;
 
@@ -318,7 +342,7 @@ namespace Discord_Bot
                 names = e.Message.MentionedUsers.ToArray()[0].Mention;
 
             //Suicide
-            if (mentionedUserCount != 0 && (hitChance < 25 || shotHimself)) 
+            if (mentionedUserCount != 0 && (hitChance < suicideChance || shotHimself)) 
             {
                 var bodypart = BodyParts.ElementAt(Tools.random.Next(BodyParts.Count));
 
@@ -327,17 +351,17 @@ namespace Discord_Bot
                 if (shotHimself)
                     await Tools.Reply(e, $"Dude! You just fucking shot yourself in the {bodypart.Key.ToLower()}! Why would you do that? You've been timed out for {bodypart.Value} minute{s}!");
                 else
-                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.Key.ToLower()}! You've been timed out for {bodypart.Value} minute{s}! Your chance was {hitChance}. (need > 50/100)");
+                    await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.Key.ToLower()}! You've been timed out for {bodypart.Value} minute{s}! Your chance was {hitChance}. (need > {suicideChance}/100)");
                 await Program.timeout.TimeoutUser(e, bodypart.Value, e.User);
                 return;
             }
             //Missed shot.
-            else if (Tools.InRange(hitChance, 25, 50))
+            else if (Tools.InRange(hitChance, suicideChance, missChance))
             {
                 if (shotHimself)
-                    await Tools.Reply(e, $"Wow! You almost shot yourself to death! For some reason, you missed. (need > 50/100)");
+                    await Tools.Reply(e, $"Wow! You almost shot yourself to death! For some reason, you missed. (need > {missChance}/100)");
                 else
-                    await Tools.Reply(e, $"{e.User.Name} missed {names}. Your chance was {hitChance}. (need > 50/100)", false);
+                    await Tools.Reply(e, $"{e.User.Mention} missed {names}. Your chance was {hitChance}. (need > {missChance}/100)", false);
 
                 return;
             }
@@ -363,6 +387,14 @@ namespace Discord_Bot
                 Tools.SaveFile(json, PathToKillScore, false); //Save it to disk.
             }
         };
+
+        public static Dictionary<ulong, uint> ShootTopPlayers(int amount)
+        {
+            var list = MostKills.ToList();
+            list.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
+            list.Reverse();
+            return list.Take(amount).ToDictionary(x => x.Key, x => x.Value);
+        }
         
     }
 }
