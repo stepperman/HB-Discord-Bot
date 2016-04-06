@@ -242,18 +242,18 @@ namespace Discord_Bot
                 if (e.Message.MentionedUsers.Count() > 0)
                 {
                     var user = e.Message.MentionedUsers.ToArray()[0];
-                    uint sc = MostKills[user.Id].kills;
-                    uint de = MostKills[user.Id].deaths;
-                    double k = MostKills[user.Id].kdRatio;
+                    var sc = MostKills[user.Id].kills;
+                    var de = MostKills[user.Id].deaths;
+                    var k = MostKills[user.Id].kdRatio;
 
                     await Tools.Reply(e, $"{user.Name} has killed {sc} people, died {de} times. Their k/d ratio is {k}");
 
                     return;
                 }
 
-                uint score = MostKills[e.User.Id].kills;
-                uint deaths = MostKills[e.User.Id].deaths;
-                double kd = MostKills[e.User.Id].kdRatio;
+                var score = MostKills[e.User.Id].kills;
+                var deaths = MostKills[e.User.Id].deaths;
+                var kd = MostKills[e.User.Id].kdRatio;
 
                 await Tools.Reply(e, $"You've killed {score} people, and you've died {deaths} times. Your k/d ratio is {kd}");
                 return;
@@ -442,7 +442,7 @@ namespace Discord_Bot
         {
             public uint kills;
             public uint deaths;
-            public double kdRatio
+            public decimal kdRatio
             {
                 get
                 {
