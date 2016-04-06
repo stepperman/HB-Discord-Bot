@@ -14,7 +14,7 @@ namespace Discord_Bot
     static class Fun
     {
         private static int ayyscore = 0;
-        private static Dictionary<ulong, uint> MostKills;
+        private static Dictionary<ulong, ShootPlayer> MostKills;
         private static string PathToKillScore = "../LocalFiles/killscore.json";
 
         static Fun()
@@ -22,14 +22,14 @@ namespace Discord_Bot
             if (!File.Exists(PathToKillScore))
             {
                 Tools.CreateFile(PathToKillScore);
-                MostKills = new Dictionary<ulong, uint>();
+                MostKills = new Dictionary<ulong, ShootPlayer>();
             }
             else
             {
                 string json = Tools.ReadFile(PathToKillScore);
-                MostKills = JsonConvert.DeserializeObject<Dictionary<ulong, uint>>(json);
+                MostKills = JsonConvert.DeserializeObject<Dictionary<ulong, ShootPlayer>>(json);
                 if(MostKills == null)
-                    MostKills = new Dictionary<ulong, uint>();
+                    MostKills = new Dictionary<ulong, ShootPlayer>();
 
             }
         }
@@ -219,18 +219,21 @@ namespace Discord_Bot
         {
             //Prematurely check if the user exists in the dictionary, if not, create the fuck.
             if (!MostKills.ContainsKey(e.User.Id))
-                MostKills.Add(e.User.Id, 0);
+                MostKills.Add(e.User.Id, new ShootPlayer());
             
             Console.WriteLine(MostKills[e.User.Id]);
 
             var arg = e.Args[0];
 
             //Get your own score
-            //TODO: Tag users to get their score.
+            //TODO: Tag users to get their score. (1 user or more?)
             if (arg == "stats")
             {
-                uint score = MostKills[e.User.Id];
-                await Tools.Reply(e, $"You killed {score} people.");
+                uint score = MostKills[e.User.Id].kills;
+                uint deaths = MostKills[e.User.Id].deaths;
+                double kd = MostKills[e.User.Id].kdRatio;
+
+                await Tools.Reply(e, $"You've killed {score} people, and you've died {deaths} times. Your k/d ratio is {kd}");
                 return;
             }
 
@@ -245,8 +248,11 @@ namespace Discord_Bot
                 foreach (var element in list)
                 {
                     var username = e.Server.GetUser(element.Key).Name;
-                    var userKills = element.Value;
-                    players += $"#{i}: **{username}** with {userKills} kills!\n";
+                    var userKills = element.Value.kills;
+                    var userDeaths = element.Value.deaths;
+                    var kd = element.Value.kdRatio;
+
+                    players += $"#{i}: **{username}** Kills: {userKills}. Deaths: {userDeaths}. k/d ratio: {kd}\n";
                     i++;
                 }
 
@@ -305,7 +311,7 @@ namespace Discord_Bot
             double suicideChance = SUICIDE_CHANCE;
             double missChance = MISS_CHANCE;
 
-            var chance = Tools.random.Next(MAX_RAND + 1);
+            var chance = Tools.random.Next(0, MAX_RAND + 1);
             var hitChance = chance - (2 * mentionedUserCount);
 
             //If player is in top 5, set the hit chance to be a harder difficulty.
@@ -380,7 +386,7 @@ namespace Discord_Bot
                 await Tools.Reply(e, $"{response} Your chance was {chance} (need > {missChance}/100)", false);
 
                 //aaand save the kills he has.
-                MostKills[e.User.Id] += (uint)mentionedUserCount;
+                MostKills[e.User.Id].kills += (uint)mentionedUserCount;
 
                 //Serialize it so that it exists even after the bot is down.
                 string json = JsonConvert.SerializeObject(MostKills);
@@ -388,12 +394,28 @@ namespace Discord_Bot
             }
         };
 
-        public static Dictionary<ulong, uint> ShootTopPlayers(int amount)
+        private static Dictionary<ulong, ShootPlayer> ShootTopPlayers(int amount)
         {
             var list = MostKills.ToList();
-            list.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
+            list.Sort((pair1, pair2) => pair1.Value.kills.CompareTo(pair2.Value.kills));
             list.Reverse();
             return list.Take(amount).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        class ShootPlayer
+        {
+            public uint kills;
+            public uint deaths;
+            public double kdRatio
+            {
+                get
+                {
+                    if (kills == 0 || deaths == 0)
+                        return -1;
+
+                    return kills / deaths;
+                }
+            }
         }
         
     }
