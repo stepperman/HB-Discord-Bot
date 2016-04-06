@@ -346,7 +346,7 @@ namespace Discord_Bot
             {
                 var bodypart = BodyParts.ElementAt(Tools.random.Next(BodyParts.Count));
 
-                string s = bodypart.Value == 1 ? "s" : "";
+                string s = bodypart.Value == 1.0 ? "s" : "";
 
                 if (shotHimself)
                     await Tools.Reply(e, $"Dude! You just fucking shot yourself in the {bodypart.Key.ToLower()}! Why would you do that? You've been timed out for {bodypart.Value} minute{s}!");
@@ -377,7 +377,7 @@ namespace Discord_Bot
                     response = responses[Tools.random.Next(responses.Length)].Replace("{0}", e.User.Mention).Replace("{1}", names) ;
 
                 //response.
-                await Tools.Reply(e, $"{response} Your chance was {chance} (need > 50/100)", false);
+                await Tools.Reply(e, $"{response} Your chance was {chance} (need > {missChance}/100)", false);
 
                 //aaand save the kills he has.
                 MostKills[e.User.Id] += (uint)mentionedUserCount;
