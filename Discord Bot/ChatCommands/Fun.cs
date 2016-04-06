@@ -222,7 +222,7 @@ namespace Discord_Bot
                 MostKills.Add(e.User.Id, new ShootPlayer());
 
             //check if the mentioned users do not exists, if not, create the fuck(s)
-            if (e.Message.MentionedUsers.Count() > 1)
+            if (e.Message.MentionedUsers.Count() > 0)
             {
                 foreach (var user in e.Message.MentionedUsers)
                 {
