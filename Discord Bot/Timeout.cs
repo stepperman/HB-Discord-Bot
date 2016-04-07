@@ -4,7 +4,7 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using Discord;
-using Discord_Bot.Commands;
+using Discord_Bot.CommandPlugin;
 
 namespace Discord_Bot
 {

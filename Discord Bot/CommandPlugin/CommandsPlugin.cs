@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Discord;
 
-namespace Discord_Bot.Commands
+namespace Discord_Bot.CommandPlugin
 {
     public partial class CommandsPlugin
     {
@@ -14,13 +14,13 @@ namespace Discord_Bot.Commands
         public char CommandChar { get; set; }
         public bool UseCommandChar { get; set; }
 
-        public CommandsPlugin(DiscordClient client, Func<User, int> getPermissions = null)
+        public CommandsPlugin(DiscordClient client, Func<User, int> getPermissions = null, char commandChar = '/')
         {
             _client = client;
             _getPermissions = getPermissions;
             _commands = new List<Command>();
 
-            CommandChar = '/';
+            CommandChar = commandChar;
             UseCommandChar = true;
 
             var timeValues = new Dictionary<User, Dictionary<Command, DateTime>>();
@@ -266,7 +266,7 @@ namespace Discord_Bot.Commands
                 }
                 catch (Exception ex)
                 {
-                    await Tools.Reply(e.User, e.Channel, $"FUCKING PLUGIN ERROR LOL: {ex.Message}", true);
+                    await Tools.Reply(e.User, e.Channel, $"Pluggin error: {ex.Message}", true);
                     Tools.LogError("Error with plugin or something.", ex.Message);
                 }
 

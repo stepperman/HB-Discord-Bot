@@ -90,18 +90,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChatCommands\AdminCommands.cs" />
-    <Compile Include="ChatCommands\Information.cs" />
-    <Compile Include="ChatCommands\Voting\SimulcastVote.cs" />
-    <Compile Include="ChatCommands\Voting\Vote.cs" />
-    <Compile Include="Commands\Command.cs" />
-    <Compile Include="Commands\CommandArgs.cs" />
-    <Compile Include="Commands\CommandBuilder.cs" />
-    <Compile Include="Commands\CommandParser.cs" />
-    <Compile Include="Commands\CommandsPlugin.cs" />
-    <Compile Include="ChatCommands\Fun.cs" />
+    <Compile Include="Modules\AdminCommands.cs" />
+    <Compile Include="Modules\HideChannel.cs" />
+    <Compile Include="Modules\Information.cs" />
+    <Compile Include="Modules\Voting\SimulcastVote.cs" />
+    <Compile Include="Modules\Models\Vote.cs" />
+    <Compile Include="CommandPlugin\Command.cs" />
+    <Compile Include="CommandPlugin\CommandArgs.cs" />
+    <Compile Include="CommandPlugin\CommandBuilder.cs" />
+    <Compile Include="CommandPlugin\CommandParser.cs" />
+    <Compile Include="CommandPlugin\CommandsPlugin.cs" />
+    <Compile Include="Modules\Fun.cs" />
+    <Compile Include="Modules\Models\UserSettings.cs" />
+    <Compile Include="Modules\Games\AyyGame.cs" />
+    <Compile Include="Modules\Games\ShootGame.cs" />
+    <Compile Include="Other\Storage.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="ChatCommands\AnimeTools.cs" />
+    <Compile Include="Modules\AnimeTools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerInfo.cs" />

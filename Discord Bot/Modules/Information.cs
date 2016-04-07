@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
-using Discord_Bot.Commands;
+using Discord_Bot.CommandPlugin;
 using Discord;
 
 namespace Discord_Bot

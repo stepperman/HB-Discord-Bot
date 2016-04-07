@@ -1,7 +1,7 @@
 ﻿using System;
 using Discord;
 
-namespace Discord_Bot.Commands
+namespace Discord_Bot.CommandPlugin
 {
     public class PermissionException : Exception { public PermissionException() : base("User does not have permission to run this command.") { } }
     public class TimeException : Exception { public TimeException() : base("User has too recently used this command.") { } }

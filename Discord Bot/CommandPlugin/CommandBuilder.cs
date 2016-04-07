@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Discord_Bot.Commands
+namespace Discord_Bot.CommandPlugin
 {
     public sealed class CommandBuilder
     {

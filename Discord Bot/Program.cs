@@ -1,10 +1,8 @@
 ﻿using Discord;
 using Newtonsoft.Json;
 using System;
-using Discord_Bot.Commands;
+using Discord_Bot.CommandPlugin;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Timers;
 using System.IO;
 
 /// <summary>
@@ -23,16 +21,6 @@ namespace Discord_Bot
         public static CommandsPlugin _commands, _admincommands;
         public static Timeout timeout;
         public static dynamic ProgramInfo = null;
-
-        public static DiscordClient Client
-        {
-            get
-            {
-                return _client;
-            }
-        }
-        
-        private static Dictionary<string, Timer> timedoutUser = new Dictionary<string, Timer>();
         
         static void Main(string[] args)
         {
@@ -41,9 +29,9 @@ namespace Discord_Bot
             _client.Log.Message += (s, e) => Console.WriteLine($"[{e.Severity}] {e.Source}: {e.Message}");
             
             _commands = new CommandsPlugin(client);
-            _admincommands = new CommandsPlugin(client);
+            _admincommands = new CommandsPlugin(client, null, '-');
             _commands.CreateCommandGroup("", group => BuildCommands(group));
-            _admincommands.CreateCommandGroup("admin", adminGroup => BuildAdminCommands(adminGroup));
+            _admincommands.CreateCommandGroup("", adminGroup => BuildAdminCommands(adminGroup));
             
             //Get Programinfo
             if(File.Exists("./../LocalFiles/ProgramInfo.json"))
@@ -60,8 +48,6 @@ namespace Discord_Bot
             {
                 await Information.NewUserText(e.User, e.Server);
                 await Information.WelcomeUser(_client, e.User, e.Server.Id);
-
-                //await WelcomeUser(e.User, e.Server.Id);
             };
 
             _client.UserLeft += async (s, e) =>
@@ -88,7 +74,7 @@ namespace Discord_Bot
             _client.MessageReceived += async (s, e) =>
             {
                 await Tools.OfflineMessage(e);
-                await Fun.AyyGame(e);
+                await Modules.Games.AyyGame.Game(e);
             };
             _client.GatewaySocket.Disconnected += async (s, e) =>
             {
@@ -125,13 +111,14 @@ namespace Discord_Bot
 
                     await _client.Connect(nottoken);
                     timeout = new Timeout(_client);
+                    Storage.client = _client;
                 });
             }
             catch (Discord.Net.HttpException)
             {
                 while (client.Status != UserStatus.Online)
                 {
-
+                    //Remove this?
                 }
             }
         }
@@ -163,6 +150,21 @@ namespace Discord_Bot
                     await Tools.Reply(e, "You need the kazoo, if you can't take part in this episode, you're a fucking faggot, you should just go kill yourself https://youtu.be/g-sgw9bPV4A", false);
                 });
 
+            group.CreateCommand("hidechannel")
+                .ArgsAtLeast(1)
+                .IsHidden()
+                .Do(Modules.HideChannel.Hide);
+
+            group.CreateCommand("showchannel")
+                .ArgsEqual(1)
+                .IsHidden()
+                .Do(Modules.HideChannel.Show);
+
+            group.CreateCommand("listhiddenchannels")
+                .NoArgs()
+                .IsHidden()
+                .Do(Modules.HideChannel.List);
+
             group.CreateCommand("hb")
                 .WithPurpose("Find a User's HummingBird account with it's information!")
                 .ArgsAtMax(1)
@@ -174,7 +176,7 @@ namespace Discord_Bot
                 .DelayIsUnignorable()
                 .SecondDelay(30)
                 .WithPurpose("shoot a user, with a chance to miss! Usage: type /shoot and tag any amount of users you want.\n`/shoot stats` for your personal score\n`/shoot top` for the top 5 killers!")
-                .Do(Fun.ShootUser);
+                .Do(Modules.Games.ShootGame.ShootUser);
 
             group.CreateCommand("8ball")
                 .WithPurpose("The magic eightball will answer all your doubts and questions!")

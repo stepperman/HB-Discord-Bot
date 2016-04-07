@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Discord;
+﻿using System.Collections.Generic;
 
 namespace Discord_Bot
 {
-    class ServerInfo
+    public class ServerInfo
     {
         public Dictionary<string, int> roleImportancy = new Dictionary<string, int>();
         public string standardRole;

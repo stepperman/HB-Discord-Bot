@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using System.IO;
-using Discord_Bot.Commands;
+using Discord_Bot.CommandPlugin;
 using Newtonsoft.Json;
 
 namespace Discord_Bot
 {
     static class Tools
     {
-        static Dictionary<string, ServerInfo> serverInfo = new Dictionary<string, ServerInfo>();
+        
         public static Random random = new Random();
         
         static Tools()
@@ -21,7 +21,7 @@ namespace Discord_Bot
                 var sw = new StreamReader("../LocalFiles/ServerInfo.json");
 
                 string json = sw.ReadToEnd();
-                serverInfo = JsonConvert.DeserializeObject<Dictionary<string, ServerInfo>>(json);
+                Storage.serverInfo = JsonConvert.DeserializeObject<Dictionary<string, ServerInfo>>(json);
                 sw.Close();
             }
         }
@@ -137,12 +137,12 @@ namespace Discord_Bot
        
         public static ServerInfo GetServerInfo(ulong serverId)
         {
-            if (serverInfo.ContainsKey(serverId.ToString()))
-                return serverInfo[serverId.ToString()];
+            if (Storage.serverInfo.ContainsKey(serverId.ToString()))
+                return Storage.serverInfo[serverId.ToString()];
             else
             {
                 var info = new ServerInfo();
-                serverInfo.Add(serverId.ToString(), info);
+                Storage.serverInfo.Add(serverId.ToString(), info);
                 return info;
             }
         }
@@ -150,7 +150,7 @@ namespace Discord_Bot
         public static void SaveServerInfo()
         {
             StreamWriter sw = new StreamWriter("../LocalFiles/ServerInfo.json", false);
-            string json = JsonConvert.SerializeObject(serverInfo);
+            string json = JsonConvert.SerializeObject(Storage.serverInfo);
             sw.Write(json);
             sw.Close();
         }
@@ -186,9 +186,9 @@ namespace Discord_Bot
 
         public static int GetPerms(CommandArgs e, User u)
         {
-            if (serverInfo.ContainsKey(e.serverId))
+            if (Storage.serverInfo.ContainsKey(e.serverId))
             {
-                var surfer = serverInfo[e.serverId];
+                var surfer = Storage.serverInfo[e.serverId];
 
                 foreach (var role in u.Roles)
                 {
@@ -234,7 +234,7 @@ namespace Discord_Bot
 
         public static async Task OfflineMessage(MessageEventArgs e)
         {
-            if (e.User.Id == Program.Client.CurrentUser.Id)
+            if (e.User.Id == Storage.client.CurrentUser.Id)
                 return;
 
             try
@@ -243,7 +243,7 @@ namespace Discord_Bot
                 bool morethanone = false;
                 foreach (var usr in e.Message.MentionedUsers)
                 {
-                    if (usr.Id == Program.Client.CurrentUser.Id)
+                    if (usr.Id == Storage.client.CurrentUser.Id)
                         continue;
 
                     if (usr.Status == UserStatus.Offline)

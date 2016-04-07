@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Discord_Bot.Commands;
+using Discord_Bot.CommandPlugin;
 using Discord;
 
 namespace Discord_Bot
@@ -169,7 +167,7 @@ namespace Discord_Bot
                 if (userToKick == null)
                     return;
 
-                if (userToKick.Id == Program.Client.CurrentUser.Id)
+                if (userToKick.Id == Storage.client.CurrentUser.Id)
                     return;
 
                 await userToKick.SendMessage($"You've been kicked by {e.User.Name}, you can rejoin by using this url: https://discord.gg/0YOrPxx9u1wtJE0B");
@@ -195,7 +193,7 @@ namespace Discord_Bot
             {
                 User userToTimeOut = Tools.GetUser(e);
 
-                if (userToTimeOut == null || userToTimeOut.Id == Program.Client.CurrentUser.Id)
+                if (userToTimeOut == null || userToTimeOut.Id == Storage.client.CurrentUser.Id)
                 {
                     if (userToTimeOut == null)
                         await Tools.Reply(e, "Couldn't find user.");

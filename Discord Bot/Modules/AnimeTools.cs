@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Discord_Bot.Commands;
-using Newtonsoft.Json;
+using Discord_Bot.CommandPlugin;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net;
