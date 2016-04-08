@@ -71,12 +71,15 @@ namespace Discord_Bot.CommandPlugin
                         }
 
                         //Check if alias
-                        foreach (var alias in command.alias)
+                        if (command.alias.Count() != 0)
                         {
-                            if (args[0].Value == alias)
+                            foreach (var alias in command.alias)
                             {
-                                isValid = true;
-                                break;
+                                if (args[0].Value == alias)
+                                {
+                                    isValid = true;
+                                    break;
+                                }
                             }
                         }
 
