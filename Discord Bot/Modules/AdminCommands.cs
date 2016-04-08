@@ -61,8 +61,16 @@ namespace Discord_Bot
 
                 deleteNumber = potentials.Count();
 
+                string users = "";
+                for (int i = 0; i < e.Message.MentionedUsers.Count(); i++)
+                {
+                    if (i != 0)
+                        users += ", ";
+                    users += e.Message.MentionedUsers.ToArray()[i].Name; 
+                }
+
                 if (!silent)
-                    await Tools.Reply(e, $"deleted {deleteNumber} messages by {e.Message.MentionedUsers}!");
+                    await Tools.Reply(e, $"deleted {deleteNumber} messages by {users}!");
             }
             //embedded stuff
             else if (e.ArgText.StartsWith("embed"))
@@ -116,6 +124,9 @@ namespace Discord_Bot
                     Regex regex = new Regex("\"[^\"]*\"");
                     string text = regex.Match(e.ArgText).Value.TrimStart('"').TrimEnd('"');
 
+                    if (text == "")
+                        return;
+
                     var messages = await e.Channel.DownloadMessages();
 
                     var potentials = new List<Message>();
@@ -135,7 +146,7 @@ namespace Discord_Bot
                     deleteNumber = potentials.Count();
 
                     if (!silent)
-                        await Tools.Reply(e, $"deleted {deleteNumber} messages containing {text}!");
+                        await Tools.Reply(e, $"deleted {deleteNumber} messages containing `{text}`!");
                 }
                 catch (Exception) { }
             }
