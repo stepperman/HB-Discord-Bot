@@ -123,15 +123,6 @@ namespace Discord_Bot
             }
         }
 
-
-
-        #region New Users
-
-
-
-
-        #endregion
-
         #region commands
         private static void BuildCommands(CommandGroupBuilder group)
         {

@@ -133,7 +133,7 @@ namespace Discord_Bot
 
                     foreach (var msg in messages)
                     {
-                        if (msg.Text.Contains(text))
+                        if (msg.Text.ToLower().Contains(text.ToLower()))
                             potentials.Add(msg);
                     }
 
