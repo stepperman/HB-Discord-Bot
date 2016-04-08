@@ -57,6 +57,7 @@ namespace Discord_Bot
 
                 deleteNumber = potentials.Count();
             }
+            //embedded stuff
             else if (e.ArgText.StartsWith("embed"))
             {
                 var messages = await e.Channel.DownloadMessages();

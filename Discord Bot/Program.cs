@@ -291,7 +291,7 @@ namespace Discord_Bot
         {
             adminGroup.DefaultMinPermissions(0);
             
-            adminGroup.CreateCommand("delete")
+            adminGroup.CreateCommand("delete").Alias("d", "remove")
                 .WithPurpose("Delete messages on this channel. Usage: `/admin delete {number of messages to delete}`. / req: rank perm > 0")
                 .ArgsAtLeast(1)
                 .Do(AdminCommands.DeleteMessages);

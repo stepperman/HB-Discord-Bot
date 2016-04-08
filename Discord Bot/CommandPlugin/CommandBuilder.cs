@@ -96,6 +96,12 @@ namespace Discord_Bot.CommandPlugin
             return this;
         }
 
+        public CommandBuilder Alias(params string[] alias)
+        {
+            _command.SetAliases(alias);
+            return this;
+        }
+
         public CommandBuilder NoArgs()
         {
             _command.MinArgs = 0;

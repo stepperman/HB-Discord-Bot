@@ -69,6 +69,17 @@ namespace Discord_Bot.CommandPlugin
                                 break;
                             }
                         }
+
+                        //Check if alias
+                        foreach (var alias in command.alias)
+                        {
+                            if (args[0].Value == alias)
+                            {
+                                isValid = true;
+                                break;
+                            }
+                        }
+
                         if (!isValid)
                             continue;
 

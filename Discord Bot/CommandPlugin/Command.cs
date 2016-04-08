@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace Discord_Bot.CommandPlugin
 {
-
     public sealed class Command
     {
-        
-
         public string Text { get; }
+        internal string[] alias;
         public int? MinArgs { get; internal set; }
         public int? MaxArgs { get; internal set; }
         public string Purpose { get; internal set; }
@@ -31,5 +29,11 @@ namespace Discord_Bot.CommandPlugin
             Text = text;
             Parts = text.ToLowerInvariant().Split(' ');
         }
+
+        internal void SetAliases(string[] alias)
+        {
+            this.alias = alias;
+        }
+
     }
 }
