@@ -146,7 +146,7 @@ namespace Discord_Bot
             group.CreateCommand("source")
                 .Do(async e =>
                 {
-                    await Tools.Reply(e, "Y-you want to see my source code..? A-a-alright then.. <https://github.com/stepperman/HB-Discord-Bot> ... baka hentai 😊");
+                    await Tools.Reply(e, "Here's my source code! <https://github.com/stepperman/HB-Discord-Bot>");
                 });
 
             //Added by Will (d0ubtless)
