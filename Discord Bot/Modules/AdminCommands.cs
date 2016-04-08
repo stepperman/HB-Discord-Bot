@@ -49,6 +49,8 @@ namespace Discord_Bot
                 {
                     await msg.Delete();
                 }
+
+                deleteNumber = potentials.Count();
             }
             else if (e.ArgText.StartsWith("embed"))
             {
@@ -66,6 +68,8 @@ namespace Discord_Bot
                 {
                     await msg.Delete();
                 }
+
+                deleteNumber = potentials.Count();
             }
             else if (e.ArgText.StartsWith("img"))
             {
@@ -83,6 +87,8 @@ namespace Discord_Bot
                 {
                     await msg.Delete();
                 }
+
+                deleteNumber = potentials.Count();
             }
 
 
