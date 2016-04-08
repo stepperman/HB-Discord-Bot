@@ -71,7 +71,7 @@ namespace Discord_Bot.CommandPlugin
                         }
 
                         //Check if alias
-                        if (command.alias.Count() != 0)
+                        if (command.alias != null)
                         {
                             foreach (var alias in command.alias)
                             {
