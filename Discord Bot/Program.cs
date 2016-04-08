@@ -143,6 +143,12 @@ namespace Discord_Bot
                     await Tools.Reply(e, "https://www.youtube.com/watch?v=JCeOf2q6_TA", false);
                 });
 
+            group.CreateCommand("source")
+                .Do(async e =>
+                {
+                    await Tools.Reply(e, "Here's my source code! <https://github.com/stepperman/HB-Discord-Bot>");
+                });
+
             //Added by Will (d0ubtless)
             group.CreateCommand("kazoo")
                 .Do(async e =>
@@ -287,7 +293,7 @@ namespace Discord_Bot
             
             adminGroup.CreateCommand("delete")
                 .WithPurpose("Delete messages on this channel. Usage: `/admin delete {number of messages to delete}`. / req: rank perm > 0")
-                .ArgsEqual(1)
+                .ArgsAtLeast(1)
                 .Do(AdminCommands.DeleteMessages);
 
             adminGroup.CreateCommand("addpermission")

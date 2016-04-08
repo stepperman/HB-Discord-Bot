@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Discord_Bot.CommandPlugin;
 using Discord;
 
@@ -16,16 +17,75 @@ namespace Discord_Bot
             if (e.Channel.IsPrivate)
                 return;
 
+            //delete num
             int deleteNumber = 0;
-
-            Int32.TryParse(e.Args[0], out deleteNumber);
-
-            var messages = await e.Channel.DownloadMessages(deleteNumber + 1);
-
-            foreach (var message in messages)
+            if (Int32.TryParse(e.Args[0], out deleteNumber))
             {
-                await message.Delete();
+
+                var messages = await e.Channel.DownloadMessages(deleteNumber + 1);
+
+                foreach (var message in messages)
+                {
+                    await message.Delete();
+                }
             }
+            //Delete users' messages.
+            else if (e.Message.MentionedUsers.Count() != 0)
+            {
+                var messages = await e.Channel.DownloadMessages();
+
+                var potentials = new List<Message>();
+
+                foreach (var msg in messages)
+                {
+                    if (e.Message.MentionedUsers.Contains(msg.User))
+                        potentials.Add(msg);
+                }
+
+                if (potentials.Count() == 0)
+                    return;
+
+                foreach (var msg in potentials)
+                {
+                    await msg.Delete();
+                }
+            }
+            else if (e.ArgText.StartsWith("embed"))
+            {
+                var messages = await e.Channel.DownloadMessages();
+
+                var potentials = new List<Message>();
+
+                foreach (var msg in messages)
+                {
+                    if (msg.Embeds.Count() != 0)
+                        potentials.Add(msg);
+                }
+
+                foreach (var msg in potentials)
+                {
+                    await msg.Delete();
+                }
+            }
+            else if (e.ArgText.StartsWith("img"))
+            {
+                var messages = await e.Channel.DownloadMessages();
+
+                var potentials = new List<Message>();
+
+                foreach (var msg in messages)
+                {
+                    if (msg.Attachments.Count() != 0)
+                        potentials.Add(msg);
+                }
+
+                foreach (var msg in potentials)
+                {
+                    await msg.Delete();
+                }
+            }
+
+
             await Tools.Reply(e, $"just deleted {deleteNumber} messages on this channel!");
         };
 
