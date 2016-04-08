@@ -17,6 +17,11 @@ namespace Discord_Bot
             if (e.Channel.IsPrivate)
                 return;
 
+            bool silent = e.Args[e.Args.Count() - 1] == "-s";
+
+            if(silent)
+                await e.Message.Delete();
+
             //delete num
             int deleteNumber = 0;
             if (Int32.TryParse(e.Args[0], out deleteNumber))
@@ -91,10 +96,9 @@ namespace Discord_Bot
                 deleteNumber = potentials.Count();
             }
 
-            if (e.Args[e.Args.Count() - 1] != "-s")
+            if (!silent)
                 await Tools.Reply(e, $"just deleted {deleteNumber} messages on this channel!");
-            else
-                await e.Message.Delete();
+                
         };
 
         public static Func<CommandArgs, Task> AddPermissionToRank = async e =>
