@@ -34,6 +34,9 @@ namespace Discord_Bot
                 {
                     await message.Delete();
                 }
+
+                if (!silent)
+                    await Tools.Reply(e, $"deleted {deleteNumber} messages!");
             }
             //Delete users' messages.
             else if (e.Message.MentionedUsers.Count() != 0)
@@ -57,6 +60,9 @@ namespace Discord_Bot
                 }
 
                 deleteNumber = potentials.Count();
+
+                if (!silent)
+                    await Tools.Reply(e, $"deleted {deleteNumber} messages by {e.Message.MentionedUsers}!");
             }
             //embedded stuff
             else if (e.ArgText.StartsWith("embed"))
@@ -77,6 +83,9 @@ namespace Discord_Bot
                 }
 
                 deleteNumber = potentials.Count();
+
+                if (!silent)
+                    await Tools.Reply(e, $"deleted {deleteNumber} messages with embedded content!");
             }
             else if (e.ArgText.StartsWith("img"))
             {
@@ -96,6 +105,9 @@ namespace Discord_Bot
                 }
 
                 deleteNumber = potentials.Count();
+
+                if (!silent)
+                    await Tools.Reply(e, $"deleted {deleteNumber} images!");
             }
             else
             {
@@ -121,12 +133,14 @@ namespace Discord_Bot
 
 
                     deleteNumber = potentials.Count();
+
+                    if (!silent)
+                        await Tools.Reply(e, $"deleted {deleteNumber} messages containing {text}!");
                 }
                 catch (Exception) { }
             }
 
-            if (!silent)
-                await Tools.Reply(e, $"just deleted {deleteNumber} messages on this channel!");
+            
                 
         };
 
