@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Discord_Bot.CommandPlugin;
+using System.Text.RegularExpressions;
 using Discord;
 
 namespace Discord_Bot
@@ -95,6 +96,33 @@ namespace Discord_Bot
                 }
 
                 deleteNumber = potentials.Count();
+            }
+            else
+            {
+                try
+                {
+                    Regex regex = new Regex("\"[^\"]*\"");
+                    string text = regex.Match(e.ArgText).Value.TrimStart('"').TrimEnd('"');
+
+                    var messages = await e.Channel.DownloadMessages();
+
+                    var potentials = new List<Message>();
+
+                    foreach (var msg in messages)
+                    {
+                        if (msg.Text.Contains(text))
+                            potentials.Add(msg);
+                    }
+
+                    foreach (var msg in potentials)
+                    {
+                        await msg.Delete();
+                    }
+
+
+                    deleteNumber = potentials.Count();
+                }
+                catch (Exception) { }
             }
 
             if (!silent)
