@@ -91,8 +91,10 @@ namespace Discord_Bot
                 deleteNumber = potentials.Count();
             }
 
-
-            await Tools.Reply(e, $"just deleted {deleteNumber} messages on this channel!");
+            if (e.Args[e.Args.Count() - 1] != "-s")
+                await Tools.Reply(e, $"just deleted {deleteNumber} messages on this channel!");
+            else
+                await e.Message.Delete();
         };
 
         public static Func<CommandArgs, Task> AddPermissionToRank = async e =>
