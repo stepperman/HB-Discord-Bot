@@ -91,9 +91,9 @@ namespace Discord_Bot
                     message += $"**{msg.Author}**: {msg.Message}\n";
                 }
 
-                message = message.Substring(0, 1999);
+                if(message.Length > 1999)
+                    message = message.Substring(0, 1999);
                 await e.User.SendMessage(message);
-
 
                 Storage.UserMentions.Remove(e.User.Id);
             }
@@ -101,19 +101,27 @@ namespace Discord_Bot
 
         public static void OfflineMessage(MessageEventArgs e)
         {
+            if (e.Message.MentionedUsers.Count() == 0)
+                return;
+
             if (e.User.Id == Storage.client.CurrentUser.Id)
                 return;
 
-            List<Storage.msg> list = null;
-            if (!Storage.UserMentions.TryGetValue(e.User.Id, out list))
-            {
-                list = new List<Storage.msg>();
-                Storage.UserMentions.Add(e.User.Id, list);
-            }
+            var users = e.Message.MentionedUsers.ToArray();
 
-            list.Add(new Storage.msg() { Author = e.User.Name, Message = e.Message.Text });
-            if (list.Count == 16)
-                list.RemoveAt(0);
+            foreach (var usr in users)
+            {
+                List<Storage.msg> list = null;
+                if (!Storage.UserMentions.TryGetValue(usr.Id, out list))
+                {
+                    list = new List<Storage.msg>();
+                    Storage.UserMentions.Add(usr.Id, list);
+                }
+
+                list.Add(new Storage.msg() { Author = e.User.Name, Message = e.Message.Text });
+                if (list.Count == 20)
+                    list.RemoveAt(0);
+            }
         }
     }
 }
