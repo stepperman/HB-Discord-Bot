@@ -27,7 +27,13 @@ namespace Discord_Bot
         public static DiscordClient client;
         public static Dictionary<string, ServerInfo> serverInfo = new Dictionary<string, ServerInfo>();
         public static int ayyscore = 0;
-        public static Dictionary<ulong, List<Message>> UserMentions = new Dictionary<ulong, List<Message>>();
+        public static Dictionary<ulong, List<msg>> UserMentions = new Dictionary<ulong, List<msg>>();
+
+        public struct msg
+        {
+            public string Author;
+            public string Message;
+        }
 
         public static Dictionary<ulong, Models.UserSetting> UserInfo { get; private set; }
 

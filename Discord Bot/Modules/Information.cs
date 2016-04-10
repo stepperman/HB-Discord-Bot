@@ -79,5 +79,41 @@ namespace Discord_Bot
                 catch (Exception) { }
             }
         }
+
+        public static Func<CommandArgs, Task> SeeMentions = async e =>
+        {
+            List<Storage.msg> list = null;
+            if (Storage.UserMentions.TryGetValue(e.User.Id, out list))
+            {
+                string message = "";
+                foreach (var msg in list)
+                {
+                    message += $"**{msg.Author}**: {msg.Message}\n";
+                }
+
+                message = message.Substring(0, 1999);
+                await e.User.SendMessage(message);
+
+
+                Storage.UserMentions.Remove(e.User.Id);
+            }
+        };
+
+        public static void OfflineMessage(MessageEventArgs e)
+        {
+            if (e.User.Id == Storage.client.CurrentUser.Id)
+                return;
+
+            List<Storage.msg> list = null;
+            if (!Storage.UserMentions.TryGetValue(e.User.Id, out list))
+            {
+                list = new List<Storage.msg>();
+                Storage.UserMentions.Add(e.User.Id, list);
+            }
+
+            list.Add(new Storage.msg() { Author = e.User.Name, Message = e.Message.Text });
+            if (list.Count == 16)
+                list.RemoveAt(0);
+        }
     }
 }

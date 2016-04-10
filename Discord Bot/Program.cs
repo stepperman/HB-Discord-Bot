@@ -73,9 +73,10 @@ namespace Discord_Bot
 
             _client.MessageReceived += async (s, e) =>
             {
-                await Tools.OfflineMessage(e);
+                Information.OfflineMessage(e);
                 await Modules.Games.AyyGame.Game(e);
             };
+
             _client.GatewaySocket.Disconnected += async (s, e) =>
             {
                 while(_client.State != ConnectionState.Connected)
@@ -133,6 +134,10 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, "https://www.youtube.com/watch?v=JCeOf2q6_TA", false);
                 });
+
+            group.CreateCommand("mentions")
+                .IsHidden()
+                .Do(Information.SeeMentions);
 
             group.CreateCommand("source")
                 .Do(async e =>

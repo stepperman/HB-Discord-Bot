@@ -232,50 +232,6 @@ namespace Discord_Bot
 
         #endregion
 
-        public static async Task OfflineMessage(MessageEventArgs e)
-        {
-            if (e.User.Id == Storage.client.CurrentUser.Id)
-                return;
-
-            try
-            {
-                string msg = String.Empty;
-                bool morethanone = false;
-                foreach (var usr in e.Message.MentionedUsers)
-                {
-                    if (usr.Id == Storage.client.CurrentUser.Id)
-                        continue;
-
-                    if (usr.Status == UserStatus.Offline)
-                    {
-                        if (msg == String.Empty)
-                            msg += usr.Mention;
-                        else
-                        {
-                            msg += $", {usr.Mention}";
-                            morethanone = true;
-                        }
-
-                        if (e.Message.Text.Length > 1500)
-                            continue;
-
-                        string msgToSend = $"**{e.User.Name} tagged you and said**: {e.Message.Text}";
-                        await usr.SendMessage(msgToSend);
-                        await Task.Delay(400);
-                    }
-                }
-
-                string isare = morethanone ? "are" : "is";
-                if (msg != String.Empty)
-                {
-                    msg += $" {isare} offline. Sending private message with content.";
-                    await Task.Delay(100);
-                    await Reply(e.User, e.Channel, msg, true);
-                }
-            }
-            catch (Exception) { }
-        }
-
         public static bool InRange(double val, double min, double max)
         {
             if (val >= min && val <= max)
