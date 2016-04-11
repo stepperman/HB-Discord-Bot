@@ -21,8 +21,6 @@ namespace Discord_Bot.Modules.Games
         /// with /shoot stats you can see your own score. The amount of people you've brutally murdered you sick fuck.
         /// with /shoot top you can see the top 5 scores of other people. They're the most brutal murderers on this server!
         /// 
-        /// TODO: Add death counter.
-        /// TODO: Add Kill/Death ratio.
         /// </summary>
         public static Func<Discord_Bot.CommandPlugin.CommandArgs, Task> ShootUser = async e =>
         {
@@ -124,8 +122,23 @@ namespace Discord_Bot.Modules.Games
                 "{0} talked to {1}, and {1} died.",
                 "{0} had a nice bath with {1}.",
                 "{0} installed Windows 10 on {1}'s computer",
-                "{1} has no idea what this has to do with the /shoot command that {0} initiated.", //courtesy to Will :*
-                "{1} proposed to {0}. They said no."
+                "{1} has no idea what this has to do with the /shoot command that {0} initiated.", //courtesy to Will :* // and Will's also a gay cunt!!!
+                "{1} proposed to {0}. They said no.", // TURNIP EDIT: ADDED IN SOME DEATHS
+                "{0} sold bad batch of meth to {1}.",
+                "{0} killed {1} in a cocaine rage.",
+                "{0} raped {1} to death.",
+                "{0} molested {1} until he committed suicide.",
+                "{0} force fed cyanide to {1}.",
+                "{0} gave anime to {1}, they later wasted their whole life on a computer screen.",
+                "{0} gave a body pillow to {1}, he died 2 weeks later of starvation after {1}'s parent's kicked them out.",
+                "{0} stomped {1}'s face into the gutter.",
+                "{0} told {1} the truth about his face. {1} then committed suicide.",
+                "{0} shanked {1} in the bathrooms.",
+                "{0} eyefucked {1} to death.",
+                "{0} shot {1} in the head.",
+                "{0} brutally bashed {1} in maccas carpark.",
+                "{0} told {1} to do a mono.",
+                "{0} teabagged {1} to death."
             };
 
             //Bodyparts
@@ -134,21 +147,22 @@ namespace Discord_Bot.Modules.Games
                 { "Foot", 0.5 },
                 { "Stomach", 1 },
                 { "Heart", 1.5 },
-                { "Head", 2 }
+                { "Head", 2 },
+                { "Dick", 3 }
             };
 
             //Chance needed
             double SUICIDE_CHANCE = 12.5;
             double MISS_CHANCE = 25;
-            double SUICIDE_CHANCE_TOP = 25;
-            double MISS_CHANCE_TOP = 50;
+            double SUICIDE_CHANCE_TOP = 20; // TURNIP EDIT: LOWERED THIS SHIT
+            double MISS_CHANCE_TOP = 40; // TURNIP EDIT: LOWERED THIS SHIT
             int MAX_RAND = 100;
 
             double suicideChance = SUICIDE_CHANCE;
             double missChance = MISS_CHANCE;
 
             var chance = Tools.random.Next(0, MAX_RAND + 1);
-            var hitChance = chance - (2 * mentionedUserCount);
+            var hitChance = chance - (int)Math.Floor((3.5 * mentionedUserCount));
 
             //If player is in top 5, set the hit chance to be a harder difficulty.
             if (ShootTopPlayers(5).Any(u => u.Key == e.User.Id))
@@ -196,9 +210,9 @@ namespace Discord_Bot.Modules.Games
                     await Tools.Reply(e, $"Woops~! You just shot yourself in the {bodypart.Key.ToLower()}! You've been timed out for {bodypart.Value} minute{s}! Your chance was {hitChance}. (need > {missChance}/100)");
 
                 //Save the suicide to the deaths
-                Storage.GetUser(e.User.Id).deaths += 1;
-                
-                
+                // TURNIP EDIT: FIXED THE GAY FOOT DEATH NOW IT DOESN'T KILL YOU :D
+                if (bodypart.Key.ToLower() != "foot" && bodypart.Key.ToLower() != "stomach")
+                        Storage.GetUser(e.User.Id).deaths += 1;
 
                 await Program.timeout.TimeoutUser(e, bodypart.Value, e.User);
                 return;
