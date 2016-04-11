@@ -378,6 +378,9 @@ namespace Discord_Bot
         //Fucking Sabre!
         public static Func<CommandArgs, Task> GiveEveryoneRole = async e =>
         {
+            if (!(Tools.GetPerms(e, e.User) > 1000))
+                return;
+
             try
             {
                 var role = e.Server.FindRoles(e.ArgText).FirstOrDefault();
