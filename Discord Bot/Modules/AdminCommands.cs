@@ -374,5 +374,30 @@ namespace Discord_Bot
 
             await e.User.SendMessage(response);
         };
+
+        //Fucking Sabre!
+        public static Func<CommandArgs, Task> GiveEveryoneRole = async e =>
+        {
+            try
+            {
+                var role = e.Server.FindRoles(e.ArgText).FirstOrDefault();
+                List<User> GiveRole = new List<User>();
+
+                foreach (var user in e.Server.Users)
+                {
+                    if (user.Roles.Count() == 1)
+                        GiveRole.Add(user);
+                }
+
+                foreach (var user in GiveRole)
+                {
+                    var usrRole = user.Roles.ToList();
+                    usrRole.Add(role);
+                    await user.Edit(null, null, null, usrRole);
+                    await Task.Delay(250);
+                }
+            }
+            catch (Exception) { Console.WriteLine("failed");  }
+        };
     }
 }

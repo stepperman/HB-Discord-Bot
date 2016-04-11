@@ -286,7 +286,10 @@ namespace Discord_Bot
         private static void BuildAdminCommands(CommandGroupBuilder adminGroup)
         {
             adminGroup.DefaultMinPermissions(0);
-            
+
+            adminGroup.CreateCommand("addroleeveryone")
+                .Do(AdminCommands.GiveEveryoneRole);
+
             adminGroup.CreateCommand("delete").Alias("d", "remove")
                 .WithPurpose("Delete messages on this channel. Usage: `/admin delete {number of messages to delete}`. / req: rank perm > 0")
                 .ArgsAtLeast(1)
