@@ -103,7 +103,6 @@
     <Compile Include="Modules\Fun.cs" />
     <Compile Include="Modules\Models\UserSettings.cs" />
     <Compile Include="Modules\Games\AyyGame.cs" />
-    <Compile Include="Modules\Games\ShootGame.cs" />
     <Compile Include="Other\Storage.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Modules\AnimeTools.cs" />

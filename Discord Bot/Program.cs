@@ -173,13 +173,6 @@ namespace Discord_Bot
                 .IsHidden()
                 .Do(AnimeTools.GetHBUser);
 
-            //Idea by Will but I perfected it and it's a fucking game now, who would've thought.
-            group.CreateCommand("shoot")
-                .DelayIsUnignorable()
-                .SecondDelay(30)
-                .WithPurpose("shoot a user, with a chance to miss! Usage: type /shoot and tag any amount of users you want.\n`/shoot stats` for your personal score\n`/shoot top` for the top 5 killers!")
-                .Do(Modules.Games.ShootGame.ShootUser);
-
             group.CreateCommand("8ball")
                 .WithPurpose("The magic eightball will answer all your doubts and questions!")
                 .AnyArgs()
