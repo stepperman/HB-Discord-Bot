@@ -304,10 +304,18 @@ namespace Discord_Bot
                 .WithPurpose("Only for super admins! Usage: `/admin kick {@username}`")
                 .ArgsEqual(1)
                 .Do(AdminCommands.KickUser);
-            adminGroup.CreateCommand("timeout")
+
+            adminGroup.CreateCommand("timeout").Alias("t")
                 .WithPurpose("Time out someone. Usage: `/admin timeout {@username} {time in minutes}`.")
                 .ArgsAtLeast(1)
                 .Do(AdminCommands.TimeoutUser);
+
+            adminGroup.CreateCommand("welcomeme")
+                .Do(async e =>
+                {
+                    await Tools.Reply(e, Information.GetWelcomeReplies()[Tools.random.Next(Information.GetWelcomeReplies().Length)], false);
+                });
+
             adminGroup.CreateCommand("commands")
                 .IsHidden()
                 .AnyArgs()
