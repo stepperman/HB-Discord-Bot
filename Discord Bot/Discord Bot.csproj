@@ -93,6 +93,7 @@
     <Compile Include="Modules\AdminCommands.cs" />
     <Compile Include="Modules\HideChannel.cs" />
     <Compile Include="Modules\Information.cs" />
+    <Compile Include="Modules\RoleManagement.cs" />
     <Compile Include="Modules\Voting\SimulcastVote.cs" />
     <Compile Include="Modules\Models\Vote.cs" />
     <Compile Include="CommandPlugin\Command.cs" />

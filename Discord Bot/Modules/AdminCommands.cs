@@ -306,7 +306,7 @@ namespace Discord_Bot
         {
             if (e.Args.Count() < 2)
             {
-                await Tools.Reply(e, "command was not in the right format. Usage: `/admin timeout {username} {time in minutes}`");
+                await Tools.Reply(e, "command was not in the right format. Usage: `-timeout {username(s)} {time in minutes}`");
                 return;
             }
 
@@ -317,38 +317,44 @@ namespace Discord_Bot
 
             if (userPerms > 0)
             {
-                User userToTimeOut = Tools.GetUser(e);
-
-                if (userToTimeOut == null || userToTimeOut.Id == Storage.client.CurrentUser.Id)
+                var mentionedUsers = e.Message.MentionedUsers.ToArray();
+                
+                if (mentionedUsers[0] == null || mentionedUsers[0].Id == Storage.client.CurrentUser.Id)
                 {
-                    if (userToTimeOut == null)
+                    if (mentionedUsers[0] == null)
                         await Tools.Reply(e, "Couldn't find user.");
                     else
                         await Tools.Reply(e, "You cant time me out!");
                     return;
                 }
 
-                int timedUserPerms = Tools.GetPerms(e, userToTimeOut);
+                string message = "";
 
-                if (timedUserPerms >= userPerms)
+                for (int i = 0; i < mentionedUsers.Length; i++)
                 {
-                    await Tools.Reply(e, $"You cannot timeout {userToTimeOut.Mention} because they're better than you are.");
-                    return;
+                    int timedUserPerms = Tools.GetPerms(e, mentionedUsers[i]);
+
+                    if (timedUserPerms >= userPerms)
+                    {
+                        message += $"You cannot timeout {mentionedUsers[i].Mention} because they're better than you are.\n";
+                        return;
+                    }
+
+                    double minutes = 0;
+                    try
+                    {
+                        minutes = double.Parse(e.Args[e.Args.Length - 1]);
+                    }
+                    catch (FormatException)
+                    {
+                        await Tools.Reply(e, "command was not in the right format. Usage: `-timeout {username(s)} {time in minutes}`");
+                        return;
+                    }
+
+                    message += await Program.timeout.Admin_TimeoutUser(e, minutes, mentionedUsers[i]) + "\n";
                 }
 
-                double minutes = 0;
-                try
-                {
-                    minutes = double.Parse(e.Args[e.Args.Length - 1]);
-                }
-                catch (FormatException)
-                {
-                    await Tools.Reply(e, "command was not in the right format. Usage: `/admin timeout {username} {time in minutes}`");
-                    return;
-                }
-
-                string reply = await Program.timeout.Admin_TimeoutUser(e, minutes, userToTimeOut);
-                await Tools.Reply(e, reply);
+                await Tools.Reply(e, message);
             }
         };
 
