@@ -337,7 +337,7 @@ namespace Discord_Bot
                     if (timedUserPerms >= userPerms)
                     {
                         message += $"You cannot timeout {mentionedUsers[i].Mention} because they're better than you are.\n";
-                        return;
+                        continue;
                     }
 
                     double minutes = 0;
