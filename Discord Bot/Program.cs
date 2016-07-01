@@ -328,7 +328,7 @@ namespace Discord_Bot
                 .Do(async e =>
                 {
                     if (ProgramInfo.DevID.ToString() == e.User.Id.ToString())
-                        await Tools.Reply(e, e.Message.RawText.Substring(5), false);
+                        await Tools.Reply(e, e.Message.Text.Substring(5), false);
                 });
 
             adminGroup.CreateCommand("commands")
