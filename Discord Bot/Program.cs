@@ -29,7 +29,7 @@ namespace Discord_Bot
             _client.Log.Message += (s, e) => Console.WriteLine($"[{e.Severity}] {e.Source}: {e.Message}");
             
             _commands = new CommandsPlugin(client);
-            _admincommands = new CommandsPlugin(client, null, '-');
+            _admincommands = new CommandsPlugin(client, (e, s) => { return Tools.GetPerms(s, e); }, '-');
             _commands.CreateCommandGroup("", group => BuildCommands(group));
             _admincommands.CreateCommandGroup("", adminGroup => BuildAdminCommands(adminGroup));
             
@@ -278,7 +278,7 @@ namespace Discord_Bot
 
         private static void BuildAdminCommands(CommandGroupBuilder adminGroup)
         {
-            adminGroup.DefaultMinPermissions(0);
+            adminGroup.DefaultMinPermissions(90);
 
             adminGroup.CreateCommand("addroleeveryone")
                 .Do(AdminCommands.GiveEveryoneRole);
@@ -300,6 +300,14 @@ namespace Discord_Bot
                 .WithPurpose("standardrole or welcomechannel. / req: rank perm >= 1000")
                 .Do(AdminCommands.EditServer);
 
+            adminGroup.CreateCommand("showroles")
+                .WithPurpose("Show all roles with a purpose on the server.")
+                .Do(RoleManagement.ShowRoles);
+
+            adminGroup.CreateCommand("addrole")
+                .WithPurpose("Add role with a type associated to it.")
+                .Do(RoleManagement.AddRole);
+
             adminGroup.CreateCommand("kick")
                 .WithPurpose("Only for super admins! Usage: `/admin kick {@username}`")
                 .ArgsEqual(1)
@@ -314,6 +322,13 @@ namespace Discord_Bot
                 .Do(async e =>
                 {
                     await Tools.Reply(e, Information.GetWelcomeReplies()[Tools.random.Next(Information.GetWelcomeReplies().Length)], false);
+                });
+
+            adminGroup.CreateCommand("say")
+                .Do(async e =>
+                {
+                    if (ProgramInfo.DevID.ToString() == e.User.Id.ToString())
+                        await Tools.Reply(e, e.ArgText, false);
                 });
 
             adminGroup.CreateCommand("commands")

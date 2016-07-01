@@ -50,12 +50,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Discord.Net, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Discord.Net.0.9.0-rc3-3\lib\net45\Discord.Net.dll</HintPath>
+    <Reference Include="Discord.Net, Version=0.9.3.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Discord.Net.0.9.3.1\lib\net45\Discord.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nito.AsyncEx, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -93,8 +93,7 @@
     <Compile Include="Modules\AdminCommands.cs" />
     <Compile Include="Modules\HideChannel.cs" />
     <Compile Include="Modules\Information.cs" />
-    <Compile Include="Modules\RoleManagement.cs" />
-    <Compile Include="Modules\Voting\SimulcastVote.cs" />
+    <Compile Include="Modules\Roles\RoleManagement.cs" />
     <Compile Include="Modules\Models\Vote.cs" />
     <Compile Include="CommandPlugin\Command.cs" />
     <Compile Include="CommandPlugin\CommandArgs.cs" />
@@ -104,6 +103,7 @@
     <Compile Include="Modules\Fun.cs" />
     <Compile Include="Modules\Models\UserSettings.cs" />
     <Compile Include="Modules\Games\AyyGame.cs" />
+    <Compile Include="Modules\Roles\UserRole.cs" />
     <Compile Include="Other\Storage.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Modules\AnimeTools.cs" />

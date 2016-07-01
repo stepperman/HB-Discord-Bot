@@ -9,12 +9,12 @@ namespace Discord_Bot.CommandPlugin
     {
         private readonly DiscordClient _client;
         public List<Command> _commands { get; private set; }
-        private Func<User, int> _getPermissions;
+        private Func<User, string, int> _getPermissions;
 
         public char CommandChar { get; set; }
         public bool UseCommandChar { get; set; }
 
-        public CommandsPlugin(DiscordClient client, Func<User, int> getPermissions = null, char commandChar = '/')
+        public CommandsPlugin(DiscordClient client, Func<User, string, int> getPermissions = null, char commandChar = '/')
         {
             _client = client;
             _getPermissions = getPermissions;
@@ -104,11 +104,11 @@ namespace Discord_Bot.CommandPlugin
                             argText = msg.Substring(args[command.Parts.Length].Index);
 
                         //Check perms
-                        int permissions = getPermissions != null ? getPermissions(e.Message.User) : 0;
+                        int permissions = getPermissions != null ? getPermissions(e.Message.User, e.Server.Id.ToString()) : 0;
                         var eventArgs = new CommandArgs(e.Message, command, msg, argText, permissions, newArgs);
                         if (permissions < command.MinPerms)
                         {
-                            RaiseCommandError(eventArgs, new PermissionException());
+                            await Tools.Reply(e.User, e.Channel, "You do not have the correct permissions to use this command.", true);
                             return;
                         }
 

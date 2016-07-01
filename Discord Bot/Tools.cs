@@ -184,11 +184,11 @@ namespace Discord_Bot
             }
         }
 
-        public static int GetPerms(CommandArgs e, User u)
+        public static int GetPerms(string serverId, User u)
         {
-            if (Storage.serverInfo.ContainsKey(e.serverId))
+            if (Storage.serverInfo.ContainsKey(serverId))
             {
-                var surfer = Storage.serverInfo[e.serverId];
+                var surfer = Storage.serverInfo[serverId];
 
                 foreach (var role in u.Roles)
                 {
@@ -201,6 +201,11 @@ namespace Discord_Bot
 
             //returns -1 if failed or role has no tier set.
             return -1;
+        }
+
+        public static int GetPerms(CommandArgs e, User u)
+        {
+            return GetPerms(e.serverId, u);
         }
         #endregion
 
