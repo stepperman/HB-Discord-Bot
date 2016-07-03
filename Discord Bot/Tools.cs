@@ -186,6 +186,9 @@ namespace Discord_Bot
 
         public static int GetPerms(string serverId, User u)
         {
+            if (u.Id.ToString() == Program.ProgramInfo.DevID.ToString())
+                return 100000;
+
             if (Storage.serverInfo.ContainsKey(serverId))
             {
                 var surfer = Storage.serverInfo[serverId];
