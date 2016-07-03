@@ -173,7 +173,7 @@ namespace Discord_Bot
 
                 try
                 {
-                    roleId = e.Server.FindRoles(RoleToFind).FirstOrDefault().Id.ToString();
+                    roleId = e.Server.FindRoles(RoleToFind, false).FirstOrDefault().Id.ToString();
                     int permId;
                     int.TryParse(e.Args[e.Args.Length - 1], out permId);
 
