@@ -159,5 +159,24 @@ namespace Discord_Bot
                 await Tools.Reply(e, $"Error: {ex.Message}");
             }
         };
+
+        public static Func<CommandArgs, Task> UrbanDictionary = async e =>
+        {
+            using (WebClient client = new WebClient())
+            {
+                string response = await client.DownloadStringTaskAsync($"http://api.urbandictionary.com/v0/define?term={e.ArgText}");
+                dynamic json = JsonConvert.DeserializeObject(response);
+
+                if (json.result_type.ToString() == "no_results")
+                {
+                    await Tools.Reply(e, $"Could not find the definition of {e.ArgText}");
+                    return;
+                }
+
+                string message = $"\nDefinition of {e.ArgText}:\n```{json.list[0].definition.ToString()}```\n\nExample:\n```{json.list[0].example.ToString()}```\n";
+                message += $"Permalink: <http://www.urbandictionary.com/define.php?term={WebUtility.UrlEncode(e.ArgText)}>";
+                await Tools.Reply(e, message);
+            }
+        };
     }
 }

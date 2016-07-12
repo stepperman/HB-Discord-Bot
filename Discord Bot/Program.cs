@@ -117,10 +117,6 @@ namespace Discord_Bot
             }
             catch (Discord.Net.HttpException)
             {
-                while (client.Status != UserStatus.Online)
-                {
-                    //Remove this?
-                }
             }
         }
 
@@ -144,6 +140,10 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, "Here's my source code! <https://github.com/stepperman/HB-Discord-Bot>");
                 });
+
+            group.CreateCommand("ud")
+                .WithPurpose("Find the definition of a word with Urban Dictionary.")
+                .Do(Fun.UrbanDictionary);
 
             //Added by Will (d0ubtless)
             group.CreateCommand("kazoo")
