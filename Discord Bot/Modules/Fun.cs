@@ -129,7 +129,7 @@ namespace Discord_Bot
                     client.QueryString.Add("q", Uri.EscapeDataString(want));
                     client.QueryString.Add("key", Uri.EscapeDataString((string)Program.ProgramInfo.google_key_code));
                     client.QueryString.Add("cx", Uri.EscapeDataString((string)Program.ProgramInfo.google_cx_code));
-                    client.QueryString.Add("safe", "medium");
+                    client.QueryString.Add("safe", Tools.GetServerInfo(e.Server.Id).safesearch);
                     client.QueryString.Add("num", "10");
                     response = await client.DownloadStringTaskAsync("https://www.googleapis.com/customsearch/v1");
                 }

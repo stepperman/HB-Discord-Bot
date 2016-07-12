@@ -31,6 +31,10 @@ namespace Discord_Bot
 
         public static async Task NewUserText(User e, Server server)
         {
+            //Only actually welcome people in the Hummingbird Discord server.
+            if (server.Id != 99333280020566016)
+                return;
+
             try
             {
                 StreamReader streamReader = new StreamReader("../BeginnersText.txt");

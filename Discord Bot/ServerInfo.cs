@@ -8,5 +8,6 @@ namespace Discord_Bot
         public string standardRole;
         public ulong welcomingChannel;
         public int ayyScore = 0;
+        public string safesearch = "medium";
     }
 }

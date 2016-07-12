@@ -267,6 +267,16 @@ namespace Discord_Bot
                     info.welcomingChannel = channel.Id;
                     await Tools.Reply(e, $"{channel.Name} is now the channel that people will be welcomed to upon joining the server!");
                     break;
+                case "safesearch":
+
+                    if (args == "")
+                    {
+                        await Tools.Reply(e, "Possible options are `high, medium, off`. Otherwise it will fuck.");
+                        return;
+                    }
+
+                    info.safesearch = args;
+                    break;
             }
 
             Tools.SaveServerInfo();

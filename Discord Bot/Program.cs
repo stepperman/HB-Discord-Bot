@@ -57,7 +57,7 @@ namespace Discord_Bot
                 if (server.welcomingChannel == 0)
                     return;
                 
-                await Tools.Reply(e.User, client.GetChannel(server.welcomingChannel), $"Goodbye, **{e.User.Name}**. It was nice having you here.", false);
+                await Tools.Reply(e.User, client.GetChannel(server.welcomingChannel), $"Goodbye, **{e.User.Mention}**. It was nice having you here.", false);
             };
 
             _client.UserBanned += async (s, e) =>
@@ -67,7 +67,7 @@ namespace Discord_Bot
                 if (server.welcomingChannel == 0)
                     return;
 
-                await Tools.Reply(e.User, client.GetChannel(server.welcomingChannel), $"**{e.User.Name}** was fuckin banned lmao.", false);
+                await Tools.Reply(e.User, client.GetChannel(server.welcomingChannel), $"**{e.User.Mention}** was fuckin banned lmao.", false);
             };
 
 
