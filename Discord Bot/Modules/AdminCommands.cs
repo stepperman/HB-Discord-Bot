@@ -253,7 +253,9 @@ namespace Discord_Bot
 
                 args += e.Args[i] + " ";
             }
-            args = args.Remove(args.Length - 1);
+            
+            if(args != "")
+                args = args.Remove(args.Length - 1);
 
             switch (toEdit)
             {
