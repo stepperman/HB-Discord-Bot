@@ -102,7 +102,11 @@ namespace Discord_Bot
             var role = e.Server.FindRoles("qttimedout").FirstOrDefault();
             var userroles = user.Roles.ToList();
             userroles.Add(role);
-            await user.Edit(null,null,null,userroles);
+            try
+            {
+                await user.Edit(null, null, null, userroles);
+            }
+            catch (Exception) { }
 
             info.timer.Start();
             return;
@@ -116,7 +120,11 @@ namespace Discord_Bot
             var role = server.FindRoles("qttimedout").FirstOrDefault();
             var userroles = user.Roles.ToList();
             userroles.Remove(role);
-            await user.Edit(null, null, null, userroles);
+            try
+            {
+                await user.Edit(null, null, null, userroles);
+            }
+            catch (Exception) { }
 
             info.timer.Dispose();
             return;
