@@ -69,7 +69,7 @@ namespace Discord_Bot
             {
                 if (minutes <= 0)
                 {
-                    await StopTimeout(users, userTimeout, user);
+                    await StopTimeout(users, userTimeout, user, e.Server);
                     return 3;
                 }
 
@@ -77,7 +77,7 @@ namespace Discord_Bot
                 timeToAdd = userTimeout.timeoutTime - timeToAdd;
 
                 Console.WriteLine($"{user.Name}'s timeout has been lengthed to {timeToAdd + minutes}");
-                await StopTimeout(users, userTimeout, user);
+                await StopTimeout(users, userTimeout, user, e.Server);
                 await StartTimeout(e, timeToAdd + minutes, user, users);
 
                 return 2; // Time added
@@ -95,22 +95,20 @@ namespace Discord_Bot
 
             info.timer.Elapsed += async (s, te) =>
             {
-                users.Remove(info);
-                Console.WriteLine($"{user.Name}'s time out has been removed!");
-                await user.Edit(null, null, null, info.roles);
-                info.timer.Dispose() ;
+                await StopTimeout(users, info, user, e.Server);
+                return;
             };
 
-            await user.Edit(null, null, user.VoiceChannel, new Role[] { e.Server.EveryoneRole });
+            await user.AddRoles(e.Server.FindRoles("qttimedout").FirstOrDefault());
             info.timer.Start();
             return;
         }
 
-        private async Task StopTimeout(List<TimedoutUser> users, TimedoutUser info, User user)
+        private async Task StopTimeout(List<TimedoutUser> users, TimedoutUser info, User user, Server server)
         {
             users.Remove(info);
             Console.WriteLine($"{user.Name}'s time out has been removed!");
-            await user.Edit(null, null, user.VoiceChannel, info.roles);
+            await user.AddRoles(server.FindRoles("qttimedout").FirstOrDefault());
             info.timer.Dispose();
             return;
         }
@@ -123,12 +121,10 @@ namespace Discord_Bot
         public TimedoutUser(User user)
         {
             this.userID = user.Id.ToString();
-            this.roles = user.Roles.ToArray();
         }
 
         public string userID;
         public double timeoutTime;
-        public Role[] roles;
         public Timer timer = new Timer();
         public DateTime t;
     }
