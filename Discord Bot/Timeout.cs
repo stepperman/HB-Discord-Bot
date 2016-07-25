@@ -99,7 +99,11 @@ namespace Discord_Bot
                 return;
             };
 
-            await user.AddRoles(e.Server.FindRoles("qttimedout").FirstOrDefault());
+            var role = e.Server.FindRoles("qttimedout").FirstOrDefault();
+            var userroles = user.Roles.ToList();
+            userroles.Add(role);
+            await user.Edit(null,null,null,userroles);
+
             info.timer.Start();
             return;
         }
@@ -108,7 +112,12 @@ namespace Discord_Bot
         {
             users.Remove(info);
             Console.WriteLine($"{user.Name}'s time out has been removed!");
-            await user.AddRoles(server.FindRoles("qttimedout").FirstOrDefault());
+
+            var role = server.FindRoles("qttimedout").FirstOrDefault();
+            var userroles = user.Roles.ToList();
+            userroles.Remove(role);
+            await user.Edit(null, null, null, userroles);
+
             info.timer.Dispose();
             return;
         }
