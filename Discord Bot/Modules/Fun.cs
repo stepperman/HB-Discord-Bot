@@ -131,7 +131,23 @@ namespace Discord_Bot
                     client.QueryString.Add("cx", Uri.EscapeDataString((string)Program.ProgramInfo.google_cx_code));
                     client.QueryString.Add("safe", Tools.GetServerInfo(e.Server.Id).safesearch);
                     client.QueryString.Add("num", "10");
-                    response = await client.DownloadStringTaskAsync("https://www.googleapis.com/customsearch/v1");
+                    try
+                    {
+                        response = await client.DownloadStringTaskAsync("https://www.googleapis.com/customsearch/v1");
+                    }
+                    catch (System.Net.WebException ex)
+                    {
+                        if (ex.Status == WebExceptionStatus.ProtocolError)
+                        {
+                            await Tools.Reply(e, "The daily limit has been reached. Try again tomorrow!");
+                            return;
+                        }
+                        else
+                        {
+                            await Tools.Reply(e, $"Error: {ex.Message}");
+                            return;
+                        }
+                    }
                 }
 
                 if (response == String.Empty)
