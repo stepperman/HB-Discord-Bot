@@ -73,8 +73,12 @@ namespace Discord_Bot
 
             _client.ChannelCreated += async (s, e) =>
             {
-                var role = e.Server.FindRoles("qttimedout").FirstOrDefault();
-                await e.Channel.AddPermissionsRule(role, new ChannelPermissionOverrides(null, null, null, PermValue.Deny));
+                try
+                {
+                    var role = e.Server.FindRoles("qttimedout").FirstOrDefault();
+                    await e.Channel.AddPermissionsRule(role, new ChannelPermissionOverrides(null, null, null, PermValue.Deny));
+                }
+                catch (Exception) {  }
             };
 
             _client.MessageReceived += async (s, e) =>
