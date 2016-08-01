@@ -13,25 +13,12 @@ namespace Discord_Bot
 {
     public static class RegularUsers
     {
-        public static Dictionary<ulong, List<UserInfo>> info = new Dictionary<ulong, List<UserInfo>>();
-        public static readonly string filelocation = "../LocalFiles/regusr.json";
-        public static Timer saveTimer;
-        public const ulong hour = 3600000;
-
-        static RegularUsers()
-        {
-            //Create the timers and start it.
-            saveTimer = new Timer(hour/4);
-            
-            saveTimer.Elapsed += async (se, e) => 
-            {
-                await Save();
-                Console.WriteLine("Saved with timer");
-            };
-
-            saveTimer.Start();
-        }
-
+        private static Dictionary<ulong, List<UserInfo>> info = new Dictionary<ulong, List<UserInfo>>();
+        private const string filelocation = "../LocalFiles/regusr.json";
+        private static int currentMessages = 0;
+        private const int messagesBeforeSave = 50;
+        private const ulong hour = 3600000;
+        
         public static async Task ReceivedMessage(MessageEventArgs e)
         {
             //If it does not contain the server key yet, add it.
@@ -57,7 +44,12 @@ namespace Discord_Bot
                 }
             }
 
-            
+            currentMessages++;
+            if (currentMessages >= messagesBeforeSave)
+            {
+                currentMessages = 0;
+                await Save();
+            }
         }
 
         public static async Task Save()
@@ -74,8 +66,6 @@ namespace Discord_Bot
                 sr.Close();
 
                 info.Clear();
-                saveTimer.Stop();
-                saveTimer.Start();
             }
         }
 
@@ -112,8 +102,6 @@ namespace Discord_Bot
             File.WriteAllText(filelocation, jsonstring);
             
             info.Clear();
-            saveTimer.Stop();
-            saveTimer.Start();
         }
 
         private static async Task<UserInfo> ProcessUser(ulong server, UserInfo user)
@@ -127,7 +115,9 @@ namespace Discord_Bot
                 //Remove the regular amount of messages if more than 4 days have passed.
                 if ((DateTime.Now - user.firstMessage).TotalDays >= 4)
                 {
-                    user.messageCount -= serverinfo.RegularUserMinMessages;
+                    user.messageCount -= serverinfo.RegularUserMinMessages * 3;
+                    if (user.messageCount < 0)
+                        user.messageCount = 0;
                     user.firstMessage = DateTime.Now;
                 }
 
