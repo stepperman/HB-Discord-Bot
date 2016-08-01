@@ -49,7 +49,7 @@ namespace Discord_Bot
                     temp.Add(usr); //Add the user to the list.
                 }
 
-                if ((DateTime.Now - usr.lastMessage).TotalMinutes >= Tools.GetServerInfo(e.Server.Id).RegularUserMinutesPerMessage)
+                if ((DateTime.Now - usr.lastMessage).TotalMinutes >= 0.01)
                 {
                     usr.lastMessage = DateTime.Now;
                     usr.messageCount++;
@@ -124,10 +124,10 @@ namespace Discord_Bot
                 var serverinfo = Tools.GetServerInfo(server);
 
                 //Remove the regular amount of messages if more than 4 days have passed.
-                if ((DateTime.Now - usr.firstMessage).TotalDays >= 4)
+                if ((DateTime.Now - user.firstMessage).TotalDays >= 4)
                 {
-                    usr.messageCount -= serverinfo.RegularUserMinMessages;
-                    usr.firstMessage = DateTime.Now;
+                    user.messageCount -= serverinfo.RegularUserMinMessages;
+                    user.firstMessage = DateTime.Now;
                 }
 
                 //mix the users
@@ -137,18 +137,26 @@ namespace Discord_Bot
                     user.messageCount += usr.messageCount;
                 }
 
+
+
                 //Check if user should get the role
                 var svr = Storage.client.GetServer(server);
                 var usrmodel = svr.GetUser(user.id);
 
-                if (usr.messageCount >= serverinfo.RegularUserMinMessages)
+                if (user.messageCount >= serverinfo.RegularUserMinMessages)
                 {
                     //Get/Keep the role
                     var role = svr.GetRole(serverinfo.RegularUserRoleId);
 
                     if (!usrmodel.HasRole(role))
                     {
-                        await usrmodel.AddRoles(role);
+                        try
+                        {
+                            var userRoles = usrmodel.Roles.ToList();
+                            userRoles.Add(role);
+                            await usrmodel.Edit(null, null, null, userRoles);
+                        }
+                        catch (Exception) { Console.WriteLine($"Couldn't edit {usrmodel.Name}"); }
                     }
                 }
                 else
@@ -158,8 +166,14 @@ namespace Discord_Bot
 
                     if (usrmodel.HasRole(role))
                     {
-                        await usrmodel.RemoveRoles(role);
-                    }
+                        try
+                        {
+                            var userRoles = usrmodel.Roles.ToList();
+                        userRoles.Remove(role);
+                        await usrmodel.Edit(null, null, null, userRoles);
+                        }
+                        catch (Exception) { Console.WriteLine($"Couldn't edit {usrmodel.Name}"); }
+                }
                 }
             }
         }

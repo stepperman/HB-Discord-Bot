@@ -273,6 +273,7 @@ namespace Discord_Bot.CommandPlugin
                         catch (Exception ex)
                         {
                             RaiseCommandError(eventArgs, ex);
+                            Console.WriteLine(ex);  
                         }
                         break;
                     }
