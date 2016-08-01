@@ -112,59 +112,15 @@ namespace Discord_Bot
             }
 
             //Adding user's role upon joining the server.
-            var role = Tools.GetServerInfo(ServerID).standardRole;
-            if (role != null)
-            {
-                try
-                {
-                    await u.Edit(null, null, u.VoiceChannel, new Role[] { client.GetServer(ServerID).GetRole(ulong.Parse(role)) });
-                }
-                catch (Exception) { }
-            }
-        }
-
-        public static Func<CommandArgs, Task> SeeMentions = async e =>
-        {
-            List<Storage.msg> list = null;
-            if (Storage.UserMentions.TryGetValue(e.User.Id, out list))
-            {
-                string message = "";
-                foreach (var msg in list)
-                {
-                    message += $"**{msg.Author}**: {msg.Message}\n";
-                }
-
-                if(message.Length > 1999)
-                    message = message.Substring(0, 1999);
-                await e.User.SendMessage(message);
-
-                Storage.UserMentions.Remove(e.User.Id);
-            }
-        };
-
-        public static void OfflineMessage(MessageEventArgs e)
-        {
-            if (e.Message.MentionedUsers.Count() == 0)
-                return;
-
-            if (e.User.Id == Storage.client.CurrentUser.Id)
-                return;
-
-            var users = e.Message.MentionedUsers.ToArray();
-
-            foreach (var usr in users)
-            {
-                List<Storage.msg> list = null;
-                if (!Storage.UserMentions.TryGetValue(usr.Id, out list))
-                {
-                    list = new List<Storage.msg>();
-                    Storage.UserMentions.Add(usr.Id, list);
-                }
-
-                list.Add(new Storage.msg() { Author = e.User.Name, Message = e.Message.Text });
-                if (list.Count == 20)
-                    list.RemoveAt(0);
-            }
-        }
+            //var role = Tools.GetServerInfo(ServerID).standardRole;
+            //if (role != null)
+            //{
+            //    try
+            //    {
+            //        await u.Edit(null, null, u.VoiceChannel, new Role[] { client.GetServer(ServerID).GetRole(ulong.Parse(role)) });
+            //    }
+            //    catch (Exception) { }
+            //}
+        }       
     }
 }

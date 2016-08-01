@@ -279,6 +279,34 @@ namespace Discord_Bot
 
                     info.safesearch = args;
                     break;
+                case "regular":
+                    await Tools.Reply(e, "`regularrole` for roles.\n`regulerenabled` (false, true) to enable/disable.\n`regularamount` for amount.");
+                    break;
+                case "regularrole":
+                    var regrole = e.Server.FindRoles(args).FirstOrDefault();
+                    info.RegularUserRoleId = regrole.Id;
+                    await Tools.Reply(e, $"{regrole.Name} is now the role that regular users will receive");
+                    break;
+                case "regularenabled":
+
+                    if (args == "true")
+                    {
+                        info.RegularUsersEnabled = true;
+                        await Tools.Reply(e, "Regular User Role is now enabled. Bastard.");
+                    }
+                    else
+                    {
+                        info.RegularUsersEnabled = false;
+                        await Tools.Reply(e, "Regular User Role is now disabled. Good.");
+                    }
+
+                    break;
+                case "regularamount":
+
+                    var amount = int.Parse(args);
+                    info.RegularUserMinMessages = amount;
+
+                    break;
             }
 
             Tools.SaveServerInfo();

@@ -65,9 +65,11 @@ namespace Discord_Bot
 
                 string text = "get as long a chain of /ayy 's before it gets broken. High Score: {0} Current Score: {1}";
 
-                await e.Channel.Edit(e.Channel.Name, String.Format(text, info.ayyScore, Storage.ayyscore), e.Channel.Position);
-
                 await e.Channel.SendMessage("ayy");
+
+                await Task.Delay(100);
+
+                await e.Channel.Edit(e.Channel.Name, String.Format(text, info.ayyScore, Storage.ayyscore), e.Channel.Position);
             }
             else
                 await Tools.Reply(e, "ayy", false);

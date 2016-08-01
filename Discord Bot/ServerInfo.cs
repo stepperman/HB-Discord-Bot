@@ -9,5 +9,10 @@ namespace Discord_Bot
         public ulong welcomingChannel;
         public int ayyScore = 0;
         public string safesearch = "medium";
+
+        //Regular User settings
+        public bool RegularUsersEnabled = false;
+        public ulong RegularUserRoleId = 0;
+        public int RegularUserMinMessages = 25;
     }
 }

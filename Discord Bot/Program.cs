@@ -83,23 +83,11 @@ namespace Discord_Bot
 
             _client.MessageReceived += async (s, e) =>
             {
-                Information.OfflineMessage(e);
                 await Modules.Games.AyyGame.Game(e);
-            };
 
-            //_client.ServerAvailable += async (s, e) =>
-            //{
-            //    foreach (var channel in e.Server.TextChannels)
-            //    {
-            //        Console.WriteLine(channel.Name);
-            //        try
-            //        {
-            //            await channel.AddPermissionsRule(e.Server.FindRoles("qttimedout").FirstOrDefault(), new ChannelPermissionOverrides(null, null, null, PermValue.Deny));
-            //            await Task.Delay(250);
-            //        }
-            //        catch (Exception) { }
-            //    }
-            //};
+                if(Tools.GetServerInfo(e.Server.Id).RegularUsersEnabled)
+                    await RegularUsers.ReceivedMessage(e);
+            };
 
             _client.GatewaySocket.Disconnected += async (s, e) =>
             {
@@ -148,16 +136,6 @@ namespace Discord_Bot
         private static void BuildCommands(CommandGroupBuilder group)
         {
             group.DefaultMinPermissions(0);
-            
-            group.CreateCommand("normie")
-                .Do(async e =>
-                {
-                    await Tools.Reply(e, "https://www.youtube.com/watch?v=JCeOf2q6_TA", false);
-                });
-
-            group.CreateCommand("mentions")
-                .IsHidden()
-                .Do(Information.SeeMentions);
 
             group.CreateCommand("source")
                 .Do(async e =>
@@ -168,13 +146,6 @@ namespace Discord_Bot
             group.CreateCommand("ud")
                 .WithPurpose("Find the definition of a word with Urban Dictionary.")
                 .Do(Fun.UrbanDictionary);
-
-            //Added by Will (d0ubtless)
-            group.CreateCommand("kazoo")
-                .Do(async e =>
-                {
-                    await Tools.Reply(e, "You need the kazoo, if you can't take part in this episode, you're a fucking faggot, you should just go kill yourself https://youtu.be/g-sgw9bPV4A", false);
-                });
 
             group.CreateCommand("hidechannel")
                 .ArgsAtLeast(1)
@@ -211,15 +182,6 @@ namespace Discord_Bot
                     await Tools.Reply(e, "https://www.youtube.com/watch?v=HTLZjhHIEdw");
                 });
 				
-            //Added by Will (d0ubtless)
-			group.CreateCommand("noice")
-                .AnyArgs()
-                .MinuteDelay(1)
-                .Do(async e =>
-                {
-                    await Tools.Reply(e, "https://youtu.be/a8c5wmeOL9o");
-                });
-				
             group.CreateCommand("no")
                 .SecondDelay(120)
                 .AnyArgs()
@@ -237,26 +199,11 @@ namespace Discord_Bot
                     await e.Channel.SendFile("keemstar.png");
                     await Tools.Reply(e, "You have used code 'KEEM'", true);
                 });
-
-            group.CreateCommand("hello")
-                .AnyArgs()
-                .HourDelay(1)
-                .Do(async e =>
-                {   
-                    await Tools.Reply(e, $"Hello, {e.User.Mention}", false);
-                });
 				
             group.CreateCommand("ayy")
                 .MinuteDelay(2)
                 .AnyArgs()
                 .Do(Fun.Ayy);
-
-            group.CreateCommand("bullying")
-                .AnyArgs()
-                .WithPurpose("Getting bullied?")
-                .IsHidden()
-                .MinuteDelay(30)
-                .Do(Fun.Bullying);
 
             group.CreateCommand("commands")
                 .AnyArgs()
@@ -270,17 +217,6 @@ namespace Discord_Bot
                 .Do(async e =>
                 {
                     await Information.NewUserText(e.User, e.Server);
-                });
-
-            group.CreateCommand("feedback")
-                .WithPurpose("Give feedback to the bot! Stepper will read it sometime soon.. I think.")
-                .ArgsAtLeast(1)
-                .IsHidden()
-                .Do(async e =>
-                {
-                    StreamWriter fs = new StreamWriter("../feedback.txt", true);
-                    await fs.WriteLineAsync($"{e.User.Name} suggested: {e.ArgText}");
-                    fs.Close();
                 });
 				
             group.CreateCommand("img")
@@ -359,6 +295,13 @@ namespace Discord_Bot
                 .IsHidden()
                 .AnyArgs()
                 .Do(AdminCommands.GetCommands);
+
+            adminGroup.CreateCommand("save")
+                .Do(async e =>
+                {
+                    if (ProgramInfo.DevID == e.User.Id)
+                        await RegularUsers.Save();
+                });
         }
         #endregion
         
