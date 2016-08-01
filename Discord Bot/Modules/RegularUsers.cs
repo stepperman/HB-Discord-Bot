@@ -50,7 +50,7 @@ namespace Discord_Bot
                     temp.Add(usr); //Add the user to the list.
                 }
 
-                if ((DateTime.Now - usr.lastMessage).TotalMinutes >= 0.01)
+                if ((DateTime.Now - usr.lastMessage).TotalMinutes >= Tools.GetServerInfo(e.Server.Id).RegularUserMinutesPerMessage)
                 {
                     usr.lastMessage = DateTime.Now;
                     usr.messageCount++;
@@ -94,18 +94,16 @@ namespace Discord_Bot
                 //Add all non existing users
                 foreach (var usr in srvr.Value)
                 {
-                    if (tempsever.Contains(usr))
-                        continue;
-
-                    tempsever.Add(usr);
+                    if (!tempsever.Any(x => x.id == usr.id))
+                        tempsever.Add(usr);
                 }
             }
 
             foreach (var server in temp)
             {
-                foreach (var user in server.Value)
+                for (int i = 0; i < server.Value.Count; i++)
                 {
-                    await ProcessUser(server.Key, user, temp);
+                    server.Value[i] = await ProcessUser(server.Key, server.Value[i]);
                 }
             }
 
@@ -118,7 +116,7 @@ namespace Discord_Bot
             saveTimer.Start();
         }
 
-        private static async Task ProcessUser(ulong server, UserInfo user, Dictionary<ulong, List<UserInfo>> temp)
+        private static async Task<UserInfo> ProcessUser(ulong server, UserInfo user)
         {
             List<UserInfo> serverId;
             if (info.TryGetValue(server, out serverId))
@@ -178,7 +176,11 @@ namespace Discord_Bot
                         catch (Exception) { Console.WriteLine($"Couldn't edit {usrmodel.Name}"); }
                 }
                 }
+
+                return user;
             }
+
+            return null;
         }
 
         public class UserInfo
