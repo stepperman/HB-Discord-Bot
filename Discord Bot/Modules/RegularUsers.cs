@@ -16,16 +16,17 @@ namespace Discord_Bot
         public static Dictionary<ulong, List<UserInfo>> info = new Dictionary<ulong, List<UserInfo>>();
         public static readonly string filelocation = "../LocalFiles/regusr.json";
         public static Timer saveTimer;
-        public static readonly double hourUntilSave = 1; //Interval to save at, to save memory and stuff.
+        public const ulong hour = 3600000;
 
         static RegularUsers()
         {
             //Create the timers and start it.
-            saveTimer = new Timer(hourUntilSave * 1000 * 60 * 60);
+            saveTimer = new Timer(hour/4);
             
-            saveTimer.Elapsed += (se, e) => 
+            saveTimer.Elapsed += async (se, e) => 
             {
-                Save().Wait();
+                await Save();
+                Console.WriteLine("Saved with timer");
             };
 
             saveTimer.Start();
@@ -55,6 +56,8 @@ namespace Discord_Bot
                     usr.messageCount++;
                 }
             }
+
+            
         }
 
         public static async Task Save()
