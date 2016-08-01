@@ -280,7 +280,8 @@ namespace Discord_Bot
                     info.safesearch = args;
                     break;
                 case "regular":
-                    await Tools.Reply(e, "`regularrole` for roles.\n`regulerenabled` (false, true) to enable/disable.\n`regularamount` for amount.");
+                    await Tools.Reply(e, "`regularrole` for roles.\n`regulerenabled` (false, true) to enable/disable.\n`regularamount` for amount." + 
+                        "\n'regulartime' to set the time.");
                     break;
                 case "regularrole":
                     var regrole = e.Server.FindRoles(args).FirstOrDefault();
@@ -306,6 +307,10 @@ namespace Discord_Bot
                     var amount = int.Parse(args);
                     info.RegularUserMinMessages = amount;
 
+                    break;
+                case "regulartime":
+                    var time = double.Parse(args);
+                    info.RegularUserMinutesPerMessage = time;
                     break;
             }
 

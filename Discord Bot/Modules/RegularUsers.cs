@@ -49,7 +49,7 @@ namespace Discord_Bot
                     temp.Add(usr); //Add the user to the list.
                 }
 
-                if ((DateTime.Now - usr.lastMessage).TotalMinutes >= 10)
+                if ((DateTime.Now - usr.lastMessage).TotalMinutes >= Tools.GetServerInfo(e.Server.Id).RegularUserMinutesPerMessage)
                 {
                     usr.lastMessage = DateTime.Now;
                     usr.messageCount++;

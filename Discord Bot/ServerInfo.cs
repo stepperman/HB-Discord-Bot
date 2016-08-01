@@ -14,5 +14,6 @@ namespace Discord_Bot
         public bool RegularUsersEnabled = false;
         public ulong RegularUserRoleId = 0;
         public int RegularUserMinMessages = 25;
+        public double RegularUserMinutesPerMessage = 5;
     }
 }
