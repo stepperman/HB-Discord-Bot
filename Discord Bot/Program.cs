@@ -85,6 +85,9 @@ namespace Discord_Bot
             {
                 await Modules.Games.AyyGame.Game(e);
 
+                if (e.Channel.IsPrivate)
+                    return;
+
                 if(Tools.GetServerInfo(e.Server.Id).RegularUsersEnabled)
                     await RegularUsers.ReceivedMessage(e);
             };
