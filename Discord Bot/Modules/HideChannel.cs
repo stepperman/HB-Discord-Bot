@@ -33,7 +33,7 @@ namespace Discord_Bot.Modules
                 try
                 {
                     await channel.AddPermissionsRule(e.User, new Discord.ChannelPermissionOverrides(null,
-                    null, null, Discord.PermValue.Deny, null, null, null, null, null, Discord.PermValue.Deny));
+                    null, Discord.PermValue.Deny, Discord.PermValue.Deny, null, null, null, null, Discord.PermValue.Deny, Discord.PermValue.Deny));
 
                     hiddenChannels.Add(channel.Id);
                 }
