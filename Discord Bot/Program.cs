@@ -151,16 +151,19 @@ namespace Discord_Bot
                 .Do(Fun.UrbanDictionary);
 
             group.CreateCommand("hidechannel")
+                .WithPurpose("Hide a channel. Usage: `/hidechannel #{channel}` This doesn't work if you have the administrator role.")
                 .ArgsAtLeast(1)
                 .IsHidden()
                 .Do(Modules.HideChannel.Hide);
 
             group.CreateCommand("showchannel")
+                .WithPurpose("Show a channel you have hid. Usage: `/showchannel {channelnum}`. Check the channelnums with the listhcannels command.")
                 .ArgsEqual(1)
                 .IsHidden()
                 .Do(Modules.HideChannel.Show);
 
-            group.CreateCommand("listhiddenchannels")
+            group.CreateCommand("listhchannels")
+                .WithPurpose("Show all the channels you have hid.")
                 .NoArgs()
                 .IsHidden()
                 .Do(Modules.HideChannel.List);
