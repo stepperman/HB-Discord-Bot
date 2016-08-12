@@ -12,9 +12,6 @@ namespace Discord_Bot
     {
         public static Func<CommandArgs, Task> DeleteMessages = async e =>
         {
-            if (!(Tools.GetPerms(e, e.User) > 1))
-                return;
-
             if (e.Channel.IsPrivate)
                 return;
 
@@ -157,10 +154,6 @@ namespace Discord_Bot
 
         public static Func<CommandArgs, Task> AddPermissionToRank = async e =>
         {
-            var userpermission = Tools.GetPerms(e, e.User);
-
-            if (userpermission >= 1000 || ulong.Parse((string)Program.ProgramInfo.DevID) == e.User.Id)
-            {
                 var serv = Tools.GetServerInfo(e.Server.Id);
 
                 string RoleToFind = "";
@@ -194,15 +187,12 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, ex.Message);
                 }
-            }
         };
 
         public static Func<CommandArgs, Task> RemovePermissionToRank = async e =>
         {
             var userpermission = Tools.GetPerms(e, e.User);
-
-            if (userpermission >= 1000 || ulong.Parse((string)Program.ProgramInfo.DevID) == e.User.Id)
-            {
+            
                 try
                 {
                     //Parse role
@@ -227,17 +217,12 @@ namespace Discord_Bot
                 {
                     await Tools.Reply(e, ex.Message);
                 }
-            }
         };
 
         public static Func<CommandArgs, Task> EditServer = async e =>
         {
             var userpermission = Tools.GetPerms(e, e.User);
-
-            //If not high ranked.
-            if (!(userpermission >= 1000))
-                return;
-
+            
             //If there's only 1 word and not anymore, return.
             if (e.Args.Length < 1)
                 return;
@@ -323,8 +308,6 @@ namespace Discord_Bot
                 return;
 
             int userPerm = Tools.GetPerms(e, e.User);
-            if (userPerm >= 100)
-            {
 
                 User userToKick = Tools.GetUser(e);
                 int usertPerms = Tools.GetPerms(e, userToKick);
@@ -344,7 +327,6 @@ namespace Discord_Bot
                 await userToKick.SendMessage($"You've been kicked by {e.User.Name}, you can rejoin by using this url: https://discord.gg/0YOrPxx9u1wtJE0B");
                 await Tools.Reply(e, $"just kicked {userToKick.Name}!");
                 await userToKick.Kick();
-            }
         };
 
         public static Func<CommandArgs, Task> TimeoutUser = async e =>
