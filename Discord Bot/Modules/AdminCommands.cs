@@ -447,8 +447,10 @@ namespace Discord_Bot
                     continue;
 
                 //If it's not a user mention, add it to the roleName.
-                roleName += Args[i];
+                roleName += Args[i] + " ";
             }
+
+            roleName = roleName.Trim();
 
             //Find the role
             Role roleToGive;
