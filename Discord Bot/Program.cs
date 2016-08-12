@@ -247,7 +247,7 @@ namespace Discord_Bot
             adminGroup.DefaultMinPermissions(90);
 
             adminGroup.CreateCommand("role").Alias("r")
-                .WithPurpose("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name")
+                .WithPurpose("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name`")
                 .Do(AdminCommands.AddRemoveRole);
 
             adminGroup.CreateCommand("delete").Alias("d", "remove")
