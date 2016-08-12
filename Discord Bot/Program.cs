@@ -247,6 +247,7 @@ namespace Discord_Bot
             adminGroup.DefaultMinPermissions(90);
 
             adminGroup.CreateCommand("role").Alias("r")
+                .MinPermissions(500)
                 .WithPurpose("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name`")
                 .Do(AdminCommands.AddRemoveRole);
 
@@ -291,13 +292,6 @@ namespace Discord_Bot
                     await Tools.Reply(e, Information.GetWelcomeReplies()[Tools.random.Next(Information.GetWelcomeReplies().Length)], false);
                 });
 
-            adminGroup.CreateCommand("say")
-                .Do(async e =>
-                {
-                    if (ProgramInfo.DevID.ToString() == e.User.Id.ToString())
-                        await Tools.Reply(e, e.Message.Text.Substring(5), false);
-                });
-
             adminGroup.CreateCommand("commands")
                 .IsHidden()
                 .AnyArgs()
@@ -308,6 +302,16 @@ namespace Discord_Bot
                 {
                     if (ProgramInfo.DevID == e.User.Id)
                         await RegularUsers.Save();
+                });
+
+            adminGroup.CreateCommand("clearperms")
+                .MinPermissions(999)
+                .Do(async e =>
+                {
+                    var serverInfo = Tools.GetServerInfo(e.Server.Id);
+                    serverInfo.roleImportancy.Clear();
+                    await Task.Delay(0);
+                    Tools.SaveServerInfo();
                 });
         }
         #endregion
