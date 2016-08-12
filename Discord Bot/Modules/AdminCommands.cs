@@ -433,7 +433,7 @@ namespace Discord_Bot
             var Args = e.Message.RawText.Split(' ');
             Args = Args.Skip(1).ToArray();
 
-            if (Args.Length < 3 || e.Message.MentionedUsers.Count() == 0)
+            if (Args.Length < 3 || e.Message.MentionedUsers.Count() == 0 || e.Message.MentionedUsers.Any(x => x.Id == e.User.Id))
             {
                 await RoleSuccessFail(false, e);
                 return;
