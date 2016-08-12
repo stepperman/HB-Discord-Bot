@@ -246,8 +246,9 @@ namespace Discord_Bot
         {
             adminGroup.DefaultMinPermissions(90);
 
-            adminGroup.CreateCommand("addroleeveryone")
-                .Do(AdminCommands.GiveEveryoneRole);
+            adminGroup.CreateCommand("role").Alias("r")
+                .WithPurpose("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name")
+                .Do(AdminCommands.AddRemoveRole);
 
             adminGroup.CreateCommand("delete").Alias("d", "remove")
                 .WithPurpose("Delete messages on this channel. Usage: `/admin delete {number of messages to delete}`. / req: rank perm > 0")

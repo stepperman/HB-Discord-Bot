@@ -426,32 +426,94 @@ namespace Discord_Bot
             await e.User.SendMessage(response);
         };
 
-        //Fucking Sabre!
-        public static Func<CommandArgs, Task> GiveEveryoneRole = async e =>
+
+        //Role management
+        public static Func<CommandArgs, Task> AddRemoveRole = async e =>
         {
-            if (!(Tools.GetPerms(e, e.User) > 1000))
-                return;
+            var Args = e.Message.RawText.Split(' ');
+            Args = Args.Skip(1).ToArray();
 
-            try
+            if (Args.Length < 3 || e.Message.MentionedUsers.Count() == 0)
             {
-                var role = e.Server.FindRoles(e.ArgText).FirstOrDefault();
-                List<User> GiveRole = new List<User>();
-
-                foreach (var user in e.Server.Users)
-                {
-                    if (user.Roles.Count() == 1)
-                        GiveRole.Add(user);
-                }
-
-                foreach (var user in GiveRole)
-                {
-                    var usrRole = user.Roles.ToList();
-                    usrRole.Add(role);
-                    await user.Edit(null, null, null, usrRole);
-                    await Task.Delay(250);
-                }
+                await RoleSuccessFail(false, e);
+                return;
             }
-            catch (Exception) { Console.WriteLine("failed");  }
+
+            string roleName = "";
+            for (int i = 1; i < Args.Length; i++) //i starts with 1 to avoid the "remove" or "add" arg
+            {
+                //If this parameter starts with a user mention, skip this.
+                if (Args[i].StartsWith("<") && Args[i].EndsWith(">"))
+                    continue;
+
+                //If it's not a user mention, add it to the roleName.
+                roleName += Args[i];
+            }
+
+            //Find the role
+            Role roleToGive;
+            roleToGive = e.Server.FindRoles(roleName).FirstOrDefault();
+
+            if (roleToGive == null)
+            {
+                await RoleSuccessFail(false, e);
+                return;
+            }
+                
+
+            //Give or add role
+            switch (Args[0].ToLower())
+            {
+                case "add":
+                case "a":
+
+                    foreach (var user in e.Message.MentionedUsers)
+                    {
+                        var userRoles = user.Roles.ToList();
+                        if (userRoles.Any(x => x.Id == roleToGive.Id))
+                            continue;
+
+                        userRoles.Add(roleToGive);
+                        try { await user.Edit(null, null, null, userRoles); }
+                        catch (Exception)
+                        {
+                            Console.WriteLine($"Couldn't edit {user.Name}");
+                        }
+                    }
+
+                    await RoleSuccessFail(true, e);
+
+                    break;
+                case "remove":
+                case "r":
+
+                    foreach (var user in e.Message.MentionedUsers)
+                    {
+                        var userRoles = user.Roles.ToList();
+                        if (!userRoles.Any(x => x.Id == roleToGive.Id))
+                            continue;
+
+                        userRoles.RemoveAll(x => x.Id == roleToGive.Id);
+                        try { await user.Edit(null, null, null, userRoles); } catch (Exception)
+                        {
+                            Console.WriteLine($"Couldn't edit {user.Name}");
+                        }
+                    }
+
+                    await RoleSuccessFail(true, e);
+
+                    break;
+                default:
+                    return;
+            }
         };
+
+        public static async Task RoleSuccessFail(bool success, CommandArgs e)
+        {
+            if (success)
+                await Tools.Reply(e, "👌🏽", false);
+            else
+                await Tools.Reply(e, "🖕🏽", false);
+        }
     }
 }
