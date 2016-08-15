@@ -77,9 +77,15 @@ namespace Discord_Bot
             foreach (var srvr in info)
             {
                 if (!temp.ContainsKey(srvr.Key))
+                {
                     temp.Add(srvr.Key, srvr.Value);
+                    continue;
+                }
 
                 var tempsever = temp[srvr.Key];
+
+                if (tempsever.Count <= 0)
+                    return;
 
                 //Add all non existing users
                 foreach (var usr in srvr.Value)
