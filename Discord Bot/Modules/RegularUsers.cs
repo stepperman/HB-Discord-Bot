@@ -90,7 +90,7 @@ namespace Discord_Bot
                 //Add all non existing users
                 foreach (var usr in srvr.Value)
                 {
-                    if (!tempsever.Any(x => x.id == usr.id))
+                    if (!tempsever.Any(x => x != null && x.id == usr.id))
                         tempsever.Add(usr);
                 }
             }
