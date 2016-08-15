@@ -115,7 +115,7 @@ namespace Discord_Bot
             List<UserInfo> serverId;
             if (info.TryGetValue(server, out serverId))
             {
-                var usr = serverId.FirstOrDefault(x => x.id == user.id);
+                var usr = serverId.FirstOrDefault(x => user != null && x != null && x.id == user.id);
                 var serverinfo = Tools.GetServerInfo(server);
 
                 //Remove the regular amount of messages if more than 4 days have passed.
