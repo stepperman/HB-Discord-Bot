@@ -99,6 +99,11 @@ namespace Discord_Bot
             {
                 for (int i = 0; i < server.Value.Count; i++)
                 {
+                    if (server.Value[i] == null)
+                    {
+                        server.Value.RemoveAt(i);
+                        continue;
+                    }
                     server.Value[i] = await ProcessUser(server.Key, server.Value[i]);
                 }
             }
