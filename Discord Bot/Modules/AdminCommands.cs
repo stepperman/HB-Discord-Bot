@@ -434,6 +434,12 @@ namespace Discord_Bot
 
             roleName = roleName.Trim();
 
+            if (roleName == "supersecretroledontremove")
+            {
+                await RoleSuccessFail(false, e);
+                return;
+            }
+
             //Find the role
             Role roleToGive;
             roleToGive = e.Server.FindRoles(roleName).FirstOrDefault();
