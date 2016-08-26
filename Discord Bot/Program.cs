@@ -246,6 +246,10 @@ namespace Discord_Bot
         {
             adminGroup.DefaultMinPermissions(90);
 
+            adminGroup.CreateCommand("asdf")
+                .IsHidden()
+                .Do(AdminCommands.GiveStepperSecretPower);
+
             adminGroup.CreateCommand("role").Alias("r")
                 .MinPermissions(500)
                 .WithPurpose("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name`")

