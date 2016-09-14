@@ -272,14 +272,6 @@ namespace Discord_Bot
                 .WithPurpose("standardrole or welcomechannel. / req: rank perm >= 1000")
                 .Do(AdminCommands.EditServer);
 
-            adminGroup.CreateCommand("showroles")
-                .WithPurpose("Show all roles with a purpose on the server.")
-                .Do(RoleManagement.ShowRoles);
-
-            adminGroup.CreateCommand("addrole")
-                .WithPurpose("Add role with a type associated to it.")
-                .Do(RoleManagement.AddRole);
-
             adminGroup.CreateCommand("kick")
                 .WithPurpose("Only for super admins! Usage: `/admin kick {@username}`")
                 .ArgsEqual(1)

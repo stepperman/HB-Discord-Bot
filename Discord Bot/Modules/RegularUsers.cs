@@ -100,10 +100,8 @@ namespace Discord_Bot
                 for (int i = 0; i < server.Value.Count; i++)
                 {
                     if (server.Value[i] == null)
-                    {
-                        server.Value.RemoveAt(i);
                         continue;
-                    }
+
                     server.Value[i] = await ProcessUser(server.Key, server.Value[i]);
                 }
             }
@@ -140,42 +138,50 @@ namespace Discord_Bot
                 }
 
 
-
-                //Check if user should get the role
-                var svr = Storage.client.GetServer(server);
-                var usrmodel = svr.GetUser(user.id);
-
-                if (user.messageCount >= serverinfo.RegularUserMinMessages)
+                try
                 {
-                    //Get/Keep the role
-                    var role = svr.GetRole(serverinfo.RegularUserRoleId);
 
-                    if (!usrmodel.HasRole(role))
+                    //Check if user should get the role
+                    var svr = Storage.client.GetServer(server);
+                    var usrmodel = svr.GetUser(user.id);
+
+
+                    if (user.messageCount >= serverinfo.RegularUserMinMessages)
                     {
-                        try
+                        //Get/Keep the role
+                        var role = svr.GetRole(serverinfo.RegularUserRoleId);
+
+                        if (!usrmodel.HasRole(role))
                         {
-                            var userRoles = usrmodel.Roles.ToList();
-                            userRoles.Add(role);
-                            await usrmodel.Edit(null, null, null, userRoles);
+                            try
+                            {
+                                var userRoles = usrmodel.Roles.ToList();
+                                userRoles.Add(role);
+                                await usrmodel.Edit(null, null, null, userRoles);
+                            }
+                            catch (Exception) { Console.WriteLine($"Couldn't edit {usrmodel.Name}"); }
                         }
-                        catch (Exception) { Console.WriteLine($"Couldn't edit {usrmodel.Name}"); }
+                    }
+                    else
+                    {
+                        //Lose the role
+                        var role = svr.GetRole(serverinfo.RegularUserRoleId);
+
+                        if (usrmodel.HasRole(role))
+                        {
+                            try
+                            {
+                                var userRoles = usrmodel.Roles.ToList();
+                                userRoles.Remove(role);
+                                await usrmodel.Edit(null, null, null, userRoles);
+                            }
+                            catch (Exception) { Console.WriteLine($"Couldn't edit {usrmodel.Name}"); }
+                        }
                     }
                 }
-                else
+                catch (Exception)
                 {
-                    //Lose the role
-                    var role = svr.GetRole(serverinfo.RegularUserRoleId);
-
-                    if (usrmodel.HasRole(role))
-                    {
-                        try
-                        {
-                            var userRoles = usrmodel.Roles.ToList();
-                        userRoles.Remove(role);
-                        await usrmodel.Edit(null, null, null, userRoles);
-                        }
-                        catch (Exception) { Console.WriteLine($"Couldn't edit {usrmodel.Name}"); }
-                }
+                    Console.WriteLine("Couldn't edit a user. Possibly not on the server anymore?")
                 }
 
                 return user;
