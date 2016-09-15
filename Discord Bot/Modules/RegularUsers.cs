@@ -102,7 +102,7 @@ namespace Discord_Bot
                     if (server.Value[i] == null)
                         continue;
 
-                    server.Value[i] = await ProcessUser(server.Key, server.Value[i]);
+                    try { server.Value[i] = await ProcessUser(server.Key, server.Value[i]); } catch (Exception) { }
                 }
             }
 
@@ -181,7 +181,7 @@ namespace Discord_Bot
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Couldn't edit a user. Possibly not on the server anymore?")
+                    Console.WriteLine("Couldn't edit a user. Possibly not on the server anymore?");
                 }
 
                 return user;
