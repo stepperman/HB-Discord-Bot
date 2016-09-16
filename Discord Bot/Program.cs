@@ -154,6 +154,12 @@ namespace Discord_Bot
                 .Do(Uptime.ShowUptime)
                 .WithPurpose("show the bot's uptime.");
 
+            group.CreateCommand("downtime")
+                .Do(async e =>
+                {
+                    await Tools.Reply(e, "a **long time.**");
+                });
+
             group.CreateCommand("ud")
                 .WithPurpose("Find the definition of a word with Urban Dictionary.")
                 .Do(Fun.UrbanDictionary);

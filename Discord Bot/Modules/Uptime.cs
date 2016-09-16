@@ -17,7 +17,7 @@ namespace Discord_Bot
             DateTime currentTime = DateTime.Now;
             var uptime = currentTime - dateTime;
 
-            await Tools.Reply(e, Tools.CalculateTime((int)Math.Round(uptime.TotalMinutes)));
+            await Tools.Reply(e, Tools.CalculateTimeWithSeconds((int)Math.Floor(uptime.TotalSeconds)));
         };
     }
 }

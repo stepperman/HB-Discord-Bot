@@ -100,6 +100,93 @@ namespace Discord_Bot
             return animeWatched;
         }
 
+        public static string CalculateTimeWithSeconds(int seconds)
+        {
+            if (seconds == 0)
+                return "No time.";
+
+            int years, minutes, months, days, hours = 0;
+
+            minutes = seconds / 60;
+            seconds %= 60;
+            hours = minutes / 60;
+            minutes %= 60;
+            days = hours / 24;
+            hours %= 24;
+            months = days / 30;
+            days %= 30;
+            years = months / 12;
+            months %= 12;
+
+            string animeWatched = "";
+
+            if (years > 0)
+            {
+                animeWatched += years;
+                if (years == 1)
+                    animeWatched += " **year**";
+                else
+                    animeWatched += " **years**";
+            }
+
+            if (months > 0)
+            {
+                if (animeWatched.Length > 0)
+                    animeWatched += ", ";
+                animeWatched += months;
+                if (months == 1)
+                    animeWatched += " **month**";
+                else
+                    animeWatched += " **months**";
+            }
+
+            if (days > 0)
+            {
+                if (animeWatched.Length > 0)
+                    animeWatched += ", ";
+                animeWatched += days;
+                if (days == 1)
+                    animeWatched += " **day**";
+                else
+                    animeWatched += " **days**";
+            }
+
+            if (hours > 0)
+            {
+                if (animeWatched.Length > 0)
+                    animeWatched += ", ";
+                animeWatched += hours;
+                if (hours == 1)
+                    animeWatched += " **hour**";
+                else
+                    animeWatched += " **hours**";
+            }
+
+            if (minutes > 0)
+            {
+                if (animeWatched.Length > 0)
+                    animeWatched += ",";
+                animeWatched += minutes;
+                if (minutes == 1)
+                    animeWatched += " **minute**";
+                else
+                    animeWatched += " **minutes**";
+            }
+
+            if (seconds > 0)
+            {
+                if (animeWatched.Length > 0)
+                    animeWatched += " and ";
+                animeWatched += seconds;
+                if (seconds == 1)
+                    animeWatched += " **second**";
+                else
+                    animeWatched += " **seconds**";
+            }
+
+            return animeWatched;
+        }
+
         #region messaging
         public static async Task Reply(User user, Channel channel, string text, bool mentionUser)
         {
