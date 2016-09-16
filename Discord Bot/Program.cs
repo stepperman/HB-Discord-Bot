@@ -108,8 +108,12 @@ namespace Discord_Bot
                     await Task.Delay(30000);
                 }
             };
+
             _commands.CommandError += async (s, e) =>
             {
+                if (e.Command.Text == "ayy")
+                    return;
+
                 var ex = e.Exception;
                 if (ex is PermissionException)
                     await Tools.Reply(e, "Sorry, you do not have the permissions to use this command!");

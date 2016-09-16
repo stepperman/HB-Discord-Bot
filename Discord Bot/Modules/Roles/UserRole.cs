@@ -1,7 +1,4 @@
-﻿using Discord;
-using System;
-
-namespace Discord_Bot
+﻿namespace Discord_Bot
 {
     public enum RoleType
     {
