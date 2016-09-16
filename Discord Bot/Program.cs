@@ -146,6 +146,10 @@ namespace Discord_Bot
                     await Tools.Reply(e, "Here's my source code! <https://github.com/stepperman/HB-Discord-Bot>");
                 });
 
+            group.CreateCommand("uptime")
+                .Do(Uptime.ShowUptime)
+                .WithPurpose("show the bot's uptime.");
+
             group.CreateCommand("ud")
                 .WithPurpose("Find the definition of a word with Urban Dictionary.")
                 .Do(Fun.UrbanDictionary);

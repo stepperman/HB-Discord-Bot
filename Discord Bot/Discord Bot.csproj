@@ -105,6 +105,7 @@
     <Compile Include="Modules\Models\UserSettings.cs" />
     <Compile Include="Modules\Games\AyyGame.cs" />
     <Compile Include="Modules\Roles\UserRole.cs" />
+    <Compile Include="Modules\Uptime.cs" />
     <Compile Include="Other\Storage.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Modules\AnimeTools.cs" />
