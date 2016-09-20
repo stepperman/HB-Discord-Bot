@@ -56,11 +56,6 @@ namespace Discord_Bot
                 var info = Tools.GetServerInfo(e.Server.Id);
 
                 Storage.ayyscore++;
-                if (Storage.ayyscore > info.ayyScore)
-                {
-                    info.ayyScore = Storage.ayyscore;
-                }
-
                 Tools.SaveServerInfo();
 
                 string text = "get as long a chain of /ayy 's before it gets broken. High Score: {0} Current Score: {1}";
