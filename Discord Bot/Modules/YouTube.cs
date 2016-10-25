@@ -104,7 +104,7 @@ namespace Discord_Bot.Modules
             if (a == null)
                 return;
 
-            a.messageToDelete.Add(message);
+            
             
             //Update the list so it's cleared.
             UpdateList();
@@ -112,6 +112,8 @@ namespace Discord_Bot.Modules
             int number = 0;
             if (!int.TryParse(message.Text, out number) || number < 1 || number > 5)
                 return;
+
+            a.messageToDelete.Add(message);
 
             var urlid = a.urlIds[number-1];
             if (urlid == null|| urlid == "")
