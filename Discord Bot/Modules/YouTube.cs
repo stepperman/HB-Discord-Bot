@@ -35,7 +35,7 @@ namespace Discord_Bot.Modules
                     var jsonString = await client.DownloadStringTaskAsync(url);
                     dynamic json = JsonConvert.DeserializeObject(jsonString);
 
-                    string uTubeID = Convert.ToString(json.items[0].id.videoID);
+                    string uTubeID = Convert.ToString(json.items[0].id.videoId);
                     await Tools.Reply(e, $"https://www.youtube.com/watch?v={uTubeID}");
                 }
                 catch (Exception ex)
