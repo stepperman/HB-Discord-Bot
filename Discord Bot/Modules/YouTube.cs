@@ -33,6 +33,7 @@ namespace Discord_Bot.Modules
                     { "part", $"snippet" },
                     { "q" , $"{e.ArgText}" },
                     { "maxResults", "5" },
+                    { "type", "video" },
                     { "key", "AIzaSyAnXBGxB_QWlHzfn0PGF7oYVdDnKwjQW4I" }
                 };
 
@@ -117,6 +118,8 @@ namespace Discord_Bot.Modules
                 return;
 
             await Tools.Reply(message.User, message.Channel, $"https://youtube.com/watch?v={urlid}", true);
+
+            utubeSelectors.Remove(a);
 
             try
             {
