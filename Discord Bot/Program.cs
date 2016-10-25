@@ -145,10 +145,16 @@ namespace Discord_Bot
             group.DefaultMinPermissions(0);
 
             group.CreateCommand("source")
+                .WithPurpose("Link to my Github baby ;))))")
                 .Do(async e =>
                 {
                     await Tools.Reply(e, "Here's my source code! <https://github.com/stepperman/HB-Discord-Bot>");
                 });
+
+            group.CreateCommand("yt").Alias("youtube")
+                .ArgsAtLeast(1)
+                .WithPurpose("Find YouTube videos!")
+                .Do(Discord_Bot.Modules.YouTube.FindYouTubeVideo);
 
             group.CreateCommand("uptime")
                 .Do(Uptime.ShowUptime)
