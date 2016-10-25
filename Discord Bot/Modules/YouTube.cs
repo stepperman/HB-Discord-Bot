@@ -112,7 +112,7 @@ namespace Discord_Bot.Modules
             if (!int.TryParse(message.Text, out number) || number < 1 || number > 5)
                 return;
 
-            var urlid = a.urlIds[number];
+            var urlid = a.urlIds[number-1];
             if (urlid == null|| urlid == "")
                 return;
 
