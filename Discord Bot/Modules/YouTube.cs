@@ -134,12 +134,7 @@ namespace Discord_Bot.Modules
         /// </summary>
         private static void UpdateList()
         {
-            foreach (var a in utubeSelectors)
-            {
-                var time = DateTime.Now - a.startedWaiting;
-                if ((int)time.TotalMinutes >= waitingTime)
-                    utubeSelectors.Remove(a);
-            }
+            utubeSelectors.RemoveAll(x => (DateTime.Now - x.startedWaiting).TotalMinutes >= waitingTime);
         }
 
         class YouTubeSelector
