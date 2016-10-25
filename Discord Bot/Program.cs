@@ -84,6 +84,7 @@ namespace Discord_Bot
             _client.MessageReceived += async (s, e) =>
             {
                 await Modules.Games.AyyGame.Game(e);
+                await Modules.YouTube.ReceivedMessage(e.Message);
 
                 if (e.Channel.IsPrivate)
                     return;
