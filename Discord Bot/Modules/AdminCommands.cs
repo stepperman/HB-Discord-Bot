@@ -520,7 +520,7 @@ namespace Discord_Bot
 
                 var t = e.ArgText.Split('.');
                 ImageType i = ImageType.None;
-                switch(t[t.Length - 1])
+                switch(t[t.Length - 1].ToUpper())
                 {
                     case "JPG":
                     case "JPEG":
