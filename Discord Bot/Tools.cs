@@ -188,27 +188,29 @@ namespace Discord_Bot
         }
 
         #region messaging
-        public static async Task Reply(User user, Channel channel, string text, bool mentionUser)
+        public static async Task<Message> Reply(User user, Channel channel, string text, bool mentionUser)
         {
             try
             {
                 if (!string.IsNullOrWhiteSpace(text))
                 {
                     if (channel.IsPrivate || !mentionUser)
-                        await channel.SendMessage(text);
+                        return await channel.SendMessage(text);
                     else
-                        await channel.SendMessage($"{user.Mention}: {text}");
+                        return await channel.SendMessage($"{user.Mention}: {text}");
                 }
             }
             catch (Exception e)
             {
                 LogError("Couldn't send message.", e.Message);
             }
+
+            return null;
         }
 
-        public static Task Reply(CommandArgs e, string text)
+        public static Task<Message> Reply(CommandArgs e, string text)
             => Reply(e.User, e.Channel, text, true);
-        public static Task Reply(CommandArgs e, string text, bool mentionUser)
+        public static Task<Message> Reply(CommandArgs e, string text, bool mentionUser)
             => Reply(e.User, e.Channel, text, mentionUser);
 
         #endregion
