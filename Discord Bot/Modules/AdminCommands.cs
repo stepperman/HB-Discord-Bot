@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Discord_Bot.CommandPlugin;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using Discord;
 
@@ -515,12 +516,17 @@ namespace Discord_Bot
         {
             try
             {
-                System.Net.WebRequest wr = System.Net.WebRequest.Create(e.ArgText);
-                var response = await wr.GetResponseAsync();
+                var http = new HttpClient();
+                var imageStream = await http.GetStreamAsync(e.ArgText);
+                var memoryStream = new System.IO.MemoryStream();
+                imageStream.CopyTo(memoryStream);
+                imageStream.Dispose();
+                memoryStream.Position = 0;
 
+                //Get filetype
                 var t = e.ArgText.Split('.');
                 ImageType i = ImageType.None;
-                switch(t[t.Length - 1].ToUpper())
+                switch (t[t.Length - 1].ToUpper())
                 {
                     case "JPG":
                     case "JPEG":
@@ -530,10 +536,11 @@ namespace Discord_Bot
                         i = ImageType.Png;
                         break;
                 }
+                
 
-                await Storage.client.CurrentUser.Edit(null, null, null, null, response.GetResponseStream(), i);
+                await Storage.client.CurrentUser.Edit(avatar: memoryStream, avatarType: i);
             }
-            catch(Exception) { }
+            catch (Exception) { }
         };
     }
 }

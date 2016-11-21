@@ -41,7 +41,6 @@ namespace Discord_Bot
                 {
                     var jsonfile = sr.ReadToEnd();
                     ProgramInfo = JsonConvert.DeserializeObject(jsonfile);
-                    Console.WriteLine(ProgramInfo.username);
                 }
             }
 
