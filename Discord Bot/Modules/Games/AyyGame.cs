@@ -24,7 +24,7 @@ namespace Discord_Bot.Modules.Games
                         string text = "get as long a chain of /ayy 's before it gets broken. High Score: {0} Current Score: {1}";
                         var oldayy = Storage.ayyscore;
 
-                        bool newHighScore = Storage.ayyscore > info.ayyHighScore;
+                        bool newHighScore = Storage.ayyscore > info.ayyScore;
                         info.ayyScore = oldayy;
 
                         Storage.ayyscore = 0;
@@ -34,11 +34,10 @@ namespace Discord_Bot.Modules.Games
                         {
                             string date = Tools.CalculateTime((int)(DateTime.Now - info.ayyScoreDateReached).TotalMinutes);
                             info.ayyScoreDateReached = DateTime.Now;
-                            info.ayyHighScore = oldayy;
                             await Tools.Reply(e.User, e.Channel, $"A new high score has been reached after {date}. The new highscore is {oldayy}", false);
                         }
 
-                        await e.Channel.Edit(e.Channel.Name, String.Format(text, info.ayyHighScore, Storage.ayyscore));
+                        await e.Channel.Edit(e.Channel.Name, String.Format(text, info.ayyScore, Storage.ayyscore));
                     }
                 }
                 catch (Exception) { }

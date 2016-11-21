@@ -59,36 +59,22 @@ namespace Discord_Bot
         {
             string[] reply =  {
                 "Holy shit, a new user! Welcome {0}!",
-                "Ew, a newfag! Get out {0}!",
-                "Someone new? Awesome! Welcome {0}! Just kidding, piss off.",
-                "Everyone, welcome {0}! Or don't. I don't care.",
+                "Someone new? Awesome! Welcome {0}!",
+                "Everyone, welcome {0}! They're new here!",
                 "Oh, how nice, someone new! Hello {0}!",
-                "My god! A new person! We don't need you, just leave {0}.",
-                "{0}, it might be better if you'd leave. You'd just be a newfag. Well, welcome anyway!",
-                "Wat de fuck?! {0}, rot eens op jij kanker hond!",
-                "Disgusting! {0} smells, kick them out!",
-                "I'm not even going to welcome {0}.",
-                "WTF are you doing here, {0}?",
-                "If I wanted a {0}, I'd have bought a dog.",
-                "If I wanted a {0}, I'd have bought a gorilla.",
-                "{0} doesn't even deserve a welcome. Hi, I guess...",
+                "My god! A new person! Hooray! Welcome, {0}.",
+                "{0} doesn't even deserve a welcome. They deserve a party.",
                 "🐸 OH SHIT IT {0} WHADDUP!",
-                "{0}... If I promise to miss you, will you go away?",
-                "Hi {0} welcome to the hummingbird chat!! Where you'll be alone: In bad company.",
-                "Everyone welcome {0}, they're better at sex than anyone, now all they needs is a partner.",
-                "Welcome {0} Can I borrow your face for a few days while my ass is on vacation?.",
-                "Hey {0}, why are you here! Did the mental hospital test too many drugs on you today?",
-                "Welcome {0}, now we are depriving a village of an idiot.",
-                "Hello {0}, I think I've seen you before today? I was at the zoo.",
-                "Hello {0} You're very smart. You have brains you never used.", //THIS IS A COMPLIMENT. How is it a compliment, exactly?
-                "Yuck! Get out {0}!! I've come across decomposed bodies that are less disgusting than you are!!",
-                "You better go away {0}, before I start taunting you. Actually, you know what? Welcome.",
-                "Welcome {0}, you will be utterly forgotten.",
-                "Hey {0}!!!! ...What doesn’t kill you... disappoints me.",
-                "Hi {0}, you deserve a hug right now.",
+                "Hi {0}, and welcome to the Weeaboo chat.",
+                "Everyone welcome {0}, they're better at sex than anyone, now all they needs is a partner. You up for it?",
                 "{0}, 👉 👌 😉",
                 "{0}, 🍆 👌🏿 😫",
-                "{0}! Ur nan's a cunt m8 and your step-dad Dave's a fookin' plonka!"
+                "Hi {0}! Have I seen you somewhere around before? Probably not, I haven't seen someone so beautiful in quite some time!",
+                "I'm excited!! Everyone, someone new just joined! It's {0}! They seem nice!",
+                "I hope you'll enjoy your stay here, {0}. I'll try to improve it.",
+                "Good day {0}! Or night. I don't know timezones, enjoy your stay.",
+                "I think I'm in love with {0}, actually no. I'm pre-programmed to say this, sorry ;(.",
+                "Hi {0}. I used to make mean remarks when someone joined. I promised I changed but it's still hard. You mind if I do it one more time?"
             };
 
             return reply;
@@ -110,17 +96,6 @@ namespace Discord_Bot
             {
                 Tools.LogError("Couldn't send message.", ex.Message);
             }
-
-            //Adding user's role upon joining the server.
-            //var role = Tools.GetServerInfo(ServerID).standardRole;
-            //if (role != null)
-            //{
-            //    try
-            //    {
-            //        await u.Edit(null, null, u.VoiceChannel, new Role[] { client.GetServer(ServerID).GetRole(ulong.Parse(role)) });
-            //    }
-            //    catch (Exception) { }
-            //}
         }       
     }
 }
