@@ -267,9 +267,17 @@ namespace Discord_Bot
         {
             adminGroup.DefaultMinPermissions(90);
 
-            adminGroup.CreateCommand("asdf")
-                .IsHidden()
-                .Do(AdminCommands.GiveStepperSecretPower);
+            adminGroup.CreateCommand("change nickname").Alias("nick")
+                .MinPermissions(1000)
+                .WithPurpose("Change the bot's username.")
+                .ArgsAtLeast(1)
+                .Do(AdminCommands.ChangeNickname);
+
+            adminGroup.CreateCommand("change avatar").Alias("avatar")
+                .MinPermissions(1000)
+                .WithPurpose("Change the bot's avatar.")
+                .ArgsAtLeast(1)
+                .Do(AdminCommands.ChangeAvatar);
 
             adminGroup.CreateCommand("role").Alias("r")
                 .MinPermissions(500)

