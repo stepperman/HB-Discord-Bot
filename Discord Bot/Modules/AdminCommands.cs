@@ -512,6 +512,11 @@ namespace Discord_Bot
             await e.Server.CurrentUser.Edit(null, null, null, null, e.ArgText);
         };
 
+        public static Func<CommandArgs, Task> ChangeUsername = async e =>
+        {
+            await Storage.client.CurrentUser.Edit(username: e.ArgText);
+        };
+
         public static Func<CommandArgs, Task> ChangeAvatar = async e =>
         {
             try

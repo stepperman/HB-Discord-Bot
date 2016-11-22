@@ -276,19 +276,22 @@ namespace Discord_Bot
         public static int GetPerms(string serverId, User u)
         {
             if (u.Id.ToString() == Program.ProgramInfo.DevID.ToString())
-                return 100000;
+                return int.MaxValue;
 
             if (Storage.serverInfo.ContainsKey(serverId))
             {
                 var surfer = Storage.serverInfo[serverId];
 
+                int perm = 0;
                 foreach (var role in u.Roles)
                 {
                     if (surfer.roleImportancy.ContainsKey(role.Id.ToString()))
                     {
-                        return surfer.roleImportancy[role.Id.ToString()];
+                        if (surfer.roleImportancy[role.Id.ToString()] > perm)
+                            perm = surfer.roleImportancy[role.Id.ToString()];
                     }
                 }
+                return perm;
             }
 
             //returns -1 if failed or role has no tier set.

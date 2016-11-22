@@ -277,6 +277,11 @@ namespace Discord_Bot
                 .ArgsAtLeast(1)
                 .Do(AdminCommands.ChangeNickname);
 
+            adminGroup.CreateCommand("change username").Alias("username")
+                .MinPermissions(8000)
+                .ArgsAtLeast(1)
+                .Do(AdminCommands.ChangeUsername);
+
             adminGroup.CreateCommand("change avatar").Alias("avatar")
                 .MinPermissions(1000)
                 .WithPurpose("Change the bot's avatar.")
