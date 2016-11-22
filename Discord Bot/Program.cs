@@ -160,6 +160,11 @@ namespace Discord_Bot
                 .Do(Uptime.ShowUptime)
                 .WithPurpose("show the bot's uptime.");
 
+            group.CreateCommand("bullying")
+                .Do(Fun.Bullying)
+                .WithPurpose("Getting bullied? Make sure to use this command as often as possible!")
+                .MinuteDelay(1);
+
             group.CreateCommand("downtime")
                 .Do(async e =>
                 {
