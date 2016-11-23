@@ -90,7 +90,8 @@ namespace Discord_Bot
 
                 if(info.heyGay)
                 {
-                    if(e.Message.Text.ToLower() == "hey")
+                    var cooltext = e.Message.Text.ToLower();
+                    if (cooltext == "hey" || cooltext == "ye" || cooltext == "ja")
                     {
                         try
                         {
