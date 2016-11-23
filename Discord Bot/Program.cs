@@ -90,11 +90,11 @@ namespace Discord_Bot
 
                 if(info.heyGay)
                 {
-                    if(e.Message.Text == "hey")
+                    if(e.Message.Text.ToLower() == "hey")
                     {
                         try
                         {
-                            await e.User.Edit(nickname: "gay");
+                            await e.User.Edit(nickname: "homo");
                         }
                         catch(Exception) { }
                     }
