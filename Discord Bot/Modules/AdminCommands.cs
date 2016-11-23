@@ -245,6 +245,14 @@ namespace Discord_Bot
 
             switch (toEdit)
             {
+                case "gay":
+
+                    if (args.ToLower() == "true")
+                        info.heyGay = true;
+                    else if (args.ToLower() == "false")
+                        info.heyGay = false;
+
+                    break;
                 case "standardrole":
                     var role = e.Server.FindRoles(args).FirstOrDefault();
                     info.standardRole = role.Id.ToString();
@@ -388,7 +396,7 @@ namespace Discord_Bot
 
         public static Func<CommandArgs, Task> GetCommands = async e =>
         {
-            string response = $"The character to use a command right now is '{Program._commands.CommandChar}'.\n";
+            string response = $"The character to use a command right now is '{Program._admincommands.CommandChar}'.\n";
             foreach (var cmd in Program._admincommands._commands)
             {
                 if (!String.IsNullOrWhiteSpace(cmd.Purpose))

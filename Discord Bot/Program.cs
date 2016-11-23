@@ -85,6 +85,21 @@ namespace Discord_Bot
                 await Modules.Games.AyyGame.Game(e);
                 await Modules.YouTube.ReceivedMessage(e.Message);
 
+                ///pranked
+                var info = Tools.GetServerInfo(e.Server.Id);
+
+                if(info.heyGay)
+                {
+                    if(e.Message.Text == "hey")
+                    {
+                        try
+                        {
+                            await e.User.Edit(nickname: "gay");
+                        }
+                        catch(Exception) { }
+                    }
+                }
+
                 if (e.Channel.IsPrivate)
                     return;
 

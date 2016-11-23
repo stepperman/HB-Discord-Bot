@@ -10,6 +10,7 @@ namespace Discord_Bot
         public ulong welcomingChannel;
         public int ayyScore = 0;
         public int ayyHighScore = 0;
+        public bool heyGay = false;
         public DateTime ayyScoreDateReached = DateTime.Now.AddDays(-1);
         public string safesearch = "medium";
 
