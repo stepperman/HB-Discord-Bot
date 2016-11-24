@@ -67,7 +67,7 @@ namespace Discord_Bot
                     string base64 = System.Convert.ToBase64String(mallogin);
                     client.Headers.Add("Authorization", $"Basic {base64}");
                     client.QueryString.Add("q", Uri.EscapeUriString(e.ArgText));
-                    string response = await client.DownloadStringTaskAsync("http://myanimelist.net/api/anime/search.xml");
+                    string response = await client.DownloadStringTaskAsync("https://myanimelist.net/api/anime/search.xml");
 
                     var xml = XDocument.Parse(response);
                     var anime = xml.Element("anime").Descendants("entry").FirstOrDefault();
@@ -81,7 +81,8 @@ namespace Discord_Bot
 
                     ///TITLE NAME (type) | Episodes: episodes | Mallink | Score: 
                     ///synopsis
-                    string reply = $"**{title}** ({type}) | **Episodes:** {episodes} | http://myanimelist.net/anime/{id} | **Score** {score}/10.0 {Environment.NewLine}{synopsis}";
+                    string reply = $"**{title}** ({type}) https://myanimelist.net/anime/{id}| \n**Episodes:** {episodes} " + 
+                    $"\n**Score** {score}/10.0 \n\n{synopsis}";
                     reply = reply.Replace("<br />", "");
 
                     await Tools.Reply(e, reply, false);
@@ -103,7 +104,7 @@ namespace Discord_Bot
                     string base64 = System.Convert.ToBase64String(mallogin);
                     client.Headers.Add("Authorization", $"Basic {base64}");
                     client.QueryString.Add("q", Uri.EscapeUriString(e.ArgText));
-                    string response = await client.DownloadStringTaskAsync("http://myanimelist.net/api/manga/search.xml");
+                    string response = await client.DownloadStringTaskAsync("https://myanimelist.net/api/manga/search.xml");
 
                     var xml = XDocument.Parse(response);
 
@@ -138,9 +139,9 @@ namespace Discord_Bot
                     string reply = "";
 
                     if (status == "Finished")
-                        reply = $"**{title}** (Manga) | **Status:** {status} **Chapters:** {chapters} **Volumes:** {volumes} | **Score** {score}/10.0 | {Environment.NewLine}http://myanimelist.net/manga/{id} |  {Environment.NewLine}{synopsis}";
+                        reply = $"**{title}** (Manga) http://myanimelist.net/manga/{id} \n**Status:** {status} \n**Chapters:** {chapters} \n**Volumes:** {volumes} \n\n**Score** {score}/10.0 \n{synopsis}";
                     else
-                        reply = $"**{title}** (Manga) | **Status:** {status} | **Score** {score}/10.0 | {Environment.NewLine}http://myanimelist.net/manga/{id} |  {Environment.NewLine}{synopsis}";
+                        reply = $"**{title}** (Manga) https://myanimelist.net/manga/{id} \n**Status:** {status} \n**Score** {score}/10.0 \n\n{synopsis}";
                     reply = reply.Replace("<br />", "");
 
                     await Tools.Reply(e, reply, false);
