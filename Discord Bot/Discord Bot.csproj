@@ -54,6 +54,10 @@
       <HintPath>..\packages\Discord.Net.0.9.3.1\lib\net45\Discord.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MALAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\MALAPI.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -133,12 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\MALAPI\MALAPI\MALAPI.csproj">
-      <Project>{48093cac-1eff-4018-b030-418775e99a63}</Project>
-      <Name>MALAPI</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
