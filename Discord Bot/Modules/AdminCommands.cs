@@ -245,14 +245,6 @@ namespace Discord_Bot
 
             switch (toEdit)
             {
-                case "gay":
-
-                    if (args.ToLower() == "true")
-                        info.heyGay = true;
-                    else if (args.ToLower() == "false")
-                        info.heyGay = false;
-
-                    break;
                 case "standardrole":
                     var role = e.Server.FindRoles(args).FirstOrDefault();
                     info.standardRole = role.Id.ToString();
