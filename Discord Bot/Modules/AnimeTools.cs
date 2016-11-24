@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Xml.Linq;
+using MALAPI;
 
 namespace Discord_Bot
 {
@@ -16,7 +17,7 @@ namespace Discord_Bot
             var client = new HttpClient();
             string url = $"http://hummingbird.me/api/v1/users/{e.ArgText}";
             string userUrl = $"http://hummingbird.me/users/{e.ArgText}";
-
+            
             try
             {
                 string response = await client.GetStringAsync(url);
@@ -61,32 +62,15 @@ namespace Discord_Bot
         {
             try
             {
-                using (WebClient client = new WebClient())
-                {
-                    var mallogin = System.Text.Encoding.UTF8.GetBytes(System.Convert.ToString(Program.ProgramInfo.mallogin));
-                    string base64 = System.Convert.ToBase64String(mallogin);
-                    client.Headers.Add("Authorization", $"Basic {base64}");
-                    client.QueryString.Add("q", Uri.EscapeUriString(e.ArgText));
-                    string response = await client.DownloadStringTaskAsync("https://myanimelist.net/api/anime/search.xml");
+                MyAnimeListAPI api = new MyAnimeListAPI();
+                var links = await api.GetSearchResultLinks(e.ArgText, 1);
+                var anime = await api.GetAnimeMalLink(links[0]);
 
-                    var xml = XDocument.Parse(response);
-                    var anime = xml.Element("anime").Descendants("entry").FirstOrDefault();
+                string epis = anime.Episodes == 0 ? "Unkown" : anime.Episodes.ToString();
+                string reply = $"**{anime.Title}** ({anime.Type}) \n {links[0]}\n**Score**: {anime.Score}" +
+                $"\n**Episodes:** {epis}\n**Genres:** {String.Join(", ", anime.Genres)}\n\n{anime.Synopsis}";
 
-                    string title = anime.Element("title").Value;
-                    string episodes = anime.Element("episodes").Value;
-                    string type = anime.Element("type").Value;
-                    string id = anime.Element("id").Value;
-                    string synopsis = anime.Element("synopsis").Value;
-                    string score = anime.Element("score").Value;
-
-                    ///TITLE NAME (type) | Episodes: episodes | Mallink | Score: 
-                    ///synopsis
-                    string reply = $"**{title}** ({type}) https://myanimelist.net/anime/{id}| \n**Episodes:** {episodes} " + 
-                    $"\n**Score** {score}/10.0 \n\n{synopsis}";
-                    reply = reply.Replace("<br />", "");
-
-                    await Tools.Reply(e, reply, false);
-                }
+                await Tools.Reply(e, reply, false);
             }
             catch (Exception ex)
             {
