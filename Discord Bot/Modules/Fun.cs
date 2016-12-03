@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Collections.Specialized;
 using Discord_Bot.CommandPlugin;
 using Discord;
 using Newtonsoft.Json;
@@ -112,61 +113,36 @@ namespace Discord_Bot
 
         public static Func<CommandArgs, Task> GetImageFromGoogleDotCom = async e =>
         {
-            try
+            using (WebClient client = new WebClient())
             {
-                string want = e.ArgText;
-                string response = String.Empty;
+                client.QueryString = new NameValueCollection {
+                        { "searchType", "image" },
+                        { "q", Uri.EscapeUriString(e.ArgText) },
+                        { "key", Uri.EscapeUriString((string)Program.ProgramInfo.google_key_code) },
+                        { "cx", Uri.EscapeUriString((string)Program.ProgramInfo.google_cx_code) },
+                        { "safe", Tools.GetServerInfo(e.Server.Id).safesearch },
+                        { "num", "10" }
+                    };
 
-                using (WebClient client = new WebClient())
+                try
                 {
-                    client.QueryString.Add("searchType", "image");
-                    client.QueryString.Add("q", Uri.EscapeDataString(want));
-                    client.QueryString.Add("key", Uri.EscapeDataString((string)Program.ProgramInfo.google_key_code));
-                    client.QueryString.Add("cx", Uri.EscapeDataString((string)Program.ProgramInfo.google_cx_code));
-                    client.QueryString.Add("safe", Tools.GetServerInfo(e.Server.Id).safesearch);
-                    client.QueryString.Add("num", "10");
-                    try
-                    {
-                        response = await client.DownloadStringTaskAsync("https://www.googleapis.com/customsearch/v1");
-                    }
-                    catch (System.Net.WebException ex)
-                    {
-                        if (ex.Status == WebExceptionStatus.ProtocolError)
-                        {
-                            await Tools.Reply(e, "The daily limit has been reached. Try again tomorrow!");
-                            return;
-                        }
-                        else
-                        {
-                            await Tools.Reply(e, $"Error: {ex.Message}");
-                            return;
-                        }
-                    }
-                }
-
-                if (response == String.Empty)
-                {
-                    await Tools.Reply(e, "No response. Servers might be down.");
-                    return;
-                }
-
-                dynamic json = JsonConvert.DeserializeObject(response);
-                var count = Enumerable.Count(json.items);
-                if (count > 0)
-                {
-                    var rand = Tools.random.Next(0, count);
-                    string link = json.items[rand].link;
+                    dynamic json =  JsonConvert.DeserializeObject(await client.DownloadStringTaskAsync("https://www.googleapis.com/customsearch/v1"));
+                    string link = json.items[Tools.random.Next(0, Enumerable.Count(json.items))].link;
                     await Tools.Reply(e, link);
                 }
-                else
+                catch (System.Net.WebException ex)
                 {
-                    await Tools.Reply(e, "No items found :(.");
+                    if (ex.Status == WebExceptionStatus.ProtocolError)
+                    {
+                        await Tools.Reply(e, "The daily limit has been reached. Try again tomorrow!");
+                        return;
+                    }
+                    else
+                    {
+                        await Tools.Reply(e, $"Error: {ex.Message}");
+                        return;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Tools.LogError("[img]", ex.Message);
-                await Tools.Reply(e, $"Error: {ex.Message}");
             }
         };
 
