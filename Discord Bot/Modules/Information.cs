@@ -12,8 +12,8 @@ namespace Discord_Bot
     {
         public static Func<CommandArgs, Task> Commands = async e =>
         {
-            string response = $"The character to use a command right now is '{Program._commands.CommandChar}'.\n";
-            foreach (var cmd in Program._commands._commands)
+            string response = $"The character to use a command right now is '{Bot._commands.CommandChar}'.\n";
+            foreach (var cmd in Bot._commands._commands)
             {
                 if (!String.IsNullOrWhiteSpace(cmd.Purpose))
                 {
@@ -28,32 +28,6 @@ namespace Discord_Bot
 
             await e.User.SendMessage(response);
         };
-
-        public static async Task NewUserText(User e, Server server)
-        {
-            //Only actually welcome people in the Hummingbird Discord server.
-            if (server.Id != 99333280020566016)
-                return;
-
-            try
-            {
-                StreamReader streamReader = new StreamReader("../BeginnersText.txt");
-
-                string GettingStarted = await streamReader.ReadToEndAsync();
-                GettingStarted = String.Format(GettingStarted, e.Mention, server.GetUser(83677331951976448).Mention);
-
-                streamReader.Close();
-
-                string[] reply = GettingStarted.Split(new string[] { "[SPLIT]" }, StringSplitOptions.None);
-
-                foreach (var message in reply)
-                    await e.SendMessage(message);
-            }
-            catch (Exception ex)
-            {
-                Tools.LogError("Couldn't send new user text!", ex.Message);
-            }
-        }
 
         public static string[] GetWelcomeReplies()
         {

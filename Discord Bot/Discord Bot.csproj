@@ -94,7 +94,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChatEventActions.cs" />
     <Compile Include="Modules\AdminCommands.cs" />
+    <Compile Include="Bot.cs" />
     <Compile Include="Modules\HideChannel.cs" />
     <Compile Include="Modules\Information.cs" />
     <Compile Include="Modules\RegularUsers.cs" />
@@ -112,6 +114,7 @@
     <Compile Include="Modules\Uptime.cs" />
     <Compile Include="Modules\YouTube.cs" />
     <Compile Include="Other\Storage.cs" />
+    <Compile Include="Setup.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Modules\AnimeTools.cs" />
     <Compile Include="Program.cs" />

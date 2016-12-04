@@ -62,25 +62,14 @@ namespace Discord_Bot
         {
             try
             {
-                System.Diagnostics.Stopwatch s = System.Diagnostics.Stopwatch.StartNew();
                 MyAnimeListAPI api = new MyAnimeListAPI();
-                System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 var links = await api.GetSearchResultLinks(e.ArgText, 1);
-                stopwatch.Stop();
-                var time = stopwatch.Elapsed.TotalSeconds;
-
-                stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                
                 var anime = await api.GetAnimeMalLink(links[0]);
-                stopwatch.Stop();
-                var time2 = stopwatch.Elapsed.TotalSeconds;
 
                 string epis = anime.Episodes == 0 ? "Unkown" : anime.Episodes.ToString();
                 string reply = $"**{anime.Title}** ({anime.Type}) \n {links[0]}\n**Score**: {anime.Score}" +
                 $"\n**Episodes:** {epis}\n**Genres:** {String.Join(", ", anime.Genres)}\n\n{anime.Synopsis}";
-                s.Stop();
-                var time3 = s.Elapsed.TotalSeconds;
-
-                reply += $"\nTime = {time} + {time2} = {time3}";
 
                 await Tools.Reply(e, reply, false);
             }
@@ -96,7 +85,7 @@ namespace Discord_Bot
             {
                 using (WebClient client = new WebClient())
                 {
-                    var mallogin = System.Text.Encoding.UTF8.GetBytes(System.Convert.ToString(Program.ProgramInfo.mallogin));
+                    var mallogin = System.Text.Encoding.UTF8.GetBytes(System.Convert.ToString(Storage.programInfo.mallogin));
                     string base64 = System.Convert.ToBase64String(mallogin);
                     client.Headers.Add("Authorization", $"Basic {base64}");
                     client.QueryString.Add("q", Uri.EscapeUriString(e.ArgText));

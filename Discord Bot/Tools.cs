@@ -275,7 +275,7 @@ namespace Discord_Bot
 
         public static int GetPerms(string serverId, User u)
         {
-            if (u.Id.ToString() == Program.ProgramInfo.DevID.ToString())
+            if (u.Id.ToString() == Storage.programInfo.DevID.ToString())
                 return int.MaxValue;
 
             if (Storage.serverInfo.ContainsKey(serverId))

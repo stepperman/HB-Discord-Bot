@@ -245,7 +245,7 @@ namespace Discord_Bot.CommandPlugin
                                             {
                                                 try
                                                 {
-
+                                                    //why is this here
                                                 }
                                                 catch (Exception ex)
                                                 {

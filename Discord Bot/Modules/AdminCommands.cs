@@ -379,7 +379,7 @@ namespace Discord_Bot
                         return;
                     }
 
-                    message += await Program.timeout.Admin_TimeoutUser(e, minutes, mentionedUsers[i]) + "\n";
+                    message += await Bot.timeout.Admin_TimeoutUser(e, minutes, mentionedUsers[i]) + "\n";
                 }
 
                 await Tools.Reply(e, message);
@@ -388,8 +388,8 @@ namespace Discord_Bot
 
         public static Func<CommandArgs, Task> GetCommands = async e =>
         {
-            string response = $"The character to use a command right now is '{Program._admincommands.CommandChar}'.\n";
-            foreach (var cmd in Program._admincommands._commands)
+            string response = $"The character to use a command right now is '{Bot._admincommands.CommandChar}'.\n";
+            foreach (var cmd in Bot._admincommands._commands)
             {
                 if (!String.IsNullOrWhiteSpace(cmd.Purpose))
                 {
@@ -416,7 +416,8 @@ namespace Discord_Bot
             var Args = e.Message.RawText.Split(' ');
             Args = Args.Skip(1).ToArray();
 
-            if (Args.Length < 3 || e.Message.MentionedUsers.Count() == 0 || (e.Message.MentionedUsers.Any(x => x.Id == e.User.Id) && Program.ProgramInfo.DevID.ToString() != e.User.Id.ToString()))
+            if (Args.Length < 3 || e.Message.MentionedUsers.Count() == 0 || 
+            (e.Message.MentionedUsers.Any(x => x.Id == e.User.Id) && Storage.programInfo.DevID.ToString() != e.User.Id.ToString()))
             {
                 await RoleSuccessFail(false, e);
                 return;

@@ -118,8 +118,8 @@ namespace Discord_Bot
                 client.QueryString = new NameValueCollection {
                         { "searchType", "image" },
                         { "q", Uri.EscapeUriString(e.ArgText) },
-                        { "key", Uri.EscapeUriString((string)Program.ProgramInfo.google_key_code) },
-                        { "cx", Uri.EscapeUriString((string)Program.ProgramInfo.google_cx_code) },
+                        { "key", Uri.EscapeUriString((string)Storage.programInfo.google_key_code) },
+                        { "cx", Uri.EscapeUriString((string)Storage.programInfo.google_cx_code) },
                         { "safe", Tools.GetServerInfo(e.Server.Id).safesearch },
                         { "num", "10" }
                     };
