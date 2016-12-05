@@ -191,7 +191,7 @@ https://anilist.co/anime/{(string)anime.id}";
 
         public static async Task<bool> AuthorizeAnilist()
         {
-            ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+            
 
             string url = "https://anilist.co/api/auth/access_token";
             var values = new NameValueCollection
@@ -205,6 +205,7 @@ https://anilist.co/anime/{(string)anime.id}";
             {
                 using (WebClient wc = new WebClient())
                 {
+                    ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
                     var response = await wc.UploadValuesTaskAsync(url, values);
                     string json = System.Text.Encoding.UTF8.GetString(response);
                     dynamic parsedJson = JsonConvert.DeserializeObject(json);
