@@ -212,7 +212,9 @@ https://anilist.co/anime/{(string)anime.id}";
                     return true;
                 }
             }
-            catch (Exception) { return false; }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                return false; }
         }
     }
 }
