@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Discord;
+using System;
 
 namespace Discord_Bot
 {
@@ -29,6 +30,11 @@ namespace Discord_Bot
         public static int ayyscore = 0;
         public static Dictionary<ulong, List<msg>> UserMentions = new Dictionary<ulong, List<msg>>();
         public static dynamic programInfo = null;
+
+
+        //Anilist
+        public static string anilistAccessToken = "";
+        public static DateTime anilistAuthorizationCreated;
 
         public struct msg
         {

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 using Discord_Bot.CommandPlugin;
+using System.Collections.Specialized;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net;
 using System.Xml.Linq;
@@ -137,5 +140,79 @@ namespace Discord_Bot
                 await Tools.Reply(e, $"Error: {ex.Message}");
             }
         };
+
+        public static Func<CommandArgs, Task> AnimeFromAnilist = async e =>
+        {
+            //Check if we need a new authorization token
+            if ((DateTime.Now - Storage.anilistAuthorizationCreated).TotalMinutes > 50)
+            {
+                if (!await AuthorizeAnilist())
+                {
+                    await Tools.Reply(e, "Something went wrong authorizing Anilist, please try again?");
+                    return;
+                }
+            }
+
+            string url = "https://anilist.co/api/anime/search/";
+
+            using (WebClient wc = new WebClient())
+            {
+                wc.QueryString = new NameValueCollection
+                {
+                    { "access_token", (string)Storage.anilistAccessToken },
+                };
+
+                var response = await wc.DownloadStringTaskAsync(url + e.ArgText);
+                dynamic json = JsonConvert.DeserializeObject(response);
+                dynamic anime = json[0];
+
+                //Download image
+                byte[] image = await wc.DownloadDataTaskAsync((string)anime.image_url_lge);
+                Stream stream = new MemoryStream(image);
+
+                string episodes = anime.total_episodes == 0 ? "unknown" : (string)anime.total_episodes;
+                string duration = anime.duration == null ? "" : $"\n**Duration:** {(int)anime.duration} minutes";
+
+                var reply = $@"
+**Anime:** {(string)anime.title_english}
+**Score:** {(string)anime.average_score}/100
+**Episodes:** {episodes} {duration}
+**Type:** {anime.type}
+**Genres:** {String.Join(", ", anime.genres)}
+**Description:**
+{((string)anime.description).Replace("<br>", "")}
+https://anilist.co/anime/{(string)anime.id}";
+
+                await e.Channel.SendMessage(reply);
+                await e.Channel.SendFile("coolimage.jpg", stream);
+            }
+        };
+
+        public static async Task<bool> AuthorizeAnilist()
+        {
+            string url = "https://anilist.co/api/auth/access_token";
+            var values = new NameValueCollection
+            {
+                { "grant_type", "client_credentials" },
+                { "client_id", (string)Storage.programInfo.anilist_id },
+                { "client_secret", (string)Storage.programInfo.anilist_client_secret }
+            };
+
+            try
+            {
+                using (WebClient wc = new WebClient())
+                {
+                    var response = await wc.UploadValuesTaskAsync(url, values);
+                    string json = System.Text.Encoding.UTF8.GetString(response);
+                    dynamic parsedJson = JsonConvert.DeserializeObject(json);
+
+                    Storage.anilistAccessToken = (string)parsedJson.access_token;
+                    Storage.anilistAuthorizationCreated = DateTime.Now;
+
+                    return true;
+                }
+            }
+            catch (Exception) { return false; }
+        }
     }
 }
