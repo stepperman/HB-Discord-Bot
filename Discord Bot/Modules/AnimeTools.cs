@@ -154,6 +154,7 @@ namespace Discord_Bot
             }
 
             string url = "https://anilist.co/api/anime/search/";
+            ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
 
             using (WebClient wc = new WebClient())
             {
@@ -190,6 +191,8 @@ https://anilist.co/anime/{(string)anime.id}";
 
         public static async Task<bool> AuthorizeAnilist()
         {
+            ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+
             string url = "https://anilist.co/api/auth/access_token";
             var values = new NameValueCollection
             {

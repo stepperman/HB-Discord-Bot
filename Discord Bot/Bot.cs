@@ -14,9 +14,6 @@ namespace Discord_Bot
 
         public Bot()
         {
-            //So the bot trusts anything
-            ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
-
             var client = new DiscordClient();
             Bot.client = client;
             Bot.client.Log.Message += (s, e) => Console.WriteLine($"[{e.Severity}] {e.Source}: {e.Message}");
