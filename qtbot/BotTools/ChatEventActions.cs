@@ -52,6 +52,7 @@ namespace qtbot.BotTools
         {
             await Modules.Games.AyyGame.GameAsync(message);
             await Modules.YouTube.ReceivedMessageAsync(message);
+            await qtbot.Modules.MultipleSelector.MultiSelectorController.ReceivedMessageAsync(message);
 
             if ((message.Channel as ITextChannel) != null)
                 return;

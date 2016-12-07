@@ -85,68 +85,41 @@ namespace qtbot.Modules
 
                 var response = await wc.GetStringAsync();
                 dynamic json = JsonConvert.DeserializeObject(response);
-                dynamic anime = json[0];
 
-                //Download image
-                wc.BaseUrl = (string)anime.image_url_lge;
-
-                string episodes = anime.total_episodes == 0 ? "unknown" : (string)anime.total_episodes;
-                string duration = String.IsNullOrWhiteSpace(Convert.ToString(anime.duration)) ? "" : $"{(int)anime.duration} minutes";
-
-                string description = ((string)anime.description).Replace("<br>", "");
-
-                if(description.Length >= 1024)
-                    description = description.Remove(1024 - 5) + "...";
-
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.WithColor(new Color(0, 255, 0))
-                .WithTitle((string)anime.title_english)
-                .WithDescription(String.Join(", ", anime.genres))
-                .WithUrl($"https://anilist.co/anime/{(string)anime.id}")
-                .WithImageUrl(wc.BaseUrl);
-
-                //Add Episodes field
-                eb.AddField(x =>
+                List<Models.AnimeModel> l = new List<Models.AnimeModel>();
+                for (int i = 0; i < 10; i++)
                 {
-                    x.IsInline = true;
-                    x.Name = "Episodes";
-                    x.Value = episodes;
-                });
+                    if (i == json.Count)
+                        break;
+                    dynamic anime = json[i];
+                    
 
-                if (!String.IsNullOrEmpty(duration))
-                {
-                    eb.AddField(x =>
+                    string episodes = anime.total_episodes == 0 ? "unknown" : (string)anime.total_episodes;
+                    string duration = String.IsNullOrWhiteSpace(Convert.ToString(anime.duration)) ? "" : $"{(int)anime.duration} minutes";
+                    string description = ((string)anime.description).Replace("<br>", "");
+
+                    if (description.Length >= 1024)
+                        description = description.Remove(1024 - 5) + "...";
+
+                    l.Add(new Models.AnimeModel()
                     {
-                        x.IsInline = true;
-                        x.Name = "Duration";
-                        x.Value = duration;
+                        Title = (string)anime.title_english,
+                        Genre = String.Join(", ", anime.genres),
+                        Url = $"https://anilist.co/anime/{(string)anime.id}",
+                        ImageUrl = (string)anime.image_url_lge,
+                        Episodes = episodes,
+                        Duration = duration,
+                        Description = description,
+                        Score = $"{(string)anime.average_score}/100",
+                        Type = (string)anime.type
                     });
                 }
+                var selector = await MultipleSelector.MultiSelectorController.CreateSelector<Models.AnimeModel>
+                    (e.Message, l.ToArray());
 
-                eb.AddField(x =>
-                {
-                    x.IsInline = true;
-                    x.Name = "Score";
-                    x.Value = $"{(string)anime.average_score}/100";
-                });
-
-                eb.AddField(x =>
-                {
-                    x.IsInline = true;
-                    x.Name = "Type";
-                    x.Value = (string)anime.type;
-                });
-
-                eb.AddField(x =>
-                {
-                    x.IsInline = false;
-                    x.Name = "Description";
-                    x.Value = description;
-                });
-
-                await e.Channel.SendMessageAsync("", embed: eb);
+                selector.SetResponse(async (a, b) => await MakeAnimeObject(a, b));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (ex is ArgumentException)
                     await Tools.ReplyAsync(e, "That anime does not exist.");
@@ -154,6 +127,64 @@ namespace qtbot.Modules
                     await Tools.ReplyAsync(e, ex.Message);
             }
         };
+
+        public static async Task MakeAnimeObject(IMessage message, object obj)
+        {
+            var anime = obj as Models.AnimeModel;
+            if(anime == null)
+            {
+                await message.Channel.SendMessageAsync($"{message.Author.Mention}: Something went wrong! I'm so sorry :(");
+                return;
+            }
+
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.WithColor(new Color(0, 255, 0))
+            .WithTitle(anime.Title)
+            .WithDescription(anime.Genre)
+            .WithUrl($"https://anilist.co/anime/{anime.Url}")
+            .WithThumbnailUrl(anime.ImageUrl);
+
+            //Add Episodes field
+            eb.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Episodes";
+                x.Value = anime.Episodes;
+            });
+
+            if (!String.IsNullOrEmpty(anime.Duration))
+            {
+                eb.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "Duration";
+                    x.Value = anime.Duration;
+                });
+            }
+
+            eb.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Score";
+                x.Value = anime.Score;
+            });
+
+            eb.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Type";
+                x.Value = anime.Type;
+            });
+
+            eb.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Description";
+                x.Value = anime.Description;
+            });
+
+            await message.Channel.SendMessageAsync("", embed: eb);
+        }
 
         public static async Task<bool> AuthorizeAnilistAsync()
         {

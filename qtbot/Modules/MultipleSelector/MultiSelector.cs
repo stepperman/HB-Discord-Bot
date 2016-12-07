@@ -8,8 +8,15 @@ using System.Linq;
 
 namespace qtbot.Modules.MultipleSelector
 {
+    //TODO: Allow the page to have multiple pages...
+    //Probably do this by setting a limit of 10, then if theres more it shows an extra dialog
+    //saying that you can switch page with "n" or "p" (next, previous)
+    //use a 2 Dimensional list/array for that.
+    //No need for extra parameters, maybe a pages boolean not needed, just limit the array to 10
+    //When creating a selector.
     class MultiSelectorController
     {
+
         public static List<MultiSelector> selectors = new List<MultiSelector>();
 
         public static async Task ReceivedMessageAsync(Discord.IMessage message)
@@ -17,8 +24,15 @@ namespace qtbot.Modules.MultipleSelector
             MultiSelector selector = selectors.FirstOrDefault(x => x.GetUser().Id == message.Author.Id);
             if (selector == null)
                 return;
+            if(selector.canRespond == false)
+            {
+                selector.canRespond = true;
+                return;
+            }
 
-            selector.ReturnAction()(message);
+            selector.AddDeleteMessage(message);
+            var obj = selector.ReturnAction()(message);
+            await selector.GetResponse()(message, obj);
             selectors.Remove(selector);
         }
 
@@ -51,93 +65,31 @@ namespace qtbot.Modules.MultipleSelector
         /// <param name="msg">The message that was contained when the selector was created.</param>
         /// <param name="t">An array with possible options.</param>
         /// <param name="actionToPerform">The function to perform that returns the correct object</param>
-        public static async Task CreateSelector<T>(IMessage msg, T[] t, Func<IMessage, object> actionToPerform = null)
+        public static async Task<MultiSelector<T>> CreateSelector<T>(IMessage msg, T[] t, Func<IMessage, object> actionToPerform = null)
         {
             if (selectors.Count != 0)
             {
                 //If the user is already in the list, don't do anything for him thank you.
                 if (WaitingOnUser(msg.Author as IGuildUser))
-                    return;
+                    return null;
             }
 
+            MultiSelector<T> x;
             if (actionToPerform == null)
-                selectors.Add(MultiSelector<T>.Create(t, (msg.Author as IGuildUser)));
+                x= MultiSelector<T>.Create(t, (msg.Author as IGuildUser));
             else
-                selectors.Add(MultiSelector<T>.Create(t, (msg.Author as IGuildUser), actionToPerform));
+                x = MultiSelector<T>.Create(t, (msg.Author as IGuildUser), actionToPerform);
+            selectors.Add(x);
 
             string reply = "Please select:\n```";
             for(int i = 0; i < t.Length; i++)
             {
-                reply += "#" + (i+1) + " " + t.ToString() + "\n";
+                reply += "#" + (i+1) + " " + t[i].ToString() + "\n";
             }
             reply += "```";
 
-            await msg.Channel.SendMessageAsync(reply);
-        }
-    }
-
-    class MultiSelector<T> : MultiSelector
-    {
-        public static MultiSelector<T> Create(T[] PossibleReplyValues, IGuildUser Creator)
-        {
-            MultiSelector<T> x = new MultiSelector<T>()
-            {
-                PossibleReplyValues = PossibleReplyValues,
-                Creator = Creator,
-                messagesToDelete = new List<IMessage>(),
-                actionToPerform = (z) =>
-                {
-                    uint o;
-                    bool parsed = uint.TryParse(z.Content, out o);
-
-                    if (o < 0 || o >= PossibleReplyValues.Length || !parsed)
-                        return default(T);
-
-                    return PossibleReplyValues[o-1];
-                }
-            };
+            x.AddDeleteMessage(await msg.Channel.SendMessageAsync(reply));
             return x;
         }
-
-        public static MultiSelector<T> Create(T[] PossibleReplyValues, IGuildUser Creator, Func<IMessage, object> actionToPerform)
-        {
-            var x = new MultiSelector<T>()
-            {
-                PossibleReplyValues = PossibleReplyValues,
-                Creator = Creator,
-                messagesToDelete = new List<IMessage>(),
-                actionToPerform = actionToPerform
-            };
-            return x;
-        }
-
-
-        public T[] PossibleReplyValues;
-        public List<IMessage> messagesToDelete;
-        public IGuildUser Creator;
-        private Func<IMessage, object> actionToPerform;
-
-        public override IGuildUser GetUser()
-        {
-            return Creator;
-        }
-
-        public override Func<IMessage, object> ReturnAction()
-        {
-            return actionToPerform;
-        }
-
-        public override void AddDeleteMessage(IMessage msg)
-        {
-            messagesToDelete.Add(msg);
-        }
-
-    }
-
-    public abstract class MultiSelector
-    {
-        public abstract IGuildUser GetUser();
-        public abstract Func<IMessage, object> ReturnAction();
-        public abstract void AddDeleteMessage(IMessage msg);
     }
 }
