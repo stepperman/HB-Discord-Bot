@@ -122,6 +122,7 @@ namespace qtbot.Modules
                 }
                 var selector = await MultipleSelector.MultiSelectorController.CreateSelector<Models.AnimeModel>
                     (e.Message, l.ToArray());
+                selector.AddDeleteMessage(e.Message);
 
                 selector.SetResponse(async (a, b) => await MakeAnimeObject(a, b));
             }
@@ -148,7 +149,13 @@ namespace qtbot.Modules
             .WithTitle(anime.Title)
             .WithDescription(anime.Genre)
             .WithUrl(anime.Url)
-            .WithThumbnailUrl(anime.ImageUrl);
+            .WithThumbnailUrl(anime.ImageUrl)
+            .WithAuthor(x=>
+            {
+                var author = message.Author as IGuildUser;
+                x.Name = author.Nickname == null ? author.Username : author.Nickname;
+                x.IconUrl = author.AvatarUrl;
+            });
 
             //Add Episodes field
             eb.AddField(x =>
