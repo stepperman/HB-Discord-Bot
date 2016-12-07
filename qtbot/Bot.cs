@@ -34,8 +34,6 @@ namespace qtbot
             Bot.Client.Disconnected += BotTools.ChatEventActions.DisconnectedAsync;
 
 
-
-
             _commands.CommandError += async (s, e) =>
             {
                 if (e.Command.Text == "ayy")

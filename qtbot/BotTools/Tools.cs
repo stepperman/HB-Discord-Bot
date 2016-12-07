@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using System.IO;
 using qtbot.CommandPlugin;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace qtbot.BotTools
 {

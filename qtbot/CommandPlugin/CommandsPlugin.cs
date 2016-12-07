@@ -50,7 +50,8 @@ namespace qtbot.CommandPlugin
                         return;
                 }
 
-                if (!CommandParser.ParseArgs(msg, out var args))
+                CommandPart[] args;
+                if (!CommandParser.ParseArgs(msg, out args))
                     return;
 
                 try
