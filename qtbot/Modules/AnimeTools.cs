@@ -86,11 +86,7 @@ namespace qtbot.Modules
                 var response = await wc.GetStringAsync();
                 dynamic json = JsonConvert.DeserializeObject(response);
 
-                if(json.Count == 1)
-                {
-                    await MakeAnimeObject(e.Message, json[0]);
-                    return;
-                }
+                
 
                 List<Models.AnimeModel> l = new List<Models.AnimeModel>();
                 for (int i = 0; i < 10; i++)
@@ -120,6 +116,13 @@ namespace qtbot.Modules
                         Type = (string)anime.type
                     });
                 }
+
+                if (l.Count == 1)
+                {
+                    await MakeAnimeObject(e.Message, l[0]);
+                    return;
+                }
+
                 var selector = await MultipleSelector.MultiSelectorController.CreateSelector<Models.AnimeModel>
                     (e.Message, l.ToArray());
                 selector.AddDeleteMessage(e.Message);
