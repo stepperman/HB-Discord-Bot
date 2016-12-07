@@ -33,6 +33,16 @@ namespace qtbot.Modules.MultipleSelector
             selector.AddDeleteMessage(message);
             var obj = selector.ReturnAction()(message);
             await selector.GetResponse()(message, obj);
+
+            foreach(var msg in selector.messagesToDelete)
+            {
+                try
+                {
+                    await msg.DeleteAsync();
+                }
+                catch(Exception) { }
+            }
+
             selectors.Remove(selector);
         }
 
