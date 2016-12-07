@@ -86,6 +86,12 @@ namespace qtbot.Modules
                 var response = await wc.GetStringAsync();
                 dynamic json = JsonConvert.DeserializeObject(response);
 
+                if(json.Count == 1)
+                {
+                    await MakeAnimeObject(e.Message, json[0]);
+                    return;
+                }
+
                 List<Models.AnimeModel> l = new List<Models.AnimeModel>();
                 for (int i = 0; i < 10; i++)
                 {
@@ -141,7 +147,7 @@ namespace qtbot.Modules
             eb.WithColor(new Color(0, 255, 0))
             .WithTitle(anime.Title)
             .WithDescription(anime.Genre)
-            .WithUrl($"https://anilist.co/anime/{anime.Url}")
+            .WithUrl(anime.Url)
             .WithThumbnailUrl(anime.ImageUrl);
 
             //Add Episodes field
