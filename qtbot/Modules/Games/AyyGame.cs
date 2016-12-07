@@ -27,7 +27,7 @@ namespace qtbot.Modules.Games
                         string text = "get as long a chain of /ayy 's before it gets broken. High Score: {0} Current Score: {1}";
                         var oldayy = Storage.ayyscore;
 
-                        bool newHighScore = Storage.ayyscore > info.ayyScore;
+                        bool newHighScore = Storage.ayyscore > info.ayyHighScore;
                         info.ayyScore = oldayy;
 
                         Storage.ayyscore = 0;
@@ -35,6 +35,7 @@ namespace qtbot.Modules.Games
 
                         if(newHighScore)
                         {
+                            info.ayyHighScore = oldayy;
                             string date = Tools.CalculateTime((int)(DateTime.Now - info.ayyScoreDateReached).TotalMinutes);
                             info.ayyScoreDateReached = DateTime.Now;
                             await Tools.ReplyAsync(e.Author, e.Channel, $"A new high score has been reached after {date}. The new highscore is {oldayy}", false);

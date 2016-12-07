@@ -17,9 +17,9 @@ namespace qtbot.BotTools
         
         static Tools()
         {
-            if (File.Exists("../LocalFiles/ServerInfo.json"))
+            if (File.Exists("./LocalFiles/ServerInfo.json"))
             {
-                var sw = new StreamReader(File.Open("../LocalFiles/ServerInfo.json", FileMode.Open));
+                var sw = new StreamReader(File.Open("./LocalFiles/ServerInfo.json", FileMode.Open));
 
                 string json = sw.ReadToEnd();
                 Storage.serverInfo = JsonConvert.DeserializeObject<Dictionary<ulong, ServerInfo>>(json);
@@ -239,7 +239,7 @@ namespace qtbot.BotTools
 
         public static void SaveServerInfo()
         {
-            StreamWriter sw = new StreamWriter(File.Open("../LocalFiles/ServerInfo.json", FileMode.OpenOrCreate));
+            StreamWriter sw = new StreamWriter(File.Open("./LocalFiles/ServerInfo.json", FileMode.OpenOrCreate));
             string json = JsonConvert.SerializeObject(Storage.serverInfo);
             sw.Write(json);
             sw.Dispose();
