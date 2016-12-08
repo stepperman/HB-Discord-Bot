@@ -84,7 +84,7 @@ namespace qtbot.Modules
 
                 Console.WriteLine($"{user.Username}'s timeout has been lengthed to {timeToAdd + minutes}");
                 await StopTimeoutAsync(users, userTimeout, user, e.Guild);
-                await StartTimeoutAsync(e, timeToAdd + minutes, user, users);
+                await StartTimeoutAsync(e, timeToAdd + minutes, user,  users);
 
                 return 2; // Time added
             }
@@ -92,15 +92,29 @@ namespace qtbot.Modules
 
         private async Task StartTimeoutAsync(CommandArgs e, double minutes, IGuildUser user, List<TimedoutUser> users)
         {
-            
+            users.Add(new TimedoutUser(user));
             var info = users[users.Count - 1];
-            users.Add(new TimedoutUser(user, new TimeoutInfo(users, info, user, user.Guild), 
-                new TimeSpan(0, (int)minutes / 60, (int)minutes % 60)));
+            info.SetTimer(new TimeSpan(0, (int)minutes, (int)minutes % 60), new TimeoutInfo(users, info, user, user.Guild));
+
+            timedoutUsers[user.GuildId] = new List<TimedoutUser>(users);
             
             info.t = DateTime.Now;
             info.timeoutTime = minutes;
 
-            var role = e.Guild.Roles.FirstOrDefault(x => x.Name == "qttimedout");
+            SocketRole role = null;
+            var roles = e.Guild.Roles.ToArray();
+            for(int i = 0; i < roles.Length; i++)
+            {
+                if(roles[i].Name == "qttimedout")
+                {
+                    role = roles[i];
+                    break;
+                }
+            }
+
+            if (role == null)
+                return;
+
             var userroles = user.RoleIds.ToList();
             userroles.Add(role.Id);
             try
@@ -151,9 +165,18 @@ namespace qtbot.Modules
 
     class TimedoutUser
     {
-        public TimedoutUser(IGuildUser user, object data, TimeSpan time)
+        public TimedoutUser(IGuildUser user)
         {
             this.userID = user.Id;
+        }
+
+        public ulong userID;
+        public double timeoutTime;
+        public Timer timer;
+        public DateTime t;
+
+        public void SetTimer(TimeSpan time, object data)
+        {
             timer = new Timer(async (r) =>
             {
                 var x = (TimeoutInfo)r;
@@ -161,10 +184,5 @@ namespace qtbot.Modules
 
             }, data, new TimeSpan(0), time);
         }
-
-        public ulong userID;
-        public double timeoutTime;
-        public Timer timer;
-        public DateTime t;
     }
 }

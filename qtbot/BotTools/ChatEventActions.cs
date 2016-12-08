@@ -78,6 +78,5 @@ namespace qtbot.BotTools
                 await Task.Delay(30000);
             }
         }
-
     }
 }

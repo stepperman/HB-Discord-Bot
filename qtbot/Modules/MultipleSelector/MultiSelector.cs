@@ -14,38 +14,10 @@ namespace qtbot.Modules.MultipleSelector
     //use a 2 Dimensional list/array for that.
     //No need for extra parameters, maybe a pages boolean not needed, just limit the array to 10
     //When creating a selector.
-    class MultiSelectorController
+    partial class MultiSelectorController
     {
-
         public static List<MultiSelector> selectors = new List<MultiSelector>();
-
-        public static async Task ReceivedMessageAsync(Discord.IMessage message)
-        {
-            MultiSelector selector = selectors.FirstOrDefault(x => x.GetUser().Id == message.Author.Id);
-            if (selector == null)
-                return;
-            if(selector.canRespond == false)
-            {
-                selector.canRespond = true;
-                return;
-            }
-
-            selector.AddDeleteMessage(message);
-            var obj = selector.ReturnAction()(message);
-            await selector.GetResponse()(message, obj);
-
-            foreach(var msg in selector.messagesToDelete)
-            {
-                try
-                {
-                    await msg.DeleteAsync();
-                }
-                catch(Exception) { }
-            }
-
-            selectors.Remove(selector);
-        }
-
+        
         private static bool WaitingOnUser(IGuildUser Author)
         {
             for (int i = 0; i < selectors.Count; i++)
@@ -75,7 +47,7 @@ namespace qtbot.Modules.MultipleSelector
         /// <param name="msg">The message that was contained when the selector was created.</param>
         /// <param name="t">An array with possible options.</param>
         /// <param name="actionToPerform">The function to perform that returns the correct object</param>
-        public static async Task<MultiSelector<T>> CreateSelector<T>(IMessage msg, T[] t, Func<IMessage, object> actionToPerform = null)
+        public static async Task<MultiSelector<T>> CreateSelectorAsync<T>(IMessage msg, T[] t, Func<IMessage, object> actionToPerform = null)
         {
             if (selectors.Count != 0)
             {
@@ -84,21 +56,21 @@ namespace qtbot.Modules.MultipleSelector
                     return null;
             }
 
-            MultiSelector<T> x;
-            if (actionToPerform == null)
-                x= MultiSelector<T>.Create(t, (msg.Author as IGuildUser));
-            else
-                x = MultiSelector<T>.Create(t, (msg.Author as IGuildUser), actionToPerform);
+            var x = MultiSelector<T>.Create(t, (msg.Author as IGuildUser));
             selectors.Add(x);
 
             string reply = "Please select:\n```";
-            for(int i = 0; i < t.Length; i++)
+            for(int i = 0; i < 10; i++)
             {
+                if (t.Length == i)
+                    break;
                 reply += "#" + (i+1) + " " + t[i].ToString() + "\n";
             }
             reply += "```";
 
-            x.AddDeleteMessage(await msg.Channel.SendMessageAsync(reply));
+            var replyMsg = await msg.Channel.SendMessageAsync(reply);
+            x.AddDeleteMessage(replyMsg);
+
             return x;
         }
     }

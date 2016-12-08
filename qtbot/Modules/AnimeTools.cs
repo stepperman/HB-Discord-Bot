@@ -85,9 +85,7 @@ namespace qtbot.Modules
 
                 var response = await wc.GetStringAsync();
                 dynamic json = JsonConvert.DeserializeObject(response);
-
                 
-
                 List<Models.AnimeModel> l = new List<Models.AnimeModel>();
                 for (int i = 0; i < 10; i++)
                 {
@@ -119,15 +117,15 @@ namespace qtbot.Modules
 
                 if (l.Count == 1)
                 {
-                    await MakeAnimeObject(e.Message, l[0]);
+                    await MakeAnimeObjectAsync(e.Message, e.Author as IGuildUser, l[0]);
                     return;
                 }
 
-                var selector = await MultipleSelector.MultiSelectorController.CreateSelector<Models.AnimeModel>
+                var selector = await MultipleSelector.MultiSelectorController.CreateSelectorAsync<Models.AnimeModel>
                     (e.Message, l.ToArray());
                 selector.AddDeleteMessage(e.Message);
 
-                selector.SetResponse(async (a, b) => await MakeAnimeObject(a, b));
+                selector.SetResponse(async (a, b, c) => await MakeAnimeObjectAsync(a, b, c));
             }
             catch (Exception ex)
             {
@@ -138,12 +136,12 @@ namespace qtbot.Modules
             }
         };
 
-        public static async Task MakeAnimeObject(IMessage message, object obj)
+        public static async Task MakeAnimeObjectAsync(IMessage message, IGuildUser author, object obj)
         {
             var anime = obj as Models.AnimeModel;
             if(anime == null)
             {
-                await message.Channel.SendMessageAsync($"{message.Author.Mention}: Something went wrong! I'm so sorry :(");
+                await message.Channel.SendMessageAsync($"{author.Mention}: Something went wrong! I'm so sorry :(");
                 return;
             }
 
@@ -155,7 +153,6 @@ namespace qtbot.Modules
             .WithThumbnailUrl(anime.ImageUrl)
             .WithAuthor(x=>
             {
-                var author = message.Author as IGuildUser;
                 x.Name = author.Nickname == null ? author.Username : author.Nickname;
                 x.IconUrl = author.AvatarUrl;
             });

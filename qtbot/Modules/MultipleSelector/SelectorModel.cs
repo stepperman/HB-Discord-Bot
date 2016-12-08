@@ -25,7 +25,7 @@ namespace qtbot.Modules.MultipleSelector
                 actionToPerform = (z) =>
                 {
                     byte o;
-                    bool parsed = byte.TryParse(z.Content, out o);
+                    bool parsed = byte.TryParse(z, out o);
 
                     if (o <= 0 || o > PossibleReplyValues.Length || !parsed)
                         return default(T);
@@ -36,29 +36,17 @@ namespace qtbot.Modules.MultipleSelector
             return x;
         }
 
-        public static MultiSelector<T> Create(T[] PossibleReplyValues, IGuildUser Creator, Func<IMessage, object> actionToPerform)
-        {
-            var x = new MultiSelector<T>()
-            {
-                PossibleReplyValues = PossibleReplyValues,
-                Creator = Creator,
-                messagesToDelete = new List<IMessage>(),
-                actionToPerform = actionToPerform
-            };
-            return x;
-        }
-
 
         public T[] PossibleReplyValues;
         public IGuildUser Creator;
-        private Func<IMessage, object> actionToPerform;
+        private Func<string, object> actionToPerform;
 
         public override IGuildUser GetUser()
         {
             return Creator;
         }
 
-        public override Func<IMessage, object> ReturnAction()
+        public override Func<string, object> ReturnAction()
         {
             return actionToPerform;
         }
@@ -68,12 +56,12 @@ namespace qtbot.Modules.MultipleSelector
             messagesToDelete.Add(msg);
         }
 
-        public override Func<IMessage, object, Task> GetResponse()
+        public override Func<IMessage, IGuildUser, object, Task> GetResponse()
         {
             return respondAction;
         }
 
-        public override void SetResponse(Func<IMessage, object, Task> respondAction)
+        public override void SetResponse(Func<IMessage, IGuildUser, object, Task> respondAction)
         {
             this.respondAction = respondAction;
         }
@@ -83,13 +71,15 @@ namespace qtbot.Modules.MultipleSelector
     public abstract class MultiSelector
     {
         public abstract IGuildUser GetUser();
-        public abstract Func<IMessage, object> ReturnAction();
+        public abstract Func<string, object> ReturnAction();
         public abstract void AddDeleteMessage(IMessage msg);
-        public abstract Func<IMessage, object, Task> GetResponse();
-        public abstract void SetResponse(Func<IMessage, object, Task> a);
+        public abstract Func<IMessage, IGuildUser, object, Task> GetResponse();
+        public abstract void SetResponse(Func<IMessage, IGuildUser, object, Task> a);
 
-        public Func<IMessage, object, Task> respondAction;
+        public Func<IMessage, IGuildUser, object, Task> respondAction;
         public List<IMessage> messagesToDelete;
         public bool canRespond = false;
+        public byte neededPages = 1;
+        public byte currentPage = 1;
     }
 }
