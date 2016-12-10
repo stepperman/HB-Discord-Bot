@@ -80,6 +80,11 @@ namespace qtbot
         {
             group.DefaultMinPermissions(0);
 
+            group.CreateCommand("al")
+                .WithPurpose("Get anilist user.")
+                .ArgsAtLeast(1)
+                .Do(Modules.AnimeTools.UserFromAnilist);
+
             group.CreateCommand("source")
                 .WithPurpose("Link to my Github baby ;))))")
                 .Do(async e =>

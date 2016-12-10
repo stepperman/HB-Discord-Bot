@@ -63,17 +63,50 @@ namespace qtbot.Modules
             }
         };
 
-        public static Func<CommandArgs, Task> AnimeFromAnilist = async e =>
+        private static async Task<bool> IsAnimeListAuthorized(ITextChannel e)
         {
-            //Check if we need a new authorization token
             if ((DateTime.Now - Storage.anilistAuthorizationCreated).TotalMinutes > 50)
             {
                 if (!await AuthorizeAnilistAsync())
                 {
-                    await Tools.ReplyAsync(e, "Something went wrong authorizing Anilist, please try again?");
-                    return;
+                    await e.SendMessageAsync($"Something went wrong authorizing Anilist, please try again!");
+                    return false;
                 }
             }
+            return true;
+        }
+
+        public static Func<CommandArgs, Task> UserFromAnilist = async e =>
+        {
+            if (!await IsAnimeListAuthorized(e.Channel))
+                return;
+
+            QtNet qtNet = new QtNet("https://anilist.co/api/user/" + e.ArgText);
+            qtNet.AddQuery("access_token", Storage.anilistAccessToken);
+            dynamic response = JsonConvert.DeserializeObject(await qtNet.GetStringAsync());
+
+            EmbedBuilder embed = new EmbedBuilder()
+            .WithTitle((string)response.display_name)
+            .WithDescription((string)response.about)
+            .WithThumbnailUrl((string)response.image_url_lge)
+            .WithColor(new Color(255, 0, 0))
+            .WithUrl($"http://anilist.co/user/{(string)response.display_name}")
+            .AddField(x =>
+            {
+                x.Name = "Anime time";
+                x.Value = Tools.CalculateTime((Int32)response.anime_time);
+                x.IsInline = false;
+            })
+            .AddField(x => x.WithName("Manga chapters").WithIsInline(false).WithValue((string)response.manga_chap));
+
+            await e.Channel.SendMessageAsync("", embed: embed);
+        };
+
+        public static Func<CommandArgs, Task> AnimeFromAnilist = async e =>
+        {
+            //Check if we need a new authorization token
+            if (!await IsAnimeListAuthorized(e.Channel))
+                return;
 
             try
             {
