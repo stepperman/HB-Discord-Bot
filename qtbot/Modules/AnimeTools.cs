@@ -32,29 +32,28 @@ namespace qtbot.Modules
                 var waifu = json["waifu"].ToString();
                 var waifu_prefix = json["waifu_or_husbando"].ToString();
                 var avatar = json["avatar"].ToString();
-                var about = json["about"].ToString();
                 var bio = json["bio"].ToString();
                 var location = json["location"].ToString();
-                var website = json["website"].ToString();
                 var life_spent_on_anime = Int32.Parse(json["life_spent_on_anime"].ToString());
 
                 string lifeAnime = BotTools.Tools.CalculateTime(life_spent_on_anime);
 
-                string messageToPost = $@"
-**User**: {username}
-**Avatar**: {avatar} 
-**{waifu_prefix}**: {waifu}
-**Bio:** {bio}
-**Time wasted on Anime:** {lifeAnime}";
+                EmbedBuilder embed = new EmbedBuilder()
+                .WithColor(new Color(255, 150, 0))
+                .WithTitle(username)
+                .WithDescription(bio)
+                .WithThumbnailUrl(avatar);
 
-                if (!String.IsNullOrWhiteSpace(location))
-                    messageToPost += $"\n**Location:** {location}";
-                if (!String.IsNullOrWhiteSpace(website))
-                    messageToPost += $"\n**Website:** {website}";
+                if (!String.IsNullOrEmpty(waifu))
+                    embed.AddField(x => x.WithIsInline(true).WithName(waifu_prefix).WithValue(waifu));
+                if (!String.IsNullOrEmpty(location))
+                    embed.AddField(x => x.WithIsInline(true).WithName("Location").WithValue(location));
 
-                messageToPost += $"\n{userUrl}";
+                embed.AddField(x => x.WithIsInline(false).WithName("Anime time").WithValue(lifeAnime));
 
-                await BotTools.Tools.ReplyAsync(e, messageToPost);
+
+
+                await e.Channel.SendMessageAsync("", embed: embed);
 
             }
             catch (Exception ex)

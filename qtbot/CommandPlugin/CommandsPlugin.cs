@@ -117,7 +117,7 @@ namespace qtbot.CommandPlugin
                         //try to delete the message if the parameter is set.
                         try
                         {
-                            if (command.IsHidden && (Discord.IPrivateChannel)message.Channel == null)
+                            if (command.IsHidden && (message.Channel as IPrivateChannel) == null)
                                 await message.DeleteAsync();
                         }
                         catch (Exception) { }
