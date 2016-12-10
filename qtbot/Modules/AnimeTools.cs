@@ -42,7 +42,8 @@ namespace qtbot.Modules
                 .WithColor(new Color(255, 150, 0))
                 .WithTitle(username)
                 .WithDescription(bio)
-                .WithThumbnailUrl(avatar);
+                .WithThumbnailUrl(avatar)
+                .WithUrl("https://hummingbird.me/users/" + username.ToLower());
 
                 if (!String.IsNullOrEmpty(waifu))
                     embed.AddField(x => x.WithIsInline(true).WithName(waifu_prefix).WithValue(waifu));
