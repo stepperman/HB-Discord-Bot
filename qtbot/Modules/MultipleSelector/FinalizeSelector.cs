@@ -22,6 +22,8 @@ namespace qtbot.Modules.MultipleSelector
                 return;
             }
 
+            bool cancelled = false;
+
             switch(message.Content.ToLower())
             {
                 case "n":
@@ -32,11 +34,19 @@ namespace qtbot.Modules.MultipleSelector
                     PreviousPage();
                     selector.AddDeleteMessage(message);
                     return;
+                case "exit":
+                    cancelled = true;
+                    await message.Channel.SendMessageAsync($"{message.Author.Mention}: Exited the selector menu.");
+                    break;
+            }
+
+            if(!cancelled)
+            {
+                var obj = selector.ReturnAction()(message.Content);
+                await selector.GetResponse()(message, message.Author as IGuildUser, obj);
             }
 
             selector.AddDeleteMessage(message);
-            var obj = selector.ReturnAction()(message.Content);
-            await selector.GetResponse()(message, message.Author as IGuildUser, obj);
             selectors.Remove(selector); //Delete if completed successfully
 
             foreach (var msg in selector.messagesToDelete)

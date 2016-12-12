@@ -56,22 +56,44 @@ namespace qtbot.Modules.MultipleSelector
                     return null;
             }
 
-            var x = MultiSelector<T>.Create(t, (msg.Author as IGuildUser));
+            List<List<T>> pages = new List<List<T>>();
+
+            int currentPage = 0;
+            //Split it up into pages
+            for(int i = 0; i < t.Length; i++)
+            {
+                if (pages.Count == 0)
+                    pages.Add(new List<T>());
+                else if(pages[currentPage].Count == 10)
+                {
+                    pages.Add(new List<T>());
+                    currentPage++;
+                }
+                pages[currentPage].Add(t[i]);
+            }
+
+            var x = MultiSelector<T>.Create(pages, (msg.Author as IGuildUser));
             selectors.Add(x);
 
+            await SendPage<T>(x, msg.Channel);
+
+            return x;
+        }
+
+        public static async Task SendPage<T>(MultiSelector<T> selector, IMessageChannel channel)
+        {
             string reply = "Please select:\n```";
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < selector.PossibleReplyValues[selector.currentPage].Count; i++)
             {
-                if (t.Length == i)
+                var cool = selector.PossibleReplyValues[selector.currentPage];
+                if (i == cool.Count)
                     break;
-                reply += "#" + (i+1) + " " + t[i].ToString() + "\n";
+                reply += $"#{(i + 1).ToString(),3} {cool[i].ToString()}\n";
             }
             reply += "```";
 
-            var replyMsg = await msg.Channel.SendMessageAsync(reply);
-            x.AddDeleteMessage(replyMsg);
-
-            return x;
+            var replyMsg = await channel.SendMessageAsync(reply);
+            selector.AddDeleteMessage(replyMsg);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace qtbot.Modules.MultipleSelector
         //use a 2 Dimensional list/array for that.
         //No need for extra parameters, maybe a pages boolean not needed, just limit the array to 10
         //When creating a selector.
-        public static MultiSelector<T> Create(T[] PossibleReplyValues, IGuildUser Creator)
+        public static MultiSelector<T> Create(List<List<T>> PossibleReplyValues, IGuildUser Creator)
         {
             MultiSelector<T> x = new MultiSelector<T>()
             {
@@ -27,7 +27,7 @@ namespace qtbot.Modules.MultipleSelector
                     byte o;
                     bool parsed = byte.TryParse(z, out o);
 
-                    if (o <= 0 || o > PossibleReplyValues.Length || !parsed)
+                    if (o <= 0 || o > PossibleReplyValues.Count || !parsed)
                         return default(T);
 
                     return PossibleReplyValues[o - 1];
@@ -37,7 +37,7 @@ namespace qtbot.Modules.MultipleSelector
         }
 
 
-        public T[] PossibleReplyValues;
+        public List<List<T>> PossibleReplyValues;
         public IGuildUser Creator;
         private Func<string, object> actionToPerform;
 
