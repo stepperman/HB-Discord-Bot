@@ -219,9 +219,9 @@ namespace qtbot.BotTools
 
         public static void LogError(string ErrorMessage, string exMessage)
         {
-            StreamWriter sw = new StreamWriter(File.OpenWrite("./errorLog.txt"));
-            sw.WriteLine($"[Error] {ErrorMessage} [Exception] {exMessage}");
-            sw.Dispose();
+            var file = File.CreateText("errors.txt");
+            file.WriteLine($"[Error] {ErrorMessage} [Exception] {exMessage}\n\n");
+            file.Dispose();
         }
 
         #region server info
