@@ -69,7 +69,10 @@ namespace qtbot
 
         private Task Client_Log(LogMessage arg)
         {
-            Console.WriteLine($"[{arg.Severity}] {arg.Source}: {arg.Message}");
+            Console.WriteLine($"[{arg.Severity}] {arg.Source}: {arg.Message}.");
+            var f = System.IO.File.CreateText("errors.txt");
+            f.WriteLine(arg.Exception.Message + "\n\n");
+            f.Dispose();
             return Task.CompletedTask;
         }
 
