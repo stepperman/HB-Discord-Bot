@@ -127,13 +127,14 @@ namespace qtbot.Modules
                     { "key", Uri.EscapeUriString((string)Storage.programInfo.google_key_code) },
                     { "cx", Uri.EscapeUriString((string)Storage.programInfo.google_cx_code) },
                     { "safe", Tools.GetServerInfo(e.Guild.Id).safesearch },
-                    { "num", "10" }
+                    { "num", "30" }
                 };
                 
-
                 try
                 {
                     dynamic json = JsonConvert.DeserializeObject(await qtNet.GetStringAsync());
+                    if(json.items.Count == 0) { await Tools.ReplyAsync(e, "No images have been found :("); return; }
+
                     string link = json.items[Tools.random.Next(0, Enumerable.Count(json.items))].link;
                     await Tools.ReplyAsync(e, link);
                 }
