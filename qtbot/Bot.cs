@@ -47,7 +47,7 @@ namespace qtbot
 
             };
 
-            
+
             await Modules.AnimeTools.AuthorizeAnilistAsync();
             await LoginAsync();
 
@@ -107,11 +107,13 @@ namespace qtbot
                 .Do(qtbot.Modules.Uptime.ShowUptime)
                 .WithPurpose("show the bot's uptime.");
 
+            /*
             group.CreateCommand("bullying")
                 .Do(qtbot.Modules.Fun.Bullying)
                 .WithPurpose("Getting bullied? Make sure to use this command as often as possible!")
                 .MinuteDelay(1);
-
+                Goodbye again, bullying.
+    */
             group.CreateCommand("downtime")
                 .Do(async e =>
                     await BotTools.Tools.ReplyAsync(e, "a **long time.**"));
