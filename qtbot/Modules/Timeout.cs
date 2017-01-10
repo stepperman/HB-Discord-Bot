@@ -9,12 +9,12 @@ using qtbot.CommandPlugin;
 
 namespace qtbot.Modules
 {
-    class Timeout
+    class OldTimeout
     {
         Dictionary<ulong, List<TimedoutUser>> timedoutUsers = new Dictionary<ulong, List<TimedoutUser>>();
         IDiscordClient _client;
 
-        public Timeout(IDiscordClient client)
+        public OldTimeout(IDiscordClient client)
         {
             SetupAsync(client).Wait();
         }
@@ -180,7 +180,7 @@ namespace qtbot.Modules
             timer = new Timer(async (r) =>
             {
                 var x = (TimeoutInfo)r;
-                await Timeout.StopTimeoutAsync(x.users, x.info, x.user, x.guild);
+                await OldTimeout.StopTimeoutAsync(x.users, x.info, x.user, x.guild);
 
             }, data, new TimeSpan(0), time);
         }
