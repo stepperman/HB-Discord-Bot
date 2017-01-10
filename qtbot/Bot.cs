@@ -47,7 +47,7 @@ namespace qtbot
 
             };
 
-            
+
             await Modules.AnimeTools.AuthorizeAnilistAsync();
             await LoginAsync();
 
@@ -69,7 +69,10 @@ namespace qtbot
 
         private Task Client_Log(LogMessage arg)
         {
-            Console.WriteLine($"[{arg.Severity}] {arg.Source}: {arg.Message}");
+            Console.WriteLine($"[{arg.Severity}] {arg.Source}: {arg.Message}.");
+            var f = System.IO.File.CreateText("errors.txt");
+            f.WriteLine(arg.Exception?.ToString() + "\n\n");
+            f.Dispose();
             return Task.CompletedTask;
         }
 
@@ -104,11 +107,13 @@ namespace qtbot
                 .Do(qtbot.Modules.Uptime.ShowUptime)
                 .WithPurpose("show the bot's uptime.");
 
+            /*
             group.CreateCommand("bullying")
                 .Do(qtbot.Modules.Fun.Bullying)
                 .WithPurpose("Getting bullied? Make sure to use this command as often as possible!")
                 .MinuteDelay(1);
-
+                Goodbye again, bullying.
+    */
             group.CreateCommand("downtime")
                 .Do(async e =>
                     await BotTools.Tools.ReplyAsync(e, "a **long time.**"));

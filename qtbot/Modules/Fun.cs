@@ -118,30 +118,36 @@ namespace qtbot.Modules
 
         public static Func<CommandArgs, Task> GetImageFromGoogleDotCom = async e =>
         {
-            QtNetHelper.QtNet qtNet = new QtNetHelper.QtNet("https://www.googleapis.com/customsearch/v1/");
+            QtNetHelper.QtNet qtNet = new QtNetHelper.QtNet("https://www.googleapis.com/customsearch/v1");
 
                 qtNet.Query = new Dictionary<string, string>
                 {
-                    { "searchType", "image" },
-                    { "q", Uri.EscapeUriString(e.ArgText) },
                     { "key", Uri.EscapeUriString((string)Storage.programInfo.google_key_code) },
                     { "cx", Uri.EscapeUriString((string)Storage.programInfo.google_cx_code) },
+                    { "searchType", "image" },
+                    { "q", Uri.EscapeUriString(e.ArgText) },
                     { "safe", Tools.GetServerInfo(e.Guild.Id).safesearch },
                     { "num", "10" }
                 };
                 
-
                 try
                 {
                     dynamic json = JsonConvert.DeserializeObject(await qtNet.GetStringAsync());
+                    if(json.items.Count == 0) { await Tools.ReplyAsync(e, "No images have been found :("); return; }
+
                     string link = json.items[Tools.random.Next(0, Enumerable.Count(json.items))].link;
                     await Tools.ReplyAsync(e, link);
                 }
-                catch (System.Net.WebException ex)
+                catch (Exception ex)
                 {
-                    if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if ((ex as WebException)?.Status == WebExceptionStatus.ProtocolError)
                     {
                         await Tools.ReplyAsync(e, "The daily limit has been reached. Try again tomorrow!");
+                        return;
+                    }
+                    else if ((ex as Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) != null)
+                    {
+                        await Tools.ReplyAsync(e, "I couldn't find any images :(. Don't blame me, blame Google.");
                         return;
                     }
                     else

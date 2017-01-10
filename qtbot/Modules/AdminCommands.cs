@@ -417,22 +417,18 @@ namespace qtbot
 
             roleName = roleName.Trim();
 
-            if (roleName == "supersecretroledontremove")
-            {
-                await RoleSuccessFailAsync(false, e);
-                return;
-            }
-
             //Find the role
             SocketRole roleToGive;
             roleToGive = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower().Contains(roleName.ToLower()));
 
-            if (roleToGive == null)
+            if (roleToGive == null || 
+            roleToGive.Position >= GetHighestRolePosition((e.Author as IGuildUser).RoleIds.ToArray(), e.Guild))
             {
                 await RoleSuccessFailAsync(false, e);
                 return;
             }
-                
+
+            List<IGuildUser> failedUsers = new List<IGuildUser>();
 
             //Give or add role
             switch (Args[0].ToLower())
@@ -442,19 +438,28 @@ namespace qtbot
 
                     foreach (var user in e.Message.MentionedUsers)
                     {
+                        var AuthorPosition = GetHighestRolePosition((e.Author as IGuildUser).RoleIds.ToArray(), e.Guild);
+                        var EditedPosition = GetHighestRolePosition((user as IGuildUser).RoleIds.ToArray(), e.Guild);
+
                         var userRoles = (user as IGuildUser).RoleIds.ToList();
-                        if (userRoles.Any(x => x == roleToGive.Id))
+                        if (userRoles.Any(x => x == roleToGive.Id) ||
+                        AuthorPosition <= EditedPosition)
+                        {
+                            failedUsers.Add(user as IGuildUser);
                             continue;
+                        }
+
 
                         userRoles.Add(roleToGive.Id);
                         try { await (user as IGuildUser).ModifyAsync(z => z.RoleIds = new Optional<ulong[]>(userRoles.ToArray())); }
                         catch (Exception)
                         {
                             Console.WriteLine($"Couldn't edit {user.Username}");
+                            failedUsers.Add(user as IGuildUser);
                         }
                     }
 
-                    await RoleSuccessFailAsync(true, e);
+                    await RoleSuccessFailAsync(true, e, failedUsers.ToArray());
 
                     break;
                 case "remove":
@@ -462,18 +467,26 @@ namespace qtbot
 
                     foreach (var user in e.Message.MentionedUsers)
                     {
+                        var AuthorPosition = GetHighestRolePosition((e.Author as IGuildUser).RoleIds.ToArray(), e.Guild);
+                        var EditedPosition = GetHighestRolePosition((user as IGuildUser).RoleIds.ToArray(), e.Guild);
+
                         var userRoles = (user as IGuildUser).RoleIds.ToList();
-                        if (!userRoles.Any(x => x == roleToGive.Id))
+                        if (!userRoles.Any(x => x == roleToGive.Id) ||
+                        AuthorPosition <= EditedPosition)
+                        {
+                            failedUsers.Add(user as IGuildUser);
                             continue;
+                        }
 
                         userRoles.RemoveAll(x => x == roleToGive.Id);
                         try { await (user as IGuildUser).ModifyAsync(x=>x.RoleIds = new Optional<ulong[]>(userRoles.ToArray())); } catch (Exception)
                         {
                             Console.WriteLine($"Couldn't edit {user.Username}");
+                            failedUsers.Add(user as IGuildUser);
                         }
                     }
 
-                    await RoleSuccessFailAsync(true, e);
+                    await RoleSuccessFailAsync(true, e, failedUsers.ToArray());
 
                     break;
                 default:
@@ -481,12 +494,35 @@ namespace qtbot
             }
         };
 
-        public static async Task RoleSuccessFailAsync(bool success, CommandArgs e)
+        public static int GetHighestRolePosition(ulong[] ids, IGuild guild)
         {
+            int position = -1;
+            foreach(var id in ids)
+            {
+                var role = guild.GetRole(id);
+                if (role.Position > position)
+                    position = role.Position;
+            }
+            return position;
+        }
+
+        public static async Task RoleSuccessFailAsync(bool success, CommandArgs e, IGuildUser[] failedUsers = null)
+        {
+            var message = "";
+
+            if(failedUsers != null && failedUsers.Length > 0)
+            {
+                message += ", ";
+                foreach (var user in failedUsers)
+                {
+                    message += "But I failed to edit " + user.Mention + ".\n"; 
+                }
+            }
+
             if (success)
-                await Tools.ReplyAsync(e, "👌🏽", false);
+                await Tools.ReplyAsync(e, "👌🏽" + message, false);
             else
-                await Tools.ReplyAsync(e, "🖕🏽", false);
+                await Tools.ReplyAsync(e, "🖕🏽" + message, false);
         }
 
         public static Func<CommandArgs, Task> ChangeNickname = async e =>

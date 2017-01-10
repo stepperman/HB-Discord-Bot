@@ -85,9 +85,16 @@ namespace qtbot.Modules
             qtNet.AddQuery("access_token", Storage.anilistAccessToken);
             dynamic response = JsonConvert.DeserializeObject(await qtNet.GetStringAsync());
 
+
+            string description = ((string)response.about).Replace("<br>", "");
+            if (description.Length >= 1024)
+            {
+                description.Substring(0, 1024-5);
+                description += "...";
+            }
             EmbedBuilder embed = new EmbedBuilder()
             .WithTitle((string)response.display_name)
-            .WithDescription((string)response.about)
+            .WithDescription(description)
             .WithThumbnailUrl((string)response.image_url_lge)
             .WithColor(new Color(255, 0, 0))
             .WithUrl($"http://anilist.co/user/{(string)response.display_name}")
