@@ -20,8 +20,8 @@ namespace qtbot
             Bot.Client = client;
             Bot.Client.Log += Client_Log;
 
-            _commands = new CommandsPlugin(Client, (s,a) => BotTools.Tools.GetPerms(a, s as IGuildUser));
-  
+            _commands = new CommandsPlugin(Client, (s, a) => BotTools.Tools.GetPerms(a, s as IGuildUser));
+
             BotTools.Setup.GetProgramInfo();
 
             Bot.Client.UserJoined += BotTools.ChatEventActions.UserJoinedAsync;
@@ -71,5 +71,5 @@ namespace qtbot
             f.Dispose();
             return Task.CompletedTask;
         }
-        }
     }
+}

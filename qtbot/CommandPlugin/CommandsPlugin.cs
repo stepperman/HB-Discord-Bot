@@ -43,13 +43,17 @@ namespace qtbot.CommandPlugin
 
 
                 string msg = message.Content;
+                char cmdChar = 'a';
                 if (UseCommandChar)
                 {
                     if (msg.Length == 0)
                         return;
 
                     if (msg[0] == CommandChar || msg[0] == adminCommandChar)
+                    {
+                        cmdChar = msg[0];
                         msg = msg.Substring(1);
+                    }
                     else
                         return;
                 }
@@ -64,6 +68,11 @@ namespace qtbot.CommandPlugin
                     foreach (var command in Commands)
                     {
                         if (args.Length < command.Parts.Length)
+                            continue;
+
+                        //Check for correct command char
+                        if (!((command.commandType == CommandType.User && cmdChar == CommandChar)
+                        || (command.commandType == CommandType.Admin && cmdChar == adminCommandChar)))
                             continue;
 
                         bool isValid = true;

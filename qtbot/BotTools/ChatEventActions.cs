@@ -56,8 +56,9 @@ namespace qtbot.BotTools
 
             if ((message.Channel as ITextChannel) != null)
                 return;
-
-            if (Tools.GetServerInfo((message.Channel as IGuildChannel).Guild.Id).RegularUsersEnabled)
+            
+            var x = Tools.GetServerInfo((message.Channel as IGuildChannel)?.Guild.Id);
+            if (x != null && x.RegularUsersEnabled)
                 await Modules.RegularUsers.ReceivedMessageAsync(message);
         }
         

@@ -226,14 +226,17 @@ namespace qtbot.BotTools
 
         #region server info
        
-        public static ServerInfo GetServerInfo(ulong serverId)
+        public static ServerInfo GetServerInfo(ulong? serverId)
         {
-            if (Storage.serverInfo.ContainsKey(serverId))
-                return Storage.serverInfo[serverId];
+            if (serverId == null)
+                return null;
+
+            if (Storage.serverInfo.ContainsKey((ulong)serverId))
+                return Storage.serverInfo[(ulong)serverId];
             else
             {
                 var info = new ServerInfo();
-                Storage.serverInfo.Add(serverId, info);
+                Storage.serverInfo.Add((ulong)serverId, info);
                 return info;
             }
         }
