@@ -12,12 +12,14 @@ using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using System.Net.Http;
+using qtbot.CommandPlugin.Attributes;
 
 namespace qtbot.Modules
 {
     static class Fun
     {
-        public static Func<CommandArgs, Task> EightBall = async e =>
+        [Command("8ball"), Description("The magic 8-ball will answer all your doubts and questions! It's not rigged, I swear.")]
+        public static async Task MagicEightBall(CommandArgs e)
         {
             string[] responses = {  "It is certain",
                                         "It is decidedly so",
@@ -48,9 +50,10 @@ namespace qtbot.Modules
                 response = responses[Tools.random.Next(responses.Length)];
 
             await Tools.ReplyAsync(e, response);
-        };
+        }
 
-        public static Func<CommandArgs, Task> Ayy = async e =>
+        [Command("ayy"), Description("ayy it."), Cooldown(2, Cooldowns.Minutes)]
+        public static async Task Ayy(CommandArgs e)
         {
             if (e.Channel.Id == 134267667245694976)
             {
@@ -70,7 +73,7 @@ namespace qtbot.Modules
             }
             else
                 await Tools.ReplyAsync(e, "ayy", false);
-        };
+        }
 
         public static Func<CommandArgs, Task> Bullying = async e =>
         {
@@ -116,7 +119,9 @@ namespace qtbot.Modules
             await Tools.ReplyAsync(e, $"{toMention.Mention} **BULLYING IN PROGESS :: {e.Author.Mention} IS BEING BULLIED** ", false);
         };
 
-        public static Func<CommandArgs, Task> GetImageFromGoogleDotCom = async e =>
+        [Command("img"), Cooldown(1, Cooldowns.Minutes)]
+        [Description("Get an image from the shitty Google Custom Search engine that will be replaced soon.")]
+        public static async Task ImageFromGoogle(CommandArgs e)
         {
             QtNetHelper.QtNet qtNet = new QtNetHelper.QtNet("https://www.googleapis.com/customsearch/v1");
 
@@ -156,9 +161,10 @@ namespace qtbot.Modules
                         return;
                     }
                 }
-        };
+        }
 
-        public static Func<CommandArgs, Task> UrbanDictionary = async e =>
+        [Command("ud"), Description("Find the definition of a word with Urban Dictionary")]
+        public static async Task UrbanDictionary(CommandArgs e)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -175,6 +181,6 @@ namespace qtbot.Modules
                 message += $"Permalink: <http://www.urbandictionary.com/define.php?term={WebUtility.UrlEncode(e.ArgText)}>";
                 await Tools.ReplyAsync(e, message);
             }
-        };
+        }
     }
 }

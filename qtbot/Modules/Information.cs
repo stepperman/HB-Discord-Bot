@@ -5,12 +5,14 @@ using System.IO;
 using System.Threading.Tasks;
 using qtbot.CommandPlugin;
 using Discord;
+using qtbot.CommandPlugin.Attributes;
 
 namespace qtbot.Modules
 {
     class Information
     {
-        public static Func<CommandArgs, Task> Commands = async e =>
+        [Command("commands"), Description("Show this command list.")]
+        public static async Task UserCommands(CommandArgs e)
         {
             string response = $"The character to use a command right now is '{Bot._commands.CommandChar}'.\n";
             foreach (var cmd in Bot._commands.Commands)
@@ -28,7 +30,7 @@ namespace qtbot.Modules
 
             var cnl = await e.Author.CreateDMChannelAsync();
             await cnl.SendMessageAsync(response);
-        };
+        }
 
         public static string[] GetWelcomeReplies()
         {

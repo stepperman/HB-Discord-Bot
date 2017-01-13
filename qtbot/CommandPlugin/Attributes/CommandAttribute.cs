@@ -5,12 +5,12 @@ using System.Text;
 namespace qtbot.CommandPlugin.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    class CommandAttributes : Attribute
+    class CommandAttribute : Attribute
     {
         public CommandType commandType { get; }
         public string commandName { get; }
 
-        public CommandAttributes(string commandName, CommandType commandType = CommandType.User)
+        public CommandAttribute(string commandName, CommandType commandType = CommandType.User)
         {
             this.commandName = commandName;
             this.commandType = commandType;

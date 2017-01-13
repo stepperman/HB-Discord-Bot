@@ -18,7 +18,7 @@ namespace qtbot.CommandPlugin
         public char CommandChar { get; set; }
         public bool UseCommandChar { get; set; }
 
-        public CommandsPlugin(DiscordSocketClient client, Func<SocketUser, ulong, int> getPermissions = null, char commandChar = '/')
+        public CommandsPlugin(DiscordSocketClient client, Func<SocketUser, ulong, int> getPermissions = null, char commandChar = '/', char adminCommandChar = '-')
         {
             _client = client;
             _getPermissions = getPermissions;
@@ -294,9 +294,6 @@ namespace qtbot.CommandPlugin
             };
 
         }
-        public void CreateCommandGroup(string cmd, Action<CommandGroupBuilder> config = null)
-            => config(new CommandGroupBuilder(this, cmd, 0));
-
         public CommandBuilder CreateCommand(string cmd)
         {
             var command = new Command(cmd);
@@ -306,6 +303,7 @@ namespace qtbot.CommandPlugin
 
         public void BuildCommands()
         {
+            Commands = new List<Command>();
             var q = from t in typeof(Bot).GetTypeInfo().Assembly.GetTypes()
                     where t.GetTypeInfo().IsClass
                     select t;
@@ -314,7 +312,7 @@ namespace qtbot.CommandPlugin
             {
                 foreach(var method in x.GetMethods())
                 {
-                    var attribute = method.GetCustomAttribute(typeof(CommandAttributes)) as CommandAttributes;
+                    var attribute = method.GetCustomAttribute(typeof(CommandAttribute)) as CommandAttribute;
                     if(attribute != null)
                     {
                         CommandBuilder command = new CommandBuilder(new Command(attribute.commandName));
@@ -341,6 +339,8 @@ namespace qtbot.CommandPlugin
                         var permA = method.GetCustomAttribute(typeof(PermissionAttribute)) as PermissionAttribute;
                         if (permA != null)
                             command.MinPermissions((int)permA.permission);
+
+                        Commands.Add(command._command);
                     }
                 }
 

@@ -9,6 +9,7 @@ using qtbot.BotTools;
 using System.Net;
 using Newtonsoft.Json;
 using Discord.WebSocket;
+using qtbot.CommandPlugin.Attributes;
 
 namespace qtbot.Modules
 {
@@ -20,7 +21,8 @@ namespace qtbot.Modules
         /// <summary>
         /// Find a YouTube video.
         /// </summary>
-        public static Func<CommandArgs, Task> FindYouTubeVideo = async e =>
+        [Command("yt"), Description("Find a video from YouTube.")]
+        public static async Task GetYTVid(CommandArgs e)
         {
             if (WaitingOnUser(e.AuthorId))
                 return;
@@ -77,7 +79,7 @@ namespace qtbot.Modules
                 {
                     await Tools.ReplyAsync(e, "I couldn't find anything!");
                 }
-        };
+        }
 
         /// <summary>
         /// Check to see if already waiting on the user to send a message..

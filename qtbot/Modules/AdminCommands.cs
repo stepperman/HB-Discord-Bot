@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Discord;
 using qtbot.BotTools;
 using Discord.WebSocket;
+using qtbot.CommandPlugin.Attributes;
 
 namespace qtbot
 {
@@ -392,7 +393,9 @@ namespace qtbot
 
 
         //Role management
-        public static Func<CommandArgs, Task> AddRemoveRole = async e =>
+        [Command("r", CommandType.Admin), Permission(Permission.ADMIN)]
+        [Description("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name`")]
+        public static async Task ManageUserRole(CommandArgs e)
         {
             var Args = e.Message.Content.Split(' ');
             Args = Args.Skip(1).ToArray();
@@ -492,7 +495,7 @@ namespace qtbot
                 default:
                     return;
             }
-        };
+        }
 
         public static int GetHighestRolePosition(ulong[] ids, IGuild guild)
         {
@@ -525,17 +528,23 @@ namespace qtbot
                 await Tools.ReplyAsync(e, "🖕🏽" + message, false);
         }
 
-        public static Func<CommandArgs, Task> ChangeNickname = async e =>
+        [Command("botnick", CommandType.Admin), Permission(Permission.OWNER)]
+        [Description("Change the bot's username. (Owner only)")]
+        public static async Task ChangeBotNickname(CommandArgs e)
         {
             await (e.Guild.CurrentUser as IGuildUser).ModifyAsync(x => x.Nickname = e.ArgText);
-        };
+        }
 
-        public static Func<CommandArgs, Task> ChangeUsername = async e =>
+        [Command("botusername", CommandType.Admin), Permission(Permission.BOTOWNER)]
+        [Description("Change the bot's username. (Bot owner only)")]
+        public static async Task ChangeBotUsername(CommandArgs e)
         {
             await Storage.client.CurrentUser.ModifyAsync(x => x.Username = e.ArgText);
-        };
+        }
 
-        public static Func<CommandArgs, Task> ChangeAvatar = async e =>
+        [Command("avatar", CommandType.Admin), Permission(Permission.ADMIN)]
+        [Description("Change the bot's avatar.")]
+        public static async Task ChangeAvatar(CommandArgs e)
         {
             try
             {
@@ -549,6 +558,6 @@ namespace qtbot
                 await Storage.client.CurrentUser.ModifyAsync(x => x.Avatar = new Discord.API.Image(memoryStream));
             }
             catch (Exception) { }
-        };
+        }
     }
 }

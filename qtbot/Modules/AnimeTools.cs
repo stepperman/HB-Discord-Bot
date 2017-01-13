@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using qtbot.CommandPlugin;
 using qtbot.BotTools;
-using System.Collections.Generic;
+using qtbot.CommandPlugin.Attributes;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net;
-using System.Xml.Linq;
 using QtNetHelper;
 using Discord;
 
@@ -17,52 +14,6 @@ namespace qtbot.Modules
 {
     class AnimeTools
     {
-        public static Func<CommandArgs, Task> GetHBUser = async e =>
-        {
-            var client = new HttpClient();
-            string url = $"http://hummingbird.me/api/v1/users/{e.ArgText}";
-            string userUrl = $"http://hummingbird.me/users/{e.ArgText}";
-
-            try
-            {
-                string response = await client.GetStringAsync(url);
-                var json = JObject.Parse(response);
-
-                var username = json["name"].ToString();
-                var waifu = json["waifu"].ToString();
-                var waifu_prefix = json["waifu_or_husbando"].ToString();
-                var avatar = json["avatar"].ToString();
-                var bio = json["bio"].ToString();
-                var location = json["location"].ToString();
-                var life_spent_on_anime = Int32.Parse(json["life_spent_on_anime"].ToString());
-
-                string lifeAnime = BotTools.Tools.CalculateTime(life_spent_on_anime);
-
-                EmbedBuilder embed = new EmbedBuilder()
-                .WithColor(new Color(255, 150, 0))
-                .WithTitle(username)
-                .WithDescription(bio)
-                .WithThumbnailUrl(avatar)
-                .WithUrl("https://hummingbird.me/users/" + username.ToLower());
-
-                if (!String.IsNullOrEmpty(waifu))
-                    embed.AddField(x => x.WithIsInline(true).WithName(waifu_prefix).WithValue(waifu));
-                if (!String.IsNullOrEmpty(location))
-                    embed.AddField(x => x.WithIsInline(true).WithName("Location").WithValue(location));
-
-                embed.AddField(x => x.WithIsInline(false).WithName("Anime time").WithValue(lifeAnime));
-
-
-
-                await e.Channel.SendMessageAsync("", embed: embed);
-
-            }
-            catch (Exception ex)
-            {
-                await BotTools.Tools.ReplyAsync(e, $"Error: {ex.Message}");
-            }
-        };
-
         private static async Task<bool> IsAnimeListAuthorized(ITextChannel e)
         {
             if ((DateTime.Now - Storage.anilistAuthorizationCreated).TotalMinutes > 50)
@@ -76,7 +27,8 @@ namespace qtbot.Modules
             return true;
         }
 
-        public static Func<CommandArgs, Task> UserFromAnilist = async e =>
+        [Command("al"), Description("Get anilist user.")]
+        public static async Task UserFromAnilist(CommandArgs e)
         {
             if (!await IsAnimeListAuthorized(e.Channel))
                 return;
@@ -107,9 +59,10 @@ namespace qtbot.Modules
             .AddField(x => x.WithName("Manga chapters").WithIsInline(false).WithValue((string)response.manga_chap));
 
             await e.Channel.SendMessageAsync("", embed: embed);
-        };
+        }
 
-        public static Func<CommandArgs, Task> AnimeFromAnilist = async e =>
+        [Command("anime"), Description("Get an anime from anilist")]
+        public static async Task AnimeFromAL(CommandArgs e)
         {
             //Check if we need a new authorization token
             if (!await IsAnimeListAuthorized(e.Channel))
@@ -174,7 +127,7 @@ namespace qtbot.Modules
                 else
                     await Tools.ReplyAsync(e, ex.Message);
             }
-        };
+        }
 
         public static async Task MakeAnimeObjectAsync(IMessage message, IGuildUser author, object obj)
         {

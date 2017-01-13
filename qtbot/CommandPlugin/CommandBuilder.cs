@@ -6,7 +6,7 @@ namespace qtbot.CommandPlugin
 {
     public sealed class CommandBuilder
     {
-        private readonly Command _command;
+        public Command _command;
         public CommandBuilder(Command command)
         {
             _command = command;
@@ -132,7 +132,10 @@ namespace qtbot.CommandPlugin
         {
 
 
-            _command.Handler = func;
+            _command.Handler = (e) =>
+            {
+                return func.Invoke(null, new object[] { e }) as Task ?? Task.Delay(0);
+            };
             return this;
         }
 
