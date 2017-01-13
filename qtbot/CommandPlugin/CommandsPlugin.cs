@@ -363,6 +363,11 @@ namespace qtbot.CommandPlugin
                         if (DescriptionAttribute != null)
                             command.WithPurpose(DescriptionAttribute.Description);
 
+                        //Add hidden attribute
+                        var HiddenAttribute = method.GetCustomAttribute(typeof(HiddenAttribute)) as HiddenAttribute;
+                        if (HiddenAttribute != null)
+                            command.IsHidden();
+
                         //Set permission
                         var permA = method.GetCustomAttribute(typeof(PermissionAttribute)) as PermissionAttribute;
                         if (permA != null)

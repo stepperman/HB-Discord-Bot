@@ -330,7 +330,7 @@ namespace qtbot
         }
 
         [Command("commands", CommandType.Admin),
-            Permission(Permission.ADMIN)]
+            Permission(Permission.ADMIN), Hidden()]
         public static async Task GetAdminCommands(CommandArgs e)
         {
             string response = $"The character to use a command right now is '-'.\n";

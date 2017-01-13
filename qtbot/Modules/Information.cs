@@ -11,7 +11,8 @@ namespace qtbot.Modules
 {
     class Information
     {
-        [Command("commands"), Description("Show this command list.")]
+        [Command("commands"), Hidden(), 
+            Description("Show this command list.")]
         public static async Task UserCommands(CommandArgs e)
         {
             string response = "The character to use a command right now is '/'.\n";
