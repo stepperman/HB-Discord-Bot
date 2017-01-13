@@ -4,6 +4,8 @@ using System.Linq;
 using Discord.API;
 using Discord.WebSocket;
 using Discord;
+using System.Reflection;
+using qtbot.CommandPlugin.Attributes;
 
 namespace qtbot.CommandPlugin
 {
@@ -24,6 +26,8 @@ namespace qtbot.CommandPlugin
 
             CommandChar = commandChar;
             UseCommandChar = true;
+
+            BuildCommands();
 
             var timeValues = new Dictionary<SocketUser, Dictionary<Command, DateTime>>();
 
@@ -298,6 +302,49 @@ namespace qtbot.CommandPlugin
             var command = new Command(cmd);
             Commands.Add(command);
             return new CommandBuilder(command);
+        }
+
+        public void BuildCommands()
+        {
+            var q = from t in typeof(Bot).GetTypeInfo().Assembly.GetTypes()
+                    where t.GetTypeInfo().IsClass
+                    select t;
+
+            q.ToList().ForEach(x =>
+            {
+                foreach(var method in x.GetMethods())
+                {
+                    var attribute = method.GetCustomAttribute(typeof(CommandAttributes)) as CommandAttributes;
+                    if(attribute != null)
+                    {
+                        CommandBuilder command = new CommandBuilder(new Command(attribute.commandName));
+
+                        command.Do(method);
+
+                        //Time Delay
+                        var cooldownA = method.GetCustomAttribute(typeof(CooldownAttribute)) as CooldownAttribute;
+                        if(cooldownA != null)
+                        {
+                            if (cooldownA.Cooldown == Cooldowns.Seconds)
+                                command.SecondDelay(cooldownA.Time);
+                            else if (cooldownA.Cooldown == Cooldowns.Minutes)
+                                command.MinuteDelay(cooldownA.Time);
+                            else if (cooldownA.Cooldown == Cooldowns.Hours)
+                                command.HourDelay(cooldownA.Time);
+                        }
+
+                        //Add Description to command if it exists.
+                        var DescriptionAttribute = method.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute;
+                        if (DescriptionAttribute != null)
+                            command.WithPurpose(DescriptionAttribute.Description);
+
+                        var permA = method.GetCustomAttribute(typeof(PermissionAttribute)) as PermissionAttribute;
+                        if (permA != null)
+                            command.MinPermissions((int)permA.permission);
+                    }
+                }
+
+            });
         }
 
         internal void AddCommand(Command command)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace qtbot.CommandPlugin
@@ -127,8 +128,10 @@ namespace qtbot.CommandPlugin
             return this;
         }
 
-        public CommandBuilder Do(Func<CommandArgs, Task> func)
+        public CommandBuilder Do(MethodInfo func)
         {
+
+
             _command.Handler = func;
             return this;
         }
