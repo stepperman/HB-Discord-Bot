@@ -41,7 +41,7 @@ namespace qtbot.Modules
             string description = ((string)response.about).Replace("<br>", "");
             if (description.Length >= 1024)
             {
-                description.Substring(0, 1024-5);
+                description.Substring(0, 1024 - 5);
                 description += "...";
             }
             EmbedBuilder embed = new EmbedBuilder()
@@ -61,7 +61,8 @@ namespace qtbot.Modules
             await e.Channel.SendMessageAsync("", embed: embed);
         }
 
-        [Command("anime"), Description("Get an anime from anilist")]
+        [Command("anime"), 
+            Description("Get an anime from anilist")]
         public static async Task AnimeFromAL(CommandArgs e)
         {
             //Check if we need a new authorization token
@@ -78,14 +79,14 @@ namespace qtbot.Modules
 
                 var response = await wc.GetStringAsync();
                 dynamic json = JsonConvert.DeserializeObject(response);
-                
+
                 List<Models.AnimeModel> l = new List<Models.AnimeModel>();
                 for (int i = 0; i < 10; i++)
                 {
                     if (i == json.Count)
                         break;
                     dynamic anime = json[i];
-                    
+
 
                     string episodes = anime.total_episodes == 0 ? "unknown" : (string)anime.total_episodes;
                     string duration = String.IsNullOrWhiteSpace(Convert.ToString(anime.duration)) ? "" : $"{(int)anime.duration} minutes";
@@ -132,7 +133,7 @@ namespace qtbot.Modules
         public static async Task MakeAnimeObjectAsync(IMessage message, IGuildUser author, object obj)
         {
             var anime = obj as Models.AnimeModel;
-            if(anime == null)
+            if (anime == null)
             {
                 await message.Channel.SendMessageAsync($"{author.Mention}: Something went wrong! I'm so sorry :(");
                 return;
@@ -140,15 +141,15 @@ namespace qtbot.Modules
 
             EmbedBuilder eb = new EmbedBuilder();
             eb.WithColor(new Color(0, 255, 0))
-            .WithTitle(anime.Title)
-            .WithDescription(anime.Genre)
-            .WithUrl(anime.Url)
-            .WithThumbnailUrl(anime.ImageUrl)
-            .WithAuthor(x=>
-            {
-                x.Name = author.Nickname == null ? author.Username : author.Nickname;
-                x.IconUrl = author.AvatarUrl;
-            });
+                .WithTitle(anime.Title)
+                .WithDescription(anime.Genre)
+                .WithUrl(anime.Url)
+                .WithThumbnailUrl(anime.ImageUrl)
+                .WithAuthor(x =>
+                {
+                    x.Name = author.Nickname == null ? author.Username : author.Nickname;
+                    x.IconUrl = author.AvatarUrl;
+                });
 
             //Add Episodes field
             eb.AddField(x =>
@@ -195,7 +196,7 @@ namespace qtbot.Modules
         public static async Task<bool> AuthorizeAnilistAsync()
         {
             string url = "https://anilist.co/api/auth/access_token";
-            
+
             try
             {
                 QtNet qtNet = new QtNet(url);
@@ -206,14 +207,14 @@ namespace qtbot.Modules
                         { "client_secret", (string)Storage.programInfo.anilist_client_secret }
                     };
 
-                    var response = await qtNet.PostAsync();
-                    string json = await response.Content.ReadAsStringAsync();
-                    dynamic parsedJson = JsonConvert.DeserializeObject(json);
+                var response = await qtNet.PostAsync();
+                string json = await response.Content.ReadAsStringAsync();
+                dynamic parsedJson = JsonConvert.DeserializeObject(json);
 
-                    Storage.anilistAccessToken = (string)parsedJson.access_token;
-                    Storage.anilistAuthorizationCreated = DateTime.Now;
+                Storage.anilistAccessToken = (string)parsedJson.access_token;
+                Storage.anilistAuthorizationCreated = DateTime.Now;
 
-                    return true;
+                return true;
             }
             catch (Exception ex)
             {

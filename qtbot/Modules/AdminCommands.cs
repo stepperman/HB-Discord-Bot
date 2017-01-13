@@ -14,14 +14,18 @@ namespace qtbot
 {
     class AdminCommands
     {
-        public static Func<CommandArgs, Task> DeleteMessages = async e =>
+
+        [Command("delete", CommandType.Admin), 
+            Permission(Permission.ADMIN),
+            Description("Delete messages on this channel. Usage: `-delete {number of messages to delete}`")]
+        public static async Task DeleteMessage(CommandArgs e)
         {
             if ((e.Channel as IPrivateChannel) != null) //get right outta there if it's a private channel.
                 return;
 
             bool silent = e.Args[e.Args.Count() - 1] == "-s";
 
-            if(silent)
+            if (silent)
                 await e.Message.DeleteAsync();
 
             //delete num
@@ -70,7 +74,7 @@ namespace qtbot
                 {
                     if (i != 0)
                         users += ", ";
-                    users += e.Message.MentionedUsers.ToArray()[i].Username; 
+                    users += e.Message.MentionedUsers.ToArray()[i].Username;
                 }
 
                 if (!silent)
@@ -154,82 +158,96 @@ namespace qtbot
                 }
                 catch (Exception) { }
             }
+        }
 
-            
-                
-        };
-
-        public static Func<CommandArgs, Task> AddPermissionToRank = async e =>
+        [Command("permission add", CommandType.Admin), 
+            Permission(Permission.OWNER),
+            Description("Assign a permission to a role. You can use: USER, ADMIN, or OWNER")]
+        public static async Task AddPermissionToRank(CommandArgs e)
         {
-                var serv = Tools.GetServerInfo(e.Guild.Id);
+            var serv = Tools.GetServerInfo(e.Guild.Id);
 
-                string RoleToFind = "";
-                for (int i = 0; i < e.Args.Length - 1; i++)
+            string RoleToFind = "";
+            for (int i = 0; i < e.Args.Length - 1; i++)
+            {
+                RoleToFind += e.Args[i] + " ";
+            }
+            RoleToFind = RoleToFind.Remove(RoleToFind.Length - 1);
+            ulong roleId;
+
+            try
+            {
+                roleId = e.Guild.Roles.FirstOrDefault(x => x.Name.Contains(RoleToFind)).Id;
+                int permId;
+                Permission perm;
+                if(Enum.TryParse(e.Args[e.Args.Length - 1].ToUpper(), out perm))
                 {
-                    RoleToFind += e.Args[i] + " ";
+                    permId = (int)perm;
                 }
-                RoleToFind = RoleToFind.Remove(RoleToFind.Length - 1);
+                else
+                {
+                    await Tools.ReplyAsync(e, $"Unexpected permission `{e.Args[e.Args.Length - 1]}`. Possible values are: USER, ADMIN, or OWNER.");
+                    return;
+                }
+
+                if (serv.roleImportancy.ContainsKey(roleId))
+                {
+                    serv.roleImportancy[roleId] = permId;
+                }
+                else
+                {
+                    serv.roleImportancy.Add(roleId, permId);
+                }
+
+                Tools.SaveServerInfo();
+
+                await Tools.ReplyAsync(e, $"Role {e.Guild.GetRole(roleId).Name}'s permission setting has been set to {permId}.");
+            }
+            catch (Exception ex)
+            {
+                await Tools.ReplyAsync(e, ex.Message);
+            }
+        }
+
+        [Command("permission remove", CommandType.Admin),
+            Permission(Permission.OWNER),
+            Description("Remove the assigned permission from a role.")]
+        public static async Task RemovePermission(CommandArgs e)
+        {
+            var userpermission = Tools.GetPerms(e, e.Author as IGuildUser);
+
+            try
+            {
+                //Parse role
+                string roleName = "";
+                for (int i = 0; i < e.Args.Length; i++)
+                {
+                    roleName += e.Args[i] + " ";
+                }
+                //remove the space
+                roleName = roleName.Remove(roleName.Length - 1);
+
+                //Find the role
                 ulong roleId;
+                roleId = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower().Contains(roleName.ToLower())).Id;
 
-                try
-                {
-                    roleId = e.Guild.Roles.FirstOrDefault(x => x.Name.Contains(RoleToFind)).Id;
-                    int permId;
-                    int.TryParse(e.Args[e.Args.Length - 1], out permId);
 
-                    if (serv.roleImportancy.ContainsKey(roleId))
-                    {
-                        serv.roleImportancy[roleId] = permId;
-                    }
-                    else
-                    {
-                        serv.roleImportancy.Add(roleId, permId);
-                    }
+                var a = Tools.GetServerInfo(e.Guild.Id);
+                a.roleImportancy.Remove(roleId);
+                Tools.SaveServerInfo();
+            }
+            catch (Exception ex)
+            {
+                await Tools.ReplyAsync(e, ex.Message);
+            }
+        }
 
-                    Tools.SaveServerInfo();
-
-                    await Tools.ReplyAsync(e, $"Role {e.Guild.GetRole(roleId).Name}'s permission setting has been set to {permId}.");
-                }
-                catch (Exception ex)
-                {
-                    await Tools.ReplyAsync(e, ex.Message);
-                }
-        };
-
-        public static Func<CommandArgs, Task> RemovePermissionToRank = async e =>
+        [Command("server edit", CommandType.Admin),
+            Permission(Permission.OWNER),
+            Description("Edit the server. Type `-server edit help` for " +
+            "all available commands on this command.")]
+        public static async Task EditServer(CommandArgs e)
         {
-            var userpermission = Tools.GetPerms(e, e.Author as IGuildUser);
-            
-                try
-                {
-                    //Parse role
-                    string roleName = "";
-                    for (int i = 0; i < e.Args.Length; i++)
-                    {
-                        roleName += e.Args[i] + " ";
-                    }
-                    //remove the space
-                    roleName = roleName.Remove(roleName.Length - 1);
-
-                    //Find the role
-                    ulong roleId;
-                    roleId = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower().Contains(roleName.ToLower())).Id;
-
-
-                    var a = Tools.GetServerInfo(e.Guild.Id);
-                    a.roleImportancy.Remove(roleId);
-                    Tools.SaveServerInfo();
-                }
-                catch (Exception ex)
-                {
-                    await Tools.ReplyAsync(e, ex.Message);
-                }
-        };
-
-        public static Func<CommandArgs, Task> EditServer = async e =>
-        {
-            var userpermission = Tools.GetPerms(e, e.Author as IGuildUser);
-            
             //If there's only 1 word and not anymore, return.
             if (e.Args.Length < 1)
                 return;
@@ -245,8 +263,8 @@ namespace qtbot
 
                 args += e.Args[i] + " ";
             }
-            
-            if(args != "")
+
+            if (args != "")
                 args = args.Remove(args.Length - 1);
 
             switch (toEdit)
@@ -272,7 +290,7 @@ namespace qtbot
                     info.safesearch = args;
                     break;
                 case "regular":
-                    await Tools.ReplyAsync(e, "`regularrole` for roles.\n`regulerenabled` (false, true) to enable/disable.\n`regularamount` for amount." + 
+                    await Tools.ReplyAsync(e, "`regularrole` for roles.\n`regulerenabled` (false, true) to enable/disable.\n`regularamount` for amount." +
                         "\n'regulartime' to set the time.");
                     break;
                 case "regularrole":
@@ -309,69 +327,18 @@ namespace qtbot
             }
 
             Tools.SaveServerInfo();
-        };
+        }
 
-        public static Func<CommandArgs, Task> TimeoutUser = async e =>
+        [Command("commands", CommandType.Admin),
+            Permission(Permission.ADMIN)]
+        public static async Task GetAdminCommands(CommandArgs e)
         {
-            if (e.Args.Count() < 2)
+            string response = $"The character to use a command right now is '-'.\n";
+            foreach (var cmd in Bot._commands.Commands)
             {
-                await Tools.ReplyAsync(e, "command was not in the right format. Usage: `-timeout {username(s)} {time in minutes}`");
-                return;
-            }
+                if (cmd.commandType == CommandType.User)
+                    continue;
 
-            if (e.Channel as IPrivateChannel != null)
-                return;
-
-            int userPerms = Tools.GetPerms(e, e.Author as IGuildUser);
-
-            if (userPerms > 0)
-            {
-                var mentionedUsers = e.Message.MentionedUsers.ToArray();
-                
-                if (mentionedUsers[0] == null || mentionedUsers[0].Id == Storage.client.CurrentUser.Id)
-                {
-                    if (mentionedUsers[0] == null)
-                        await Tools.ReplyAsync(e, "Couldn't find user.");
-                    else
-                        await Tools.ReplyAsync(e, "You cant time me out!");
-                    return;
-                }
-
-                string message = "";
-
-                for (int i = 0; i < mentionedUsers.Length; i++)
-                {
-                    int timedUserPerms = Tools.GetPerms(e, mentionedUsers[i] as IGuildUser);
-
-                    if (timedUserPerms >= userPerms)
-                    {
-                        message += $"You cannot timeout {mentionedUsers[i].Mention} because they're better than you are.\n";
-                        continue;
-                    }
-
-                    double minutes = 0;
-                    try
-                    {
-                        minutes = double.Parse(e.Args[e.Args.Length - 1]);
-                    }
-                    catch (FormatException)
-                    {
-                        await Tools.ReplyAsync(e, "command was not in the right format. Usage: `-timeout {username(s)} {time in minutes}`");
-                        return;
-                    }
-
-                    message += await Bot.timeout.Admin_TimeoutUserAsync(e, minutes, mentionedUsers[i] as IGuildUser) + "\n";
-                }
-
-                await Tools.ReplyAsync(e, message);
-            }
-        };
-
-        public static Func<CommandArgs, Task> GetCommands = async e =>
-        {
-            string response = $"The character to use a command right now is '{Bot._admincommands.CommandChar}'.\n";
-            foreach (var cmd in Bot._admincommands.Commands)
-            {
                 if (!String.IsNullOrWhiteSpace(cmd.Purpose))
                 {
                     string command = "";
@@ -389,18 +356,19 @@ namespace qtbot
 
             var c = await e.Author.CreateDMChannelAsync();
             await c.SendMessageAsync(response);
-        };
+        }
 
 
         //Role management
-        [Command("r", CommandType.Admin), Permission(Permission.ADMIN)]
-        [Description("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name`")]
+        [Command("r", CommandType.Admin), 
+            Permission(Permission.ADMIN),
+            Description("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name`")]
         public static async Task ManageUserRole(CommandArgs e)
         {
             var Args = e.Message.Content.Split(' ');
             Args = Args.Skip(1).ToArray();
 
-            if (Args.Length < 3 || e.Message.MentionedUsers.Count() == 0 || 
+            if (Args.Length < 3 || e.Message.MentionedUsers.Count() == 0 ||
             (e.Message.MentionedUsers.Any(x => x.Id == e.Author.Id) && Storage.programInfo.DevID.ToString() != e.Author.Id.ToString()))
             {
                 await RoleSuccessFailAsync(false, e);
@@ -424,7 +392,7 @@ namespace qtbot
             SocketRole roleToGive;
             roleToGive = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower().Contains(roleName.ToLower()));
 
-            if (roleToGive == null || 
+            if (roleToGive == null ||
             roleToGive.Position >= GetHighestRolePosition((e.Author as IGuildUser).RoleIds.ToArray(), e.Guild))
             {
                 await RoleSuccessFailAsync(false, e);
@@ -482,7 +450,8 @@ namespace qtbot
                         }
 
                         userRoles.RemoveAll(x => x == roleToGive.Id);
-                        try { await (user as IGuildUser).ModifyAsync(x=>x.RoleIds = new Optional<ulong[]>(userRoles.ToArray())); } catch (Exception)
+                        try { await (user as IGuildUser).ModifyAsync(x => x.RoleIds = new Optional<ulong[]>(userRoles.ToArray())); }
+                        catch (Exception)
                         {
                             Console.WriteLine($"Couldn't edit {user.Username}");
                             failedUsers.Add(user as IGuildUser);
@@ -500,7 +469,7 @@ namespace qtbot
         public static int GetHighestRolePosition(ulong[] ids, IGuild guild)
         {
             int position = -1;
-            foreach(var id in ids)
+            foreach (var id in ids)
             {
                 var role = guild.GetRole(id);
                 if (role.Position > position)
@@ -513,12 +482,12 @@ namespace qtbot
         {
             var message = "";
 
-            if(failedUsers != null && failedUsers.Length > 0)
+            if (failedUsers != null && failedUsers.Length > 0)
             {
                 message += ", ";
                 foreach (var user in failedUsers)
                 {
-                    message += "But I failed to edit " + user.Mention + ".\n"; 
+                    message += "But I failed to edit " + user.Mention + ".\n";
                 }
             }
 
@@ -528,22 +497,25 @@ namespace qtbot
                 await Tools.ReplyAsync(e, "🖕🏽" + message, false);
         }
 
-        [Command("botnick", CommandType.Admin), Permission(Permission.OWNER)]
-        [Description("Change the bot's username. (Owner only)")]
+        [Command("botnick", CommandType.Admin), 
+            Permission(Permission.OWNER),
+            Description("Change the bot's username. (Owner only)")]
         public static async Task ChangeBotNickname(CommandArgs e)
         {
             await (e.Guild.CurrentUser as IGuildUser).ModifyAsync(x => x.Nickname = e.ArgText);
         }
 
-        [Command("botusername", CommandType.Admin), Permission(Permission.BOTOWNER)]
-        [Description("Change the bot's username. (Bot owner only)")]
+        [Command("botusername", CommandType.Admin), 
+            Permission(Permission.BOTOWNER),
+            Description("Change the bot's username. (Bot owner only)")]
         public static async Task ChangeBotUsername(CommandArgs e)
         {
             await Storage.client.CurrentUser.ModifyAsync(x => x.Username = e.ArgText);
         }
 
-        [Command("avatar", CommandType.Admin), Permission(Permission.ADMIN)]
-        [Description("Change the bot's avatar.")]
+        [Command("avatar", CommandType.Admin), 
+            Permission(Permission.ADMIN),
+            Description("Change the bot's avatar.")]
         public static async Task ChangeAvatar(CommandArgs e)
         {
             try
@@ -553,8 +525,8 @@ namespace qtbot
                 var memoryStream = new System.IO.MemoryStream();
                 imageStream.CopyTo(memoryStream);
                 imageStream.Dispose();
-                memoryStream.Position = 0;                
-                
+                memoryStream.Position = 0;
+
                 await Storage.client.CurrentUser.ModifyAsync(x => x.Avatar = new Discord.API.Image(memoryStream));
             }
             catch (Exception) { }

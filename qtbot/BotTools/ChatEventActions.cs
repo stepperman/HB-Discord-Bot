@@ -70,7 +70,7 @@ namespace qtbot.BotTools
                 {
                     await Storage.client.LoginAsync(TokenType.Bot, Storage.programInfo.token);
                 }
-                catch (Exception exe)
+                catch (Exception)
                 {
                     Tools.LogError("Couldn't connect!", ex.Message);
                 }

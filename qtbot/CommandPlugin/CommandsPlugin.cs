@@ -48,7 +48,7 @@ namespace qtbot.CommandPlugin
                     if (msg.Length == 0)
                         return;
 
-                    if (msg[0] == CommandChar)
+                    if (msg[0] == CommandChar || msg[0] == adminCommandChar)
                         msg = msg.Substring(1);
                     else
                         return;
@@ -110,7 +110,7 @@ namespace qtbot.CommandPlugin
                             argText = msg.Substring(args[command.Parts.Length].Index);
 
                         //Check perms
-                        int permissions = getPermissions != null ? getPermissions(message.Author, ((Discord.ITextChannel)message.Channel).Guild.Id) : 0;
+                        int permissions = getPermissions != null ? getPermissions(message.Author, ((ITextChannel)message.Channel).Guild.Id) : 0;
                         var eventArgs = new CommandArgs(message, command, msg, argText, permissions, newArgs);
                         if (permissions < command.MinPerms)
                         {
@@ -315,9 +315,13 @@ namespace qtbot.CommandPlugin
                     var attribute = method.GetCustomAttribute(typeof(CommandAttribute)) as CommandAttribute;
                     if(attribute != null)
                     {
-                        CommandBuilder command = new CommandBuilder(new Command(attribute.commandName));
-
+                        var command = new CommandBuilder(new Command(attribute.commandName))
+                            .Alias(attribute.commandAlias);
+                        
                         command.Do(method);
+
+                        //Set Command Type
+                        command.cmd.commandType = attribute.commandType;
 
                         //Time Delay
                         var cooldownA = method.GetCustomAttribute(typeof(CooldownAttribute)) as CooldownAttribute;
@@ -331,16 +335,32 @@ namespace qtbot.CommandPlugin
                                 command.HourDelay(cooldownA.Time);
                         }
 
+                        //Args
+                        var argA = method.GetCustomAttribute(typeof(ArgsAttribute)) as ArgsAttribute;
+                        if(argA != null)
+                        {
+                            if (argA.argType == ArgsType.ArgsAtLeast)
+                                command.ArgsAtLeast(argA.First);
+                            else if (argA.argType == ArgsType.ArgsAtMax)
+                                command.ArgsAtMax(argA.First);
+                            else if (argA.argType == ArgsType.ArgsBetween)
+                                command.ArgsBetween(argA.First, argA.Last);
+                            else if (argA.argType == ArgsType.ArgsNone)
+                                command.NoArgs();
+                        }
+
                         //Add Description to command if it exists.
                         var DescriptionAttribute = method.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute;
                         if (DescriptionAttribute != null)
                             command.WithPurpose(DescriptionAttribute.Description);
 
+                        //Set permission
                         var permA = method.GetCustomAttribute(typeof(PermissionAttribute)) as PermissionAttribute;
                         if (permA != null)
                             command.MinPermissions((int)permA.permission);
 
-                        Commands.Add(command._command);
+                        //Add permission to the list.
+                        Commands.Add(command.cmd);
                     }
                 }
 

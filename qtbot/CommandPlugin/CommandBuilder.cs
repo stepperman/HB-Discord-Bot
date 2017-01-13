@@ -6,133 +6,131 @@ namespace qtbot.CommandPlugin
 {
     public sealed class CommandBuilder
     {
-        public Command _command;
+        public Command cmd;
         public CommandBuilder(Command command)
         {
-            _command = command;
+            cmd = command;
         }
 
         public CommandBuilder ArgsEqual(int argCount)
         {
-            _command.MinArgs = argCount;
-            _command.MaxArgs = argCount;
+            cmd.MinArgs = argCount;
+            cmd.MaxArgs = argCount;
             return this;
         }
 
         public CommandBuilder SecondDelay(int seconds)
         {
             if (seconds == 1)
-                _command.timeType = "second";
+                cmd.timeType = "second";
             else
-                _command.timeType = "seconds";
-            _command.CommandDelay = seconds;
-            _command.CommandDelayNotify = seconds;
+                cmd.timeType = "seconds";
+            cmd.CommandDelay = seconds;
+            cmd.CommandDelayNotify = seconds;
             return this;
         }
 
         public CommandBuilder MinuteDelay(int minutes)
         {
             if (minutes == 1)
-                _command.timeType = "minute";
+                cmd.timeType = "minute";
             else
-                _command.timeType = "minutes";
-            _command.CommandDelay = minutes * 60;
-            _command.CommandDelayNotify = minutes;
+                cmd.timeType = "minutes";
+            cmd.CommandDelay = minutes * 60;
+            cmd.CommandDelayNotify = minutes;
             return this;
         }
 
         public CommandBuilder HourDelay(int hours)
         {
             if (hours == 1)
-                _command.timeType = "hour";
+                cmd.timeType = "hour";
             else
-                _command.timeType = "hours";
-            _command.CommandDelay = hours * 60 * 60;
-            _command.CommandDelayNotify = hours;
+                cmd.timeType = "hours";
+            cmd.CommandDelay = hours * 60 * 60;
+            cmd.CommandDelayNotify = hours;
             return this;
         }
 
         public CommandBuilder DayDelay(int days)
         {
             if (days == 1)
-                _command.timeType = "day";
+                cmd.timeType = "day";
             else
-                _command.timeType = "days";
-            _command.CommandDelay = days * 60 * 60 * 24;
-            _command.CommandDelayNotify = days;
+                cmd.timeType = "days";
+            cmd.CommandDelay = days * 60 * 60 * 24;
+            cmd.CommandDelayNotify = days;
             return this;
         }
 
         public CommandBuilder WithPurpose(string purpose)
         {
-            _command.Purpose = purpose;
+            cmd.Purpose = purpose;
             return this;
         }
 
         public CommandBuilder ArgsAtLeast(int minArgCount)
         {
-            _command.MinArgs = minArgCount;
-            _command.MaxArgs = null;
+            cmd.MinArgs = minArgCount;
+            cmd.MaxArgs = null;
             return this;
         }
 
         public CommandBuilder ArgsAtMax(int maxArgCount)
         {
-            _command.MaxArgs = maxArgCount;
-            _command.MinArgs = null;
+            cmd.MaxArgs = maxArgCount;
+            cmd.MinArgs = null;
             return this;
         }
 
         public CommandBuilder ArgsBetween(int minArg, int maxArg)
         {
-            _command.MaxArgs = maxArg;
-            _command.MinArgs = minArg;
+            cmd.MaxArgs = maxArg;
+            cmd.MinArgs = minArg;
             return this;
         }
 
         public CommandBuilder AnyArgs()
         {
-            _command.MaxArgs = null;
-            _command.MinArgs = null;
+            cmd.MaxArgs = null;
+            cmd.MinArgs = null;
             return this;
         }
 
         public CommandBuilder Alias(params string[] alias)
         {
-            _command.SetAliases(alias);
+            cmd.SetAliases(alias);
             return this;
         }
 
         public CommandBuilder NoArgs()
         {
-            _command.MinArgs = 0;
-            _command.MaxArgs = 0;
+            cmd.MinArgs = 0;
+            cmd.MaxArgs = 0;
             return this;
         }
 
         public CommandBuilder MinPermissions(int level)
         {
-            _command.MinPerms = level;
+            cmd.MinPerms = level;
             return this;
         }
 
         public CommandBuilder IsHidden()
         {
-            _command.IsHidden = true;
+            cmd.IsHidden = true;
             return this;
         }
 
         public CommandBuilder DelayIsUnignorable()
         {
-            _command.DelayUnignorable = true;
+            cmd.DelayUnignorable = true;
             return this;
         }
 
         public CommandBuilder Do(MethodInfo func)
         {
-
-
-            _command.Handler = (e) =>
+            cmd.Handler = (e) =>
             {
                 return func.Invoke(null, new object[] { e }) as Task ?? Task.Delay(0);
             };
@@ -141,7 +139,7 @@ namespace qtbot.CommandPlugin
 
         public CommandBuilder OnFail(Func<CommandArgs, Task> func)
         {
-            _command.FailHandler = func;
+            cmd.FailHandler = func;
             return this;
         }
     }

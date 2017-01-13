@@ -277,8 +277,9 @@ namespace qtbot.BotTools
 
         public static int GetPerms(ulong serverId, IGuildUser u)
         {
+            //If it's the bot owner, return the botowner permission.
             if (u.Id == (ulong)Storage.programInfo.DevID)
-                return int.MaxValue;
+                return (int)qtbot.CommandPlugin.Attributes.Permission.BOTOWNER;
 
             if (Storage.serverInfo.ContainsKey(serverId))
             {

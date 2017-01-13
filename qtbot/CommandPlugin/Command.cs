@@ -18,6 +18,7 @@ namespace qtbot.CommandPlugin
         public int? CommandDelayNotify { get; internal set; }
         public int? CommandDelay { get; internal set; }
         public Permission permission { get; internal set; }
+        public CommandType commandType { get; internal set; }
         internal readonly string[] Parts;
         internal Func<CommandArgs, Task> Handler;
         internal Func<CommandArgs, Task> FailHandler;
@@ -26,6 +27,9 @@ namespace qtbot.CommandPlugin
         {
             Text = text;
             Parts = text.ToLowerInvariant().Split(' ');
+            permission = Permission.USER;
+            commandType = CommandType.User;
+
         }
 
         internal void SetAliases(string[] alias)

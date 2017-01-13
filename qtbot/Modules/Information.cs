@@ -14,9 +14,12 @@ namespace qtbot.Modules
         [Command("commands"), Description("Show this command list.")]
         public static async Task UserCommands(CommandArgs e)
         {
-            string response = $"The character to use a command right now is '{Bot._commands.CommandChar}'.\n";
+            string response = "The character to use a command right now is '/'.\n";
             foreach (var cmd in Bot._commands.Commands)
             {
+                if (cmd.commandType != CommandType.User)
+                    continue;
+
                 if (!String.IsNullOrWhiteSpace(cmd.Purpose))
                 {
                     response += $"**{cmd.Parts[0]}** - {cmd.Purpose}";
@@ -51,7 +54,8 @@ namespace qtbot.Modules
                 "I hope you'll enjoy your stay here, {0}. I'll try to improve it.",
                 "Good day {0}! Or night. I don't know timezones, enjoy your stay.",
                 "I think I'm in love with {0}, actually no. I'm pre-programmed to say this, sorry ;(.",
-                "Hi {0}. I used to make mean remarks when someone joined. I promised I changed but it's still hard. You mind if I do it one more time?"
+                "Hi {0}. I used to make mean remarks when someone joined. I promised I changed but it's still hard. You mind if I do it one more time?",
+                "I've never felt so good in my life! {0} has joined!!"
             };
 
             return reply;
