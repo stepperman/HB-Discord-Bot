@@ -9,6 +9,9 @@
     <EmbeddedResource Include="**\*.resx" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CoreCompat.System.Drawing">
+      <Version>1.0.0-beta006</Version>
+    </PackageReference>
     <PackageReference Include="Discord.Net">
       <Version>1.0.0-beta2-00499</Version>
     </PackageReference>

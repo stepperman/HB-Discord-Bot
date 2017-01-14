@@ -13,6 +13,7 @@ using Discord.WebSocket;
 using Newtonsoft.Json;
 using System.Net.Http;
 using qtbot.CommandPlugin.Attributes;
+using System.Drawing;
 
 namespace qtbot.Modules
 {
@@ -74,50 +75,6 @@ namespace qtbot.Modules
             else
                 await Tools.ReplyAsync(e, "ayy", false);
         }
-
-        public static Func<CommandArgs, Task> Bullying = async e =>
-        {
-            var Admins = new List<SocketUser>();
-            var OnlineAdmins = new List<SocketUser>();
-
-            var info = Tools.GetServerInfo(e.Guild.Id);
-
-            foreach (var importantrole in info.roleImportancy.Keys)
-            {
-                SocketRole role = null;
-                foreach (var rol in e.Guild.Roles)
-                {
-                    if (rol.Id == importantrole)
-                    {
-                        role = rol;
-                        break;
-                    }
-                }
-
-                foreach (var u in e.Guild.Users)
-                {
-                    if (role != null)
-                        if (u.RoleIds.Contains(role.Id))
-                            Admins.Add(u);
-                }
-            }
-
-            foreach (var admin in Admins)
-                if (admin.Status == UserStatus.Online || admin.Status == UserStatus.Invisible ||
-                admin.Status == UserStatus.Idle || admin.Status == UserStatus.AFK)
-                    OnlineAdmins.Add(admin);
-
-            SocketUser toMention = null;
-            if (OnlineAdmins.Count != 0)
-                toMention = OnlineAdmins[Tools.random.Next(OnlineAdmins.Count)];
-            else if (Admins.Count != 0)
-                toMention = Admins[Tools.random.Next(Admins.Count)];
-
-            await e.Channel.SendFileAsync("antibully.jpg");
-            await Tools.ReplyAsync(e, $"{toMention.Mention} **BULLYING IN PROGESS :: {e.Author.Mention} IS BEING BULLIED** ", false);
-            await Task.Delay(300);
-            await Tools.ReplyAsync(e, $"{toMention.Mention} **BULLYING IN PROGESS :: {e.Author.Mention} IS BEING BULLIED** ", false);
-        };
 
         [Command("img"), Cooldown(1, Cooldowns.Minutes)]
         [Description("Get an image from the shitty Google Custom Search engine that will be replaced soon.")]
@@ -181,6 +138,45 @@ namespace qtbot.Modules
                 message += $"Permalink: <http://www.urbandictionary.com/define.php?term={WebUtility.UrlEncode(e.ArgText)}>";
                 await Tools.ReplyAsync(e, message);
             }
+        }
+
+        [Command("fortune"),
+            Description("Grab a fortune cookie and see the message.")]
+        public static async Task FortuneCookie(CommandArgs e)
+        {
+            var tpyingState = e.Channel.EnterTypingState();
+
+            string[] responses;
+            //Get an array of possible responses
+            using (StreamReader sr = new StreamReader(File.OpenRead("LocalFiles/fortunecookie.txt")))
+            {
+                responses = (await sr.ReadToEndAsync()).Split('\n');
+            }
+
+            Bitmap bitmap = new Bitmap("LocalFiles/fortunecookie.png");
+            RectangleF rect = new RectangleF(247, 133, 528 - 247, 210 - 133);
+            Graphics g = Graphics.FromImage(bitmap);
+
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Default;
+
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+
+            g.DrawString(responses[Tools.random.Next(responses.Length)],
+                new Font("Calibri", 20f), Brushes.Black, rect, stringFormat);
+
+            g.Flush();
+
+            var memStream = new MemoryStream();
+            bitmap.Save(memStream, System.Drawing.Imaging.ImageFormat.Png);
+            memStream.Position = 0;
+
+            await e.Channel.SendFileAsync(memStream, "fortune.png", e.Author.Mention);
+
+            tpyingState.Dispose();
         }
     }
 }
