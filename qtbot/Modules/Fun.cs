@@ -174,8 +174,8 @@ namespace qtbot.Modules
             stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
 
-            g.DrawString(responses[Tools.random.Next(1, responses.Length)],
-                new Font("Freestyle Script", fontSize), Brushes.Black, rect, stringFormat);
+            g.DrawString(responses[Tools.random.Next(2, responses.Length)],
+                new Font(responses[1], fontSize), Brushes.Black, rect, stringFormat);
 
             g.Flush();
 
