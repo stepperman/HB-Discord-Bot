@@ -36,6 +36,25 @@ namespace qtbot.Modules
             await cnl.SendMessageAsync(response);
         }
 
+        [Command("source"),
+            Description("Show the bot's source code.")]
+        public static async Task SourceCode(CommandArgs e)
+        {
+            await BotTools.Tools.ReplyAsync(e, "Here is my source code: <https://github.com/stepperman/qtbot>");
+        }
+
+        [Command("lmao")]
+        public static async Task Lmao(CommandArgs e)
+        {
+            await BotTools.Tools.ReplyAsync(e, "https://www.youtube.com/watch?v=HTLZjhHIEdw");
+        }
+
+        [Command("no")]
+        public static async Task No(CommandArgs e)
+        {
+            await BotTools.Tools.ReplyAsync(e, "pignig", false);
+        }
+
         public static string[] GetWelcomeReplies()
         {
             string[] reply =  {
