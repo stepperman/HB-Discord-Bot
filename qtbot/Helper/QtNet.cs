@@ -29,6 +29,7 @@ namespace QtNetHelper
         {
             string url = GetUrl();
             return await _client.GetStringAsync(GetUrl());
+            
         }
 
 

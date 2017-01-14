@@ -19,7 +19,8 @@ namespace qtbot.Modules
 {
     static class Fun
     {
-        [Command("8ball"), Description("The magic 8-ball will answer all your doubts and questions! It's not rigged, I swear.")]
+        [Command("8ball"), 
+            Description("The magic 8-ball will answer all your doubts and questions! It's not rigged, I swear.")]
         public static async Task MagicEightBall(CommandArgs e)
         {
             string[] responses = {  "It is certain",
@@ -53,7 +54,9 @@ namespace qtbot.Modules
             await Tools.ReplyAsync(e, response);
         }
 
-        [Command("ayy"), Description("ayy it."), Cooldown(2, Cooldowns.Minutes)]
+        [Command("ayy"), 
+            Description("ayy it."), 
+            Cooldown(2, Cooldowns.Minutes)]
         public static async Task Ayy(CommandArgs e)
         {
             if (e.Channel.Id == 134267667245694976)
@@ -76,7 +79,8 @@ namespace qtbot.Modules
                 await Tools.ReplyAsync(e, "ayy", false);
         }
 
-        [Command("img"), Cooldown(1, Cooldowns.Minutes)]
+        [Command("shitimg"), 
+            Cooldown(1, Cooldowns.Minutes)]
         [Description("Get an image from the shitty Google Custom Search engine that will be replaced soon.")]
         public static async Task ImageFromGoogle(CommandArgs e)
         {
@@ -119,8 +123,9 @@ namespace qtbot.Modules
                     }
                 }
         }
-
-        [Command("ud"), Description("Find the definition of a word with Urban Dictionary")]
+        
+        [Command("ud"), 
+            Description("Find the definition of a word with Urban Dictionary")]
         public static async Task UrbanDictionary(CommandArgs e)
         {
             using (HttpClient client = new HttpClient())
