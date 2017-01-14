@@ -81,7 +81,6 @@ namespace qtbot.Modules
 
         [Command("shitimg"), 
             Cooldown(1, Cooldowns.Minutes)]
-        [Description("Get an image from the shitty Google Custom Search engine that will be replaced soon.")]
         public static async Task ImageFromGoogle(CommandArgs e)
         {
             QtNetHelper.QtNet qtNet = new QtNetHelper.QtNet("https://www.googleapis.com/customsearch/v1");
