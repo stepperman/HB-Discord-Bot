@@ -147,10 +147,15 @@ namespace qtbot.Modules
             var tpyingState = e.Channel.EnterTypingState();
 
             string[] responses;
+            float fontSize;
             //Get an array of possible responses
             using (StreamReader sr = new StreamReader(File.OpenRead("LocalFiles/fortunecookie.txt")))
             {
-                responses = (await sr.ReadToEndAsync()).Split('\n');
+                var textFile = await sr.ReadToEndAsync();
+                responses = textFile.Split('\n');
+
+                if (!float.TryParse(responses[0], out fontSize))
+                    fontSize = 10f;
             }
 
             Bitmap bitmap = new Bitmap("LocalFiles/fortunecookie.png");
@@ -165,8 +170,8 @@ namespace qtbot.Modules
             stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
 
-            g.DrawString(responses[Tools.random.Next(responses.Length)],
-                new Font("Calibri", 20f), Brushes.Black, rect, stringFormat);
+            g.DrawString(responses[Tools.random.Next(1, responses.Length)],
+                new Font("Calibri", fontSize), Brushes.Black, rect, stringFormat);
 
             g.Flush();
 
