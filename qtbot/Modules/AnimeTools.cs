@@ -27,7 +27,7 @@ namespace qtbot.Modules
             return true;
         }
 
-        [Command("al"), Description("Get anilist user.")]
+        [Command("al"), Description("Get a user from Anilist.")]
         public static async Task UserFromAnilist(CommandArgs e)
         {
             if (!await IsAnimeListAuthorized(e.Channel))
@@ -57,6 +57,41 @@ namespace qtbot.Modules
                 x.IsInline = false;
             })
             .AddField(x => x.WithName("Manga chapters").WithIsInline(false).WithValue((string)response.manga_chap));
+
+            await e.Channel.SendMessageAsync("", embed: embed);
+        }
+
+        [Command("ku"), Description("Get a user from Kitsu.")]
+        public static async Task UserFromKitsu(CommandArgs e)
+        {
+            QtNet qtNet = new QtNet("https://kitsu.io/api/edge/users");
+            qtNet.AddQuery("filter[name]", e.ArgText);
+
+            dynamic response = JsonConvert.DeserializeObject(await qtNet.GetStringAsync());
+
+            if(response.data.Count == 0)
+            {
+                await Tools.ReplyAsync(e, "Could not find user.");
+                return;
+            }
+
+            var user = response.data[0];
+            string name = user.attributes.name;
+            string description = user.attributes.about;
+            string timeSpentOnAnime = Tools.CalculateTime((int)user.attributes.lifeSpentOnAnime);
+
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithTitle(name)
+                .WithDescription(description)
+                .WithThumbnailUrl((string)user.attributes.avatar.medium)
+                .WithColor(new Color(0xEC9614))
+                .WithUrl("https://kitsu.io/users/" + name)
+                .AddField(x =>
+                {
+                    x.Name = "Anime time";
+                    x.Value = timeSpentOnAnime;
+                    x.IsInline = false;
+                });
 
             await e.Channel.SendMessageAsync("", embed: embed);
         }
