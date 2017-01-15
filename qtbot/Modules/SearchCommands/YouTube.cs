@@ -21,7 +21,7 @@ namespace qtbot.Modules
         /// <summary>
         /// Find a YouTube video.
         /// </summary>
-        [Command("yt"), Description("Find a video from YouTube.")]
+        [Command("youtube", alias:"yt"), Description("Find a video from YouTube.")]
         public static async Task GetYTVid(CommandArgs e)
         {
             if (WaitingOnUser(e.AuthorId))

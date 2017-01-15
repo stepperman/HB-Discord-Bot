@@ -61,7 +61,7 @@ namespace qtbot.Modules
             await e.Channel.SendMessageAsync("", embed: embed);
         }
 
-        [Command("anime"), 
+        [Command("anime", CommandType.User),  
             Description("Get an anime from anilist")]
         public static async Task AnimeFromAL(CommandArgs e)
         {

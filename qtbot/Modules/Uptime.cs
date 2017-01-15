@@ -14,7 +14,8 @@ namespace qtbot.Modules
     {
         private static DateTime dateTime = DateTime.Now;
 
-        [Command("uptime"), Description("Show the bot's uptime")]
+        [Command("uptime"), 
+            Description("Show the bot's uptime")]
         public static async Task ShowUptime(CommandArgs e)
         {
             DateTime currentTime = DateTime.Now;

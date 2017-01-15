@@ -15,7 +15,7 @@ namespace qtbot
     class AdminCommands
     {
 
-        [Command("delete", CommandType.Admin), 
+        [Command("delete", CommandType.Admin, "d", "remove"), 
             Permission(Permission.ADMIN),
             Description("Delete messages on this channel. Usage: `-delete {number of messages to delete}`")]
         public static async Task DeleteMessage(CommandArgs e)
@@ -160,7 +160,7 @@ namespace qtbot
             }
         }
 
-        [Command("permission add", CommandType.Admin), 
+        [Command("permission add", CommandType.Admin, "pa"), 
             Permission(Permission.OWNER),
             Description("Assign a permission to a role. You can use: USER, ADMIN, or OWNER")]
         public static async Task AddPermissionToRank(CommandArgs e)
@@ -209,7 +209,7 @@ namespace qtbot
             }
         }
 
-        [Command("permission remove", CommandType.Admin),
+        [Command("permission remove", CommandType.Admin, "pr"),
             Permission(Permission.OWNER),
             Description("Remove the assigned permission from a role.")]
         public static async Task RemovePermission(CommandArgs e)
@@ -242,7 +242,7 @@ namespace qtbot
             }
         }
 
-        [Command("server edit", CommandType.Admin),
+        [Command("server edit", CommandType.Admin, "se"),
             Permission(Permission.OWNER),
             Description("Edit the server. Type `-server edit help` for " +
             "all available commands on this command.")]
@@ -360,7 +360,7 @@ namespace qtbot
 
 
         //Role management
-        [Command("r", CommandType.Admin), 
+        [Command("role", CommandType.Admin, "r"), 
             Permission(Permission.ADMIN),
             Description("Remove or add a role. Usage: `-role add/remove @{user(s)} Role name`")]
         public static async Task ManageUserRole(CommandArgs e)
