@@ -49,7 +49,7 @@ namespace qtbot.Modules
             if (e.ArgText.Length == 0)
                 response = "I can't do anything with empty prompts.";
             else
-                response = responses[Tools.random.Next(responses.Length)];
+                response = responses[RandomNumber.Next(responses.Length)];
 
             await Tools.ReplyAsync(e, response);
         }
@@ -100,7 +100,7 @@ namespace qtbot.Modules
                     dynamic json = JsonConvert.DeserializeObject(await qtNet.GetStringAsync());
                     if(json.items.Count == 0) { await Tools.ReplyAsync(e, "No images have been found :("); return; }
 
-                    string link = json.items[Tools.random.Next(0, Enumerable.Count(json.items))].link;
+                    string link = json.items[RandomNumber.Next(0, Enumerable.Count(json.items))].link;
                     await Tools.ReplyAsync(e, link);
                 }
                 catch (Exception ex)
@@ -174,7 +174,7 @@ namespace qtbot.Modules
             stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
 
-            g.DrawString(responses[Tools.random.Next(2, responses.Length)],
+            g.DrawString(responses[RandomNumber.Next(2, responses.Length)],
                 new Font(responses[1], fontSize), Brushes.Black, rect, stringFormat);
 
             g.Flush();
@@ -187,5 +187,7 @@ namespace qtbot.Modules
 
             tpyingState.Dispose();
         }
+        
+
     }
 }

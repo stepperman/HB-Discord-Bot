@@ -13,9 +13,6 @@ namespace qtbot.BotTools
 {
     static class Tools
     {
-        
-        public static Random random = new Random();
-        
         static Tools()
         {
             if (File.Exists("./LocalFiles/ServerInfo.json"))
