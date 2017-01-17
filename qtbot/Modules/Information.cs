@@ -79,7 +79,7 @@ namespace qtbot.Modules
         {
             //Welcoming people.
             string[] replies = GetWelcomeReplies();
-            string reply = String.Format(replies[BotTools.Tools.random.Next(replies.Length)], u.Mention);
+            string reply = String.Format(replies[RandomNumber.Next(replies.Length)], u.Mention);
             ITextChannel channelToAnswerIn = client.GetChannel(BotTools.Tools.GetServerInfo(ServerID).welcomingChannel) as ITextChannel;
 
             try

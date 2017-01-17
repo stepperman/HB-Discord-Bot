@@ -35,7 +35,7 @@ namespace qtbot.Modules.SearchCommands
             };
 
             var results = GetResults(await net.GetStringAsync());
-            string randomResult = results[Tools.random.Next(results.Length)];
+            string randomResult = results[RandomNumber.Next(results.Length)];
             
             await Tools.ReplyAsync(e, randomResult);
         }
