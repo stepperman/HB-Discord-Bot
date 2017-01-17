@@ -32,3 +32,8 @@ To make anilist commands work, like `/anime` and `/al` you need the `anilist_id`
 
 
 have fun>?
+
+##Fortune Cookie
+
+If you want Fortune Cookie to work, just drop [this](http://i.imgur.com/JwXl4h0.png) image in the LocalFiles folder and call it `fortunecookie.png`  
+Then in there, make a text file called `fortunecookie.txt`. In that text file the first two lines are for the font size and font family. Then just add all the fortunes you want in there.
