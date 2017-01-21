@@ -63,7 +63,7 @@ namespace qtbot.Modules
                     {
                         average += double.Parse(splitString[i]);
                     }
-                    average /= (int)(splitString.Length / 2);
+                    average /= Math.Round((double)(splitString.Length / 2), 2);
 
                     await BotTools.Tools.ReplyAsync(e, $"The average amout of messages in {(int)(splitString.Length / 2)} days is {average}");
                     return;
