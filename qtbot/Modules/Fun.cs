@@ -188,7 +188,7 @@ namespace qtbot.Modules
             tpyingState.Dispose();
         }
         
-        [Command("fingerguns"), Args(ArgsType.ArgsAtLeast)
+        [Command("fingerguns"), Args(ArgsType.ArgsAtLeast),
             Description("You deploy the finger guns of {emotion}. `/fingergun {emotion}`")]
         public static async Task Fingerguns(CommandArgs e) =>
             await e.Channel.SendMessageAsync($"_{e.Author.Mention} fingerguns of {e.ArgText}_");

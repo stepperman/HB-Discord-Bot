@@ -240,7 +240,7 @@ namespace qtbot.BotTools
 
         public static void SaveServerInfo()
         {
-            StreamWriter sw = new StreamWriter(File.Open("./LocalFiles/ServerInfo.json", FileMode.OpenOrCreate));
+            StreamWriter sw = new StreamWriter(File.Open("./LocalFiles/ServerInfo.json", FileMode.Create));
             string json = JsonConvert.SerializeObject(Storage.serverInfo);
             sw.Write(json);
             sw.Dispose();
@@ -277,6 +277,9 @@ namespace qtbot.BotTools
 
         public static int GetPerms(ulong serverId, IGuildUser u)
         {
+            if (u == null)
+                return 0;
+
             //If it's the bot owner, return the botowner permission.
             if (u.Id == (ulong)Storage.programInfo.DevID)
                 return (int)qtbot.CommandPlugin.Attributes.Permission.BOTOWNER;

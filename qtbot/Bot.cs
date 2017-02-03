@@ -42,8 +42,7 @@ namespace qtbot
                     await BotTools.Tools.ReplyAsync(e, $"Error: {ex.Message}.");
 
             };
-
-
+            
             await Modules.AnimeTools.AuthorizeAnilistAsync();
             await LoginAsync();
 

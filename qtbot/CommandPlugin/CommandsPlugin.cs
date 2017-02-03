@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Discord;
 using System.Reflection;
 using qtbot.CommandPlugin.Attributes;
+using System.Threading.Tasks;
 
 namespace qtbot.CommandPlugin
 {
@@ -283,7 +284,9 @@ namespace qtbot.CommandPlugin
                         {
                             var task = command.Handler(eventArgs);
                             if (task != null)
-                                await task;
+                            {
+                                Task.Run(() => task);
+                            }
                         }
                         catch (Exception ex)
                         {

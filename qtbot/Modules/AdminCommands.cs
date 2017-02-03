@@ -293,36 +293,18 @@ namespace qtbot
                     await Tools.ReplyAsync(e, "`regularrole` for roles.\n`regulerenabled` (false, true) to enable/disable.\n`regularamount` for amount." +
                         "\n'regulartime' to set the time.");
                     break;
-                case "regularrole":
-                    var regrole = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower().Contains(args.ToLower()));
-                    info.RegularUserRoleId = regrole.Id;
-                    await Tools.ReplyAsync(e, $"{regrole.Name} is now the role that regular users will receive");
-                    break;
                 case "regularenabled":
 
                     if (args == "true")
                     {
                         info.RegularUsersEnabled = true;
-                        await Tools.ReplyAsync(e, "Regular User Role is now enabled. Bastard.");
+                        await Tools.ReplyAsync(e, "Experience subsystem enabled.");
                     }
                     else
                     {
                         info.RegularUsersEnabled = false;
-                        await Tools.ReplyAsync(e, "Regular User Role is now disabled. Good.");
+                        await Tools.ReplyAsync(e, "Experience subsystem disabled.");
                     }
-
-                    break;
-                case "regularamount":
-
-                    var amount = int.Parse(args);
-                    info.RegularUserMinMessages = amount;
-
-                    break;
-                case "regulartime":
-
-                    var time = double.Parse(args);
-                    info.RegularUserMinutesPerMessage = time;
-
                     break;
             }
 

@@ -15,8 +15,6 @@ namespace qtbot.BotTools
 
         //Regular User settings
         public bool RegularUsersEnabled = false;
-        public ulong RegularUserRoleId = 0;
-        public int RegularUserMinMessages = 25;
-        public double RegularUserMinutesPerMessage = 5;
+        public int month = -1;
     }
 }

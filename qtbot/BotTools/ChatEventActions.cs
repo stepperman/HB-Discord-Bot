@@ -53,14 +53,10 @@ namespace qtbot.BotTools
             await Modules.Games.AyyGame.GameAsync(message);
             await Modules.YouTube.ReceivedMessageAsync(message);
             await qtbot.Modules.MultipleSelector.MultiSelectorController.ReceivedMessageAsync(message);
-
+            await Experience.ExperienceController.ReceivedMessageAsync(message);
 
             if ((message.Channel as ITextChannel) != null)
                 return;
-            
-            var x = Tools.GetServerInfo((message.Channel as IGuildChannel)?.Guild.Id);
-            if (x != null && x.RegularUsersEnabled)
-                await Modules.RegularUsers.ReceivedMessageAsync(message);
         }
         
         // If the bot has been disconnected, try to reconnect.
