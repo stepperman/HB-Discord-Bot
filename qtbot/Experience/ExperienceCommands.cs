@@ -21,7 +21,6 @@ namespace qtbot.Experience
                 var users = db.Users
                     .OrderByDescending(x => x.DisplayXP)
                     .Where(x => x.ServerID == e.Guild.Id)
-                    .Take(10)
                     .ToList();
 
                 await BotTools.Tools.ReplyAsync(e, await FormatList(users, e.Guild));
@@ -37,7 +36,6 @@ namespace qtbot.Experience
                 var users = db.Users
                     .OrderByDescending(x => x.FullXP)
                     .Where(x => x.ServerID == e.Guild.Id)
-                    .Take(10)
                     .ToList();
 
                 await BotTools.Tools.ReplyAsync(e, await FormatList(users, e.Guild));
@@ -132,7 +130,7 @@ namespace qtbot.Experience
         {
             string msg = $"Leaderboard for {guild.Name}\n```\nRank    |    Name";
 
-            for(int i = 0; i < users.Count; i++)
+            for(int i = 0; i < 10; i++)
             {
                 var serveruser = await guild.GetUserAsync(users[i].UserID);
                 string name = "User not found.";
@@ -142,7 +140,7 @@ namespace qtbot.Experience
                 msg += $"#{i + 1}\t{name}\nMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}";
             }
 
-            return msg + "```";
+            return (msg + "```");
         }
     }
 }
