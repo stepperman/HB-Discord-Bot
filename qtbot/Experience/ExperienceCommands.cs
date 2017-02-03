@@ -38,7 +38,6 @@ namespace qtbot.Experience
                     .ToList();
                 
                 string blah = await FormatList(users, e.Guild);
-                await BotTools.Tools.ReplyAsync(e, blah.Length.ToString());
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             }
         }
@@ -128,7 +127,7 @@ namespace qtbot.Experience
 
         public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild)
         {
-            StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}\n```\nRank  |  Name");
+            StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}\n```\nRank  |  Name\n");
 
             for(int i = 0; i < 10; i++)
             {
