@@ -16,16 +16,14 @@ namespace qtbot.Experience
             Description("Get the monthly top 10 of all users on the current servers.")]
         public static async Task CmdGetTop10(CommandArgs e)
         {
-            using (var db = new ExperienceContext())
-            {
+            var db = new ExperienceContext()
                 var users = db.Users
                     .OrderByDescending(x => x.DisplayXP)
                     .Where(x => x.ServerID == e.Guild.Id)
                     .ToList();
-
                 string blah = await FormatList(users, e.Guild);
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
-            }
+            db.Dispose();
         }
 
         [Command("atop10"),
@@ -130,7 +128,7 @@ namespace qtbot.Experience
 
         public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild)
         {
-            string msg = $"Leaderboard for {guild.Name}\n```\nRank  |  Name";
+            StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}\n```\nRank  |  Name");
 
             for(int i = 0; i < 10; i++)
             {
@@ -139,13 +137,14 @@ namespace qtbot.Experience
 
                 var serveruser = await guild.GetUserAsync(users[i].UserID);
                 string name = "User not found.";
-                if (serveruser == null)
+                if (serveruser != null)
                     name = serveruser.Nickname == null ? serveruser.Username : serveruser.Nickname;
 
-                msg += $"#{i + 1}\t{name}\n\t\tMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}\n";
+                msg.AppendLine($"#{i + 1}\t{name}");
+                msg.AppendLine($"\t\tMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}");
             }
-
-            return (msg + "```");
+            msg.Append("```");
+            return msg.ToString();
         }
     }
 }
