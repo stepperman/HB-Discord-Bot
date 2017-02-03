@@ -23,7 +23,8 @@ namespace qtbot.Experience
                     .Where(x => x.ServerID == e.Guild.Id)
                     .ToList();
 
-                await BotTools.Tools.ReplyAsync(e, await FormatList(users, e.Guild));
+                string blah = await FormatList(users, e.Guild);
+                await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             }
         }
 
@@ -37,9 +38,10 @@ namespace qtbot.Experience
                     .OrderByDescending(x => x.FullXP)
                     .Where(x => x.ServerID == e.Guild.Id)
                     .ToList();
-
-                await BotTools.Tools.ReplyAsync(e, users.Count.ToString());
-                await BotTools.Tools.ReplyAsync(e, await FormatList(users, e.Guild));
+                
+                string blah = await FormatList(users, e.Guild);
+                await BotTools.Tools.ReplyAsync(e, blah.Length.ToString());
+                await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             }
         }
 
@@ -125,7 +127,7 @@ namespace qtbot.Experience
                 await e.Channel.SendMessageAsync("", embed: embed);
             }
         }
-        
+
         public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild)
         {
             string msg = $"Leaderboard for {guild.Name}\n```\nRank  |  Name";
