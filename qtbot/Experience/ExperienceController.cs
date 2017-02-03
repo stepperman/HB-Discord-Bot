@@ -15,7 +15,7 @@ namespace qtbot.Experience
         public const int maxXP = 60;
         public const int XPPerChar = 1;
         public const int RoleUpdateRate = 50;
-        public const double MessageCooldown = 1.5; //in minutes
+        public const double MessageCooldown = 0.3; //in minutes
         
         public static ulong[] IgnoreChannels =
         {
