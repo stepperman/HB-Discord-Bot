@@ -38,6 +38,7 @@ namespace qtbot.Experience
                     .Where(x => x.ServerID == e.Guild.Id)
                     .ToList();
 
+                await BotTools.Tools.ReplyAsync(e, users.Count.ToString());
                 await BotTools.Tools.ReplyAsync(e, await FormatList(users, e.Guild));
             }
         }
@@ -124,20 +125,22 @@ namespace qtbot.Experience
                 await e.Channel.SendMessageAsync("", embed: embed);
             }
         }
-
-        static int tableWidth = 65;
+        
         public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild)
         {
-            string msg = $"Leaderboard for {guild.Name}\n```\nRank    |    Name";
+            string msg = $"Leaderboard for {guild.Name}\n```\nRank  |  Name";
 
             for(int i = 0; i < 10; i++)
             {
+                if (i == users.Count)
+                    break;
+
                 var serveruser = await guild.GetUserAsync(users[i].UserID);
                 string name = "User not found.";
                 if (serveruser == null)
                     name = serveruser.Nickname == null ? serveruser.Username : serveruser.Nickname;
 
-                msg += $"#{i + 1}\t{name}\nMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}";
+                msg += $"#{i + 1}\t{name}\n\t\tMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}\n";
             }
 
             return (msg + "```");
