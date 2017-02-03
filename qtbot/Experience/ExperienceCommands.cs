@@ -21,6 +21,7 @@ namespace qtbot.Experience
                 var users = db.Users
                     .OrderByDescending(x => x.DisplayXP)
                     .Where(x => x.ServerID == e.Guild.Id)
+                    .Take(10)
                     .ToList();
 
                 await BotTools.Tools.ReplyAsync(e, await FormatList(users, e.Guild));
@@ -36,6 +37,7 @@ namespace qtbot.Experience
                 var users = db.Users
                     .OrderByDescending(x => x.FullXP)
                     .Where(x => x.ServerID == e.Guild.Id)
+                    .Take(10)
                     .ToList();
 
                 await BotTools.Tools.ReplyAsync(e, await FormatList(users, e.Guild));
@@ -125,45 +127,22 @@ namespace qtbot.Experience
             }
         }
 
-        static int tableWidth = 77;
+        static int tableWidth = 65;
         public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild)
         {
-            string msg = "```\n" + new string('-', tableWidth) + "\n|";
-
-            int width = (tableWidth - 3) / 3;
-            string row = "|";
-
-            msg += AlignCentre("User", width) + "|" +
-            AlignCentre("Monthly XP", width) + "|" +
-            AlignCentre("Total XP", width) + "|\n";
-
-            msg += new string('-', tableWidth) + "\n";
+            string msg = $"Leaderboard for {guild.Name}\n```\nRank    |    Name";
 
             for(int i = 0; i < users.Count; i++)
             {
-                var usr = await guild.GetUserAsync(users[i].UserID);
+                var serveruser = await guild.GetUserAsync(users[i].UserID);
+                string name = "User not found.";
+                if (serveruser == null)
+                    name = serveruser.Nickname == null ? serveruser.Username : serveruser.Nickname;
 
-                msg += String.Format($"{{0,{width}}} |{{1,{width}}} |{{2,{width}}}|\n", 
-                    $"#{i+1} {usr.Username}", users[i].DisplayXP, users[i].FullXP);
+                msg += $"#{i + 1}\t{name}\nMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}";
             }
 
-            return msg + new string('-', tableWidth) + "```";
-        }
-
-
-
-        static string AlignCentre(string text, int width)
-        {
-            text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;
-
-            if (string.IsNullOrEmpty(text))
-            {
-                return new string(' ', width);
-            }
-            else
-            {
-                return text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
-            }
+            return msg + "```";
         }
     }
 }
