@@ -16,7 +16,7 @@ namespace qtbot.Experience
             Description("Get the monthly top 10 of all users on the current servers.")]
         public static async Task CmdGetTop10(CommandArgs e)
         {
-            var db = new ExperienceContext()
+            var db = new ExperienceContext();
                 var users = db.Users
                     .OrderByDescending(x => x.DisplayXP)
                     .Where(x => x.ServerID == e.Guild.Id)
