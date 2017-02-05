@@ -12,7 +12,7 @@ namespace qtbot.Experience
 {
     class ExperienceCommands
     {
-        [Command("top10"),
+        [Command("top10", alias: "top"),
             Description("Get the monthly top 10 of all users on the current servers.")]
         public static async Task CmdGetTop10(CommandArgs e)
         {
@@ -26,7 +26,7 @@ namespace qtbot.Experience
             db.Dispose();
         }
 
-        [Command("atop10"),
+        [Command("atop10", alias: "atop"),
             Description("Get the top 10 of all time on the current server")]
         public static async Task CmdGetTopTop10(CommandArgs e)
         {
@@ -42,7 +42,7 @@ namespace qtbot.Experience
             }
         }
 
-        [Command("stats"),
+        [Command("stats", alias:"rank"),
             Description("Get your monthly XP, daily XP and XP needed to go to the next level.")]
         public static async Task CmdGetStats(CommandArgs e)
         {
