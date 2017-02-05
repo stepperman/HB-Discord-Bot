@@ -174,8 +174,8 @@ namespace qtbot.Experience
                     name = serveruser.Nickname == null ? serveruser.Username : serveruser.Nickname;
 
 
-                msg.AppendLine($"[{i + 1}]\t⇨ {name}");
-                msg.AppendLine($"\t\tMonthly XP: {users[i].DisplayXP} \tTotal XP: {users[i].DisplayXP}");
+                msg.AppendLine(String.Format("{0,15} {1,15}", $"[{i+1}]", $"⇨ {name}"));
+                msg.Append(String.Format("\t\t{0,20} {1,20}", $"Monthly XP: { users[i].DisplayXP}", $"Total XP: {users[i].DisplayXP}"));
             }
             
              if(userID != null)
@@ -189,7 +189,7 @@ namespace qtbot.Experience
                         break;
                     }
                 }
-                msg.AppendLine("---------------------------------");
+                msg.AppendLine(new string('-', 10));
                 msg.AppendLine("@ Your placement on the server");
                 msg.AppendLine($"Rank: {userPlacing}\tXP: {userID.FullXP}");
             }
