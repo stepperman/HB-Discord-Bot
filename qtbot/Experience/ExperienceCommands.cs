@@ -174,7 +174,7 @@ namespace qtbot.Experience
                     name = serveruser.Nickname == null ? serveruser.Username : serveruser.Nickname;
 
 
-                msg.AppendLine(String.Format("{0,-15} {1,-15}", $"[{i+1}]", $"⇨ {name}"));
+                msg.AppendLine(String.Format("{0,-6} {1,-15}", $"[{i+1}]", $"⇨ {name}"));
                 msg.AppendLine(String.Format("\t\t{0,-20} {1,-20}", $"Monthly XP: { users[i].DisplayXP}", $"Total XP: {users[i].DisplayXP}"));
             }
             
