@@ -51,7 +51,7 @@ namespace qtbot.Experience
         private static int GetPage(string text)
         {
             int page = 0;
-            if (!Int32.TryParse(text, out page))
+            if (!Int32.TryParse(text, out page) || page < 0 || page > 10000000)
                 return 1;
             return page;
         }
@@ -166,7 +166,7 @@ namespace qtbot.Experience
         {
             StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}. Page {page}.\n```Golo\n🏆 Rank | Name\n");
 
-            for(int i = 0; i < 10*page; i++)
+            for(int i = 0+(10*(page-1)); i < 10*page; i++)
             {
                 if (i >= users.Count)
                     break;
@@ -176,7 +176,7 @@ namespace qtbot.Experience
                 
                 if(serveruser == null)
                 {
-                    await guild.DownloadUsersAsync();
+                    try { await guild.DownloadUsersAsync(); } catch(Exception) { }
                     serveruser = await guild.GetUserAsync(users[i].UserID);
                 }
 
