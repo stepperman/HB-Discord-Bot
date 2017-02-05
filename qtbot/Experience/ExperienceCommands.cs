@@ -113,7 +113,7 @@ namespace qtbot.Experience
                 int serverPlacing = -1;
                 for (int i = 0; i < serverList.Count; i++)
                 {
-                    if(serverList[i].UserID == e.Author.Id)
+                    if(serverList[i].UserID == user.UserID)
                     {
                         serverPlacing = i + 1;
                         break;
