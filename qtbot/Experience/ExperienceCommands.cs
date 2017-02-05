@@ -21,7 +21,11 @@ namespace qtbot.Experience
                     .OrderByDescending(x => x.DisplayXP)
                     .Where(x => x.ServerID == e.Guild.Id)
                     .ToList();
-                string blah = await FormatList(users, e.Guild);
+
+            var currentUser = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
+
+            string blah = await FormatList(users, e.Guild, currentUser);
+
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             db.Dispose();
         }
@@ -36,8 +40,10 @@ namespace qtbot.Experience
                     .OrderByDescending(x => x.FullXP)
                     .Where(x => x.ServerID == e.Guild.Id)
                     .ToList();
+
+                var currentUser = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
                 
-                string blah = await FormatList(users, e.Guild);
+                string blah = await FormatList(users, e.Guild, currentUser);
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             }
         }
@@ -52,9 +58,9 @@ namespace qtbot.Experience
                 var taggedUser = e.Message.MentionedUsers.Count > 0;
                 ExperienceUser user;
                 if (taggedUser)
-                    user = db.Users.FirstOrDefault(x => e.Message.MentionedUsers.ToList()[0].Id == x.UserID);
+                    user = db.Users.FirstOrDefault(x => e.Message.MentionedUsers.ToList()[0].Id == x.UserID && x.ServerID == e.Guild.Id);
                 else
-                    user = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id);
+                    user = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
 
                 if(user == null)
                 {
@@ -100,6 +106,27 @@ namespace qtbot.Experience
                     x.IsInline = true;
                 });
 
+                //Get placing on the server
+                var serverList = db.Users.Where(x => x.ServerID == e.Guild.Id)
+                    .OrderByDescending(x => x.DisplayXP)
+                    .ToList();
+                int serverPlacing = -1;
+                for (int i = 0; i < serverList.Count; i++)
+                {
+                    if(serverList[i].UserID == e.Author.Id)
+                    {
+                        serverPlacing = i + 1;
+                        return;
+                    }
+                }
+
+                embed.AddField(x =>
+                {
+                    x.Name = "Rank on server.";
+                    x.IsInline = true;
+                    x.Value = "#" + serverPlacing.ToString();
+                });
+
                 var roles = ExperienceController.ServerRanks
                     .OrderBy(x => x.XP)
                     .Where(x => x.ServerRole == e.Guild.Id).ToList();
@@ -125,9 +152,9 @@ namespace qtbot.Experience
             }
         }
 
-        public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild)
+        public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild, ExperienceUser userID)
         {
-            StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}\n```\nRank  |  Name\n");
+            StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}\n```Golo\n🏆 Rank | Name\n");
 
             for(int i = 0; i < 10; i++)
             {
@@ -147,9 +174,26 @@ namespace qtbot.Experience
                     name = serveruser.Nickname == null ? serveruser.Username : serveruser.Nickname;
 
 
-                msg.AppendLine($"#{i + 1}\t{name}");
-                msg.AppendLine($"\t\tMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}");
+                msg.AppendLine($"[{i + 1}]\t⇨ {name}");
+                msg.AppendLine($"\t\tMonthly XP: {users[i].DisplayXP} \tTotal XP: {users[i].DisplayXP}");
             }
+            
+             if(userID != null)
+            {
+                int userPlacing = 0;
+                for(int i = 0;i<users.Count;i++)
+                {
+                    if (users[i].UserID == userID.UserID)
+                    {
+                        userPlacing = i + 1;
+                        break;
+                    }
+                }
+                msg.AppendLine("---------------------------------");
+                msg.AppendLine("@ Your placement on the server");
+                msg.AppendLine($"Rank: {userPlacing}\tXP: {userID.FullXP}");
+            }
+
             msg.Append("```");
             return msg.ToString();
         }
