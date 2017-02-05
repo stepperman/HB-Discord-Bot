@@ -110,6 +110,7 @@ namespace qtbot.Experience
                 var serverList = db.Users.Where(x => x.ServerID == e.Guild.Id)
                     .OrderByDescending(x => x.DisplayXP)
                     .ToList();
+
                 int serverPlacing = -1;
                 for (int i = 0; i < serverList.Count; i++)
                 {

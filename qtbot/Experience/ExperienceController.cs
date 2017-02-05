@@ -88,6 +88,7 @@ namespace qtbot.Experience
                         try
                         {
                             await serverUser.ModifyAsync(x => x.RoleIds = roles.ToArray());
+                            await AnnounceNewRole(message, dRanks[i].RoleID);
                         }
                         catch(Exception) { }
                     }
@@ -96,6 +97,20 @@ namespace qtbot.Experience
                 db.Users.Update(user); //Update the user and save.
                 await db.SaveChangesAsync();
             }
+        }
+
+        /// <summary>
+        /// Call this to announce it when someone gets a new role.
+        /// </summary>
+        private static async Task AnnounceNewRole(IMessage message, ulong roleID)
+        {
+            var guild = (message.Channel as IGuildChannel)?.Guild;
+            var role = guild?.GetRole(roleID);
+
+            if (role == null)
+                return;
+
+            await message.Channel.SendMessageAsync($"{message.Author.Mention} just ranked up! You've now reached {role.Name}! Congratulations!");
         }
 
         /// <summary>
