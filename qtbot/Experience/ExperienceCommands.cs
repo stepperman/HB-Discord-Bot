@@ -136,8 +136,16 @@ namespace qtbot.Experience
 
                 var serveruser = await guild.GetUserAsync(users[i].UserID);
                 string name = "User not found.";
-                if (serveruser != null)
+                
+                if(serveruser == null)
+                {
+                    await guild.DownloadUsersAsync();
+                    serveruser = await guild.GetUserAsync(users[i].UserID);
+                }
+
+                if(serveruser != null)
                     name = serveruser.Nickname == null ? serveruser.Username : serveruser.Nickname;
+
 
                 msg.AppendLine($"#{i + 1}\t{name}");
                 msg.AppendLine($"\t\tMonthly XP: {users[i].DisplayXP} Total XP: {users[i].DisplayXP}");
