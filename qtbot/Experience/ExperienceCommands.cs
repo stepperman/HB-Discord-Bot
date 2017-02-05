@@ -24,7 +24,7 @@ namespace qtbot.Experience
 
             var currentUser = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
 
-            string blah = await FormatList(users, e.Guild, currentUser, GetPage(e.Message.Content));
+            string blah = await FormatList(users, e.Guild, currentUser, GetPage(e.ArgText));
 
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             db.Dispose();
@@ -43,7 +43,7 @@ namespace qtbot.Experience
 
                 var currentUser = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
                 
-                string blah = await FormatList(users, e.Guild, currentUser, GetPage(e.Message.Content));
+                string blah = await FormatList(users, e.Guild, currentUser, GetPage(e.ArgText));
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             }
         }
@@ -162,13 +162,13 @@ namespace qtbot.Experience
             }
         }
 
-        public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild, ExperienceUser userID, int page = 1)
+        public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild, ExperienceUser userID, int page)
         {
             StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}. Page {page}.\n```Golo\n🏆 Rank | Name\n");
 
             for(int i = 0; i < 10*page; i++)
             {
-                if (i == users.Count)
+                if (i >= users.Count)
                     break;
 
                 var serveruser = await guild.GetUserAsync(users[i].UserID);
