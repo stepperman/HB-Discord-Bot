@@ -110,7 +110,7 @@ namespace qtbot.Experience
             if (role == null)
                 return;
 
-            await message.Channel.SendMessageAsync($"{message.Author.Mention} just ranked up! You've now reached {role.Name}! Congratulations!");
+            await message.Channel.SendMessageAsync($"{message.Author.Mention} just ranked up! You've now reached **{role.Name}**. Congratulations!");
         }
 
         /// <summary>
