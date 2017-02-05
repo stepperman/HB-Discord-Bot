@@ -116,7 +116,7 @@ namespace qtbot.Experience
                     if(serverList[i].UserID == e.Author.Id)
                     {
                         serverPlacing = i + 1;
-                        return;
+                        break;
                     }
                 }
 
