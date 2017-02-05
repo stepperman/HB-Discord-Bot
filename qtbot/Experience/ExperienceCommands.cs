@@ -24,12 +24,12 @@ namespace qtbot.Experience
 
             var currentUser = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
 
-            string blah = await FormatList(users, e.Guild, currentUser);
+            string blah = await FormatList(users, e.Guild, currentUser, GetPage(e.Message.Content));
 
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             db.Dispose();
         }
-
+        
         [Command("atop10", alias: "atop"),
             Description("Get the top 10 of all time on the current server")]
         public static async Task CmdGetTopTop10(CommandArgs e)
@@ -43,10 +43,19 @@ namespace qtbot.Experience
 
                 var currentUser = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
                 
-                string blah = await FormatList(users, e.Guild, currentUser);
+                string blah = await FormatList(users, e.Guild, currentUser, GetPage(e.Message.Content));
                 await BotTools.Tools.ReplyAsync(e, String.IsNullOrEmpty(blah) ? "Couldn't make table" : blah);
             }
         }
+
+        private static int GetPage(string text)
+        {
+            int page = 0;
+            if (!Int32.TryParse(text, out page))
+                return 1;
+            return page;
+        }
+
 
         [Command("stats", alias:"rank"),
             Description("Get your monthly XP, daily XP and XP needed to go to the next level.")]
@@ -153,11 +162,11 @@ namespace qtbot.Experience
             }
         }
 
-        public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild, ExperienceUser userID)
+        public static async Task<string> FormatList(List<ExperienceUser> users, IGuild guild, ExperienceUser userID, int page = 1)
         {
-            StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}\n```Golo\n🏆 Rank | Name\n");
+            StringBuilder msg = new StringBuilder($"Leaderboard for {guild.Name}. Page {page}.\n```Golo\n🏆 Rank | Name\n");
 
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < 10*page; i++)
             {
                 if (i == users.Count)
                     break;
