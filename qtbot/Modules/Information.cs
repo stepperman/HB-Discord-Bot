@@ -23,7 +23,7 @@ namespace qtbot.Modules
 
                 if (!String.IsNullOrWhiteSpace(cmd.Purpose))
                 {
-                    response += $"**{cmd.Parts[0]}** - {cmd.Purpose}";
+                    response += $"**{string.Join(" ", cmd.Parts)}** - {cmd.Purpose}";
 
                     if (cmd.CommandDelay == null)
                         response += "\n";

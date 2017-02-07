@@ -172,7 +172,7 @@ namespace qtbot.Experience
             await e.Channel.SendMessageAsync("", embed: embed);
         }
 
-        [Command("stats exclude", alias:"excludeme"),
+        [Command("excludefromstats"),
             Description("Exclude yourself from stat collection, and from the top list.")]
         public static async Task CmdXPExclude(CommandArgs e)
         {
