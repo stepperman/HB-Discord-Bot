@@ -35,5 +35,6 @@ namespace qtbot.Experience
         public DateTime LastResettedXP { get; set; }
         public int DisplayXP { get; set; }
         public int FullXP { get; set; }
+        public bool Excluded { get; set; }
     }
 }

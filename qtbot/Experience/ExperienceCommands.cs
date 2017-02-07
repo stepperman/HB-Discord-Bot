@@ -55,8 +55,7 @@ namespace qtbot.Experience
                 return 1;
             return page;
         }
-
-
+        
         [Command("stats", alias:"rank"),
             Description("Get your monthly XP, daily XP and XP needed to go to the next level.")]
         public static async Task CmdGetStats(CommandArgs e)
@@ -71,7 +70,7 @@ namespace qtbot.Experience
                 else
                     user = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
 
-                if(user == null)
+                if(user == null || user.Excluded)
                 {
                     if (taggedUser)
                         await Tools.ReplyAsync(e, $"User {e.Message.MentionedUsers.ToList()[0].Username} doesn't have any stats.");
@@ -81,84 +80,112 @@ namespace qtbot.Experience
                     return;
                 }
 
-                EmbedBuilder embed = new EmbedBuilder();
-                var serverUser = await e.Channel.GetUserAsync(user.UserID);
+                await BuildEmbed(e, user, db);
+            }
+        }
 
-                if(serverUser == null)
+        /// <summary>
+        /// Builds the embed and posts it to the channel.
+        /// </summary>
+        public static async Task BuildEmbed(CommandArgs e, ExperienceUser user, ExperienceContext db)
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+            var serverUser = await e.Channel.GetUserAsync(user.UserID);
+
+            if (serverUser == null)
+            {
+                await e.Guild.DownloadUsersAsync();
+                serverUser = await e.Channel.GetUserAsync(user.UserID);
+
+                if (serverUser == null)
                 {
-                    await e.Guild.DownloadUsersAsync();
-                    serverUser = await e.Channel.GetUserAsync(user.UserID);
-
-                    if(serverUser == null)
-                    {
-                        await Tools.ReplyAsync(e, "I couldn't find user with the ID of " + user.UserID + ". Fatal error");
-                        return;
-                    }
+                    await Tools.ReplyAsync(e, "I couldn't find user with the ID of " + user.UserID + ". Fatal error");
+                    return;
                 }
+            }
 
-                embed.WithTitle(serverUser.Nickname == null ? serverUser.Username : serverUser.Nickname)
-                    .WithColor(new Color(80, 80, 180))
-                    .WithCurrentTimestamp()
-                    .WithThumbnailUrl(serverUser.AvatarUrl);
+            embed.WithTitle(serverUser.Nickname == null ? serverUser.Username : serverUser.Nickname)
+                .WithColor(new Color(80, 80, 180))
+                .WithCurrentTimestamp()
+                .WithThumbnailUrl(serverUser.AvatarUrl);
 
-                embed.AddField(x =>
+            embed.AddField(x =>
+            {
+                x.Name = "Current XP";
+                x.Value = user.FullXP.ToString();
+                x.IsInline = true;
+            });
+
+            embed.AddField(x =>
+            {
+                x.Name = "Monthly XP";
+                x.Value = user.DisplayXP.ToString();
+                x.IsInline = true;
+            });
+
+            //Get placing on the server
+            var serverList = db.Users.Where(x => x.ServerID == e.Guild.Id)
+                .OrderByDescending(x => x.DisplayXP)
+                .ToList();
+
+            int serverPlacing = -1;
+            for (int i = 0; i < serverList.Count; i++)
+            {
+                if (serverList[i].UserID == user.UserID)
                 {
-                    x.Name = "Current XP";
-                    x.Value = user.FullXP.ToString();
-                    x.IsInline = true;
-                });
-
-                embed.AddField(x =>
-                {
-                    x.Name = "Monthly XP";
-                    x.Value = user.DisplayXP.ToString();
-                    x.IsInline = true;
-                });
-
-                //Get placing on the server
-                var serverList = db.Users.Where(x => x.ServerID == e.Guild.Id)
-                    .OrderByDescending(x => x.DisplayXP)
-                    .ToList();
-
-                int serverPlacing = -1;
-                for (int i = 0; i < serverList.Count; i++)
-                {
-                    if(serverList[i].UserID == user.UserID)
-                    {
-                        serverPlacing = i + 1;
-                        break;
-                    }
+                    serverPlacing = i + 1;
+                    break;
                 }
+            }
 
-                embed.AddField(x =>
+            embed.AddField(x =>
+            {
+                x.Name = "Rank on server.";
+                x.IsInline = true;
+                x.Value = "#" + serverPlacing.ToString();
+            });
+
+            var roles = ExperienceController.ServerRanks
+                .OrderBy(x => x.XP)
+                .Where(x => x.ServerRole == e.Guild.Id).ToList();
+
+            int xp = 0;
+            for (int i = 0; i < roles.Count; i++)
+            {
+                if (user.FullXP < roles[i].XP)
                 {
-                    x.Name = "Rank on server.";
-                    x.IsInline = true;
-                    x.Value = "#" + serverPlacing.ToString();
-                });
-
-                var roles = ExperienceController.ServerRanks
-                    .OrderBy(x => x.XP)
-                    .Where(x => x.ServerRole == e.Guild.Id).ToList();
-
-                int xp = 0;
-                for(int i = 0; i < roles.Count; i++)
-                {
-                    if(user.FullXP < roles[i].XP)
-                    {
-                        xp = roles[i].XP;
-                        break;
-                    }
+                    xp = roles[i].XP;
+                    break;
                 }
+            }
 
+            if ((xp - user.FullXP) > 0)
+            {
                 embed.AddField(x =>
                 {
                     x.Name = "XP until next rank";
                     x.Value = (xp - user.FullXP).ToString();
                     x.IsInline = true;
                 });
+            }
 
-                await e.Channel.SendMessageAsync("", embed: embed);
+            await e.Channel.SendMessageAsync("", embed: embed);
+        }
+
+        [Command("stats exclude", alias:"excludeme"),
+            Description("Exclude yourself from stat collection, and from the top list.")]
+        public static async Task CmdXPExclude(CommandArgs e)
+        {
+            using (var db = new ExperienceContext())
+            {
+                var user = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && e.Guild.Id == x.ServerID);
+                if(user != null)
+                    user.Excluded = !user.Excluded;
+                db.Users.Update(user);
+                await db.SaveChangesAsync();
+
+                string newSetting = user.Excluded ? "excluded" : "included";
+                await Tools.ReplyAsync(e, $"You are now {newSetting} from stats collection");
             }
         }
 
@@ -170,6 +197,9 @@ namespace qtbot.Experience
             {
                 if (i >= users.Count)
                     break;
+
+                if (users[i].Excluded)
+                    continue;
 
                 var serveruser = await guild.GetUserAsync(users[i].UserID);
                 string name = "User not found.";

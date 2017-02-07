@@ -52,9 +52,9 @@ namespace qtbot.Experience
                     await CreateUser(message, guildChannel, db);
                     return; // return since no messages have to be sent anymore.
                 }
-                
+
                 //If the user has sent a message before the cooldown was up, just return.
-                if ((DateTime.Now - user.LastMessage).TotalMinutes < MessageCooldown)
+                if ((DateTime.Now - user.LastMessage).TotalMinutes < MessageCooldown || user.Excluded)
                     return;
 
                 //Add XP
