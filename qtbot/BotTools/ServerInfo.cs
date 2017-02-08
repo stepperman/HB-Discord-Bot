@@ -18,7 +18,7 @@ namespace qtbot.BotTools
         public bool RegularUsersEnabled = false;
         public int month = -1;
 
-        public List<ulong> IgnoreChannels { get; set; }
-        public List<Rank> ServerRanks { get; set; }
+        public List<ulong> IgnoreChannels = new List<ulong>();
+        public List<Rank> ServerRanks = new List<Rank>();
     }
 }

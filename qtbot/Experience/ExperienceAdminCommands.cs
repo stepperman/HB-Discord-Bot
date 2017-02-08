@@ -125,6 +125,24 @@ namespace qtbot.Experience
             ExperienceController.SetupServer();
         }
 
+        [Command("xp listranks", CommandType.Admin),
+            Description("List all the ranks in the server")]
+        public static async Task CmdListRanks(CommandArgs e)
+        {
+            var roles = ExperienceController.ServerRanks.Where(x => x.ServerRole == e.Guild.Id)
+                .OrderBy(x => x.XP)
+                .ToList();
+
+            StringBuilder s = new StringBuilder();
+            foreach(var role in roles)
+            {
+                var r = e.Guild.GetRole(role.RoleID);
+                s.AppendLine(r.Name);
+            }
+
+            await Tools.ReplyAsync(e, s.ToString());
+        }
+
         [Command("roleinfo", CommandType.Admin),
             Description("Get the info of a role.")]
         public static async Task CmdRoleInfo(CommandArgs e)
