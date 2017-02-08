@@ -42,7 +42,7 @@ namespace qtbot.Experience
         }
 
         [Command("xp addrank", CommandType.Admin),
-            Description("create or edit a rank Usage: `/xp addrank [XP] [role mention, name, or ID]"),
+            Description("create or edit a rank Usage: `/xp addrank [XP] [role mention, name, or ID]`"),
             Args(ArgsType.ArgsAtLeast, 2),
             Permission(Permission.OWNER)]
         public static async Task CmdAddRank(CommandArgs e)
@@ -62,19 +62,24 @@ namespace qtbot.Experience
             else if (ulong.TryParse(e.Args[1], out roleId))   // Find role by ID
                 role = e.Guild.GetRole(roleId);
             else        // Find role by name   
-                role = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower().Contains(e.ArgText.ToLower()));
+                role = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower().Contains(e.Args[1].ToLower()));
 
             if (role == null)
+            {
+                await Tools.ReplyAsync(e, "No role found.");
                 return;
+            }
 
             // If XP is 0 or below, remove the rank instead.
             if(xp<=0)
             {
                 RemoveRank(e.Guild.Id, role.Id);
+                await Tools.ReplyAsync(e, $"Rank {role.Name} has been removed.");
                 return;
             }
 
             AddUpdateRole(e.Guild.Id, role.Id, xp);
+            await Tools.ReplyAsync(e, $"Role {role.Name} added/updated with {xp}");
         }
 
         public static void AddUpdateRole(ulong serverId, ulong roleId, int xp)

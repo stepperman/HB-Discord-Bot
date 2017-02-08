@@ -101,15 +101,25 @@ namespace qtbot.Experience
         {
             IgnoreChannels = new List<ulong>();
             ServerRanks = new List<Rank>();
+
+            if(BotTools.Storage.client == null)
+                return;
+
             foreach(var server in BotTools.Storage.client.Guilds)
             {
                 var serverInfo = BotTools.Tools.GetServerInfo(server.Id);
-                
-                foreach(var rank in serverInfo.ServerRanks)
+
+                foreach (var rank in serverInfo.ServerRanks)
+                {
                     ServerRanks.Add(rank);
+                    Console.WriteLine("Added " + rank.RoleID + ".");
+                }
 
                 foreach(var ignoreChnl in serverInfo.IgnoreChannels)
+                {
                     IgnoreChannels.Add(ignoreChnl);
+                    Console.WriteLine("Ignored " + ignoreChnl);
+                }
             }
 
             experienceSetup = true;
