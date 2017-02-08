@@ -15,7 +15,7 @@ namespace qtbot.Experience
         public const int maxXP = 60;
         public const int XPPerChar = 1;
         public const int RoleUpdateRate = 50;
-        public const double MessageCooldown = 0.3; //in minutes
+        public const double MessageCooldown = 0.7; //in minutes
         
         public static ulong[] IgnoreChannels =
         {
@@ -27,9 +27,9 @@ namespace qtbot.Experience
 
         public static List<Rank> ServerRanks = new List<Rank>
         {
-            new Rank(20000, 277053512305737728, 99333280020566016),  //     Rank tier 1 
-            new Rank(102000, 277053564747120640, 99333280020566016), //     Rank tier 2
-            new Rank(500, 277773089289273346, 99333280020566016) //       User roles
+            new Rank(20000, 277053512305737728, 99333280020566016),     //     Rank tier 1 
+            new Rank(102000, 277053564747120640, 99333280020566016),    //     Rank tier 2
+            new Rank(500, 277773089289273346, 99333280020566016)        //       User roles
         };
 
         public static async Task ReceivedMessageAsync(IMessage message)
