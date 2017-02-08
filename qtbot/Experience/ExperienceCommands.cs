@@ -148,28 +148,37 @@ namespace qtbot.Experience
             var roles = ExperienceController.ServerRanks
                 .OrderBy(x => x.XP)
                 .Where(x => x.ServerRole == e.Guild.Id).ToList();
+            
+            var nextRank = GetNextRank(user, e.Guild);
 
-            int xp = 0;
-            for (int i = 0; i < roles.Count; i++)
+            if (nextRank != null)
             {
-                if (user.FullXP < roles[i].XP)
-                {
-                    xp = roles[i].XP;
-                    break;
-                }
-            }
+                var rankRole = e.Guild.GetRole(nextRank.RoleID);
 
-            if ((xp - user.FullXP) > 0)
-            {
                 embed.AddField(x =>
                 {
-                    x.Name = "XP until next rank";
-                    x.Value = (xp - user.FullXP).ToString();
+                    x.Name = "XP until " + rankRole.Name;
+                    x.Value = (nextRank.XP - user.FullXP).ToString();
                     x.IsInline = true;
                 });
             }
 
             await e.Channel.SendMessageAsync("", embed: embed);
+        }
+
+        public static Rank GetNextRank(ExperienceUser e, IGuild guild)
+        {
+            var ranks = ExperienceController.ServerRanks
+                .Where(x => x.ServerRole == guild.Id)
+                .OrderBy(x => x.XP).ToList();
+            
+            foreach(var rank in ranks)
+            {
+                if (rank.XP > e.FullXP)
+                    return rank;
+            }
+
+            return null;
         }
 
         [Command("excludefromstats"),

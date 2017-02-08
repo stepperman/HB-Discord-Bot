@@ -202,7 +202,7 @@ namespace qtbot.Experience
         }
     }
 
-    struct Rank
+    class Rank
     {
         public int XP { get; set; }
         public ulong RoleID { get; set; }
