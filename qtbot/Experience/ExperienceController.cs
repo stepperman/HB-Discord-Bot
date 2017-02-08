@@ -214,7 +214,7 @@ namespace qtbot.Experience
         /// <param name="xp">The XP required to reach this rank.</param>
         /// <param name="roleId">The ID of the role to give when the user reaches the required amount of XP</param>
         /// <param name="ServerId">The server associated with this role.</param>
-        public Rank(int xp, ulong roleId, ulong ServerId) : this()
+        public Rank(int xp, ulong roleId, ulong ServerId)
         {
             XP = xp;
             RoleID = roleId;
