@@ -280,18 +280,22 @@ namespace qtbot.CommandPlugin
                         //Run Command
                         Console.WriteLine($"[CommandEvent] {message.Author.Username} used command: {String.Join("", eventArgs.Command.Parts)}.");
                         RaiseRanCommand(eventArgs);
-                        try
+
+                        var task = command.Handler(eventArgs);
+                        if (task != null)
                         {
-                            var task = command.Handler(eventArgs);
-                            if (task != null)
+#pragma warning disable CS4014
+                            Task.Run(() =>
                             {
-                                Task.Run(() => task);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            RaiseCommandError(eventArgs, ex);
-                            Console.WriteLine(ex);  
+
+                                try { task.Wait(); }
+                                catch (Exception ex)
+                                {
+                                    RaiseCommandError(eventArgs, ex);
+                                    Console.WriteLine(ex);
+                                }
+                            });
+#pragma warning restore CS4014
                         }
                         break;
                     }
@@ -322,14 +326,14 @@ namespace qtbot.CommandPlugin
 
             q.ToList().ForEach(x =>
             {
-                foreach(var method in x.GetMethods())
+                foreach (var method in x.GetMethods())
                 {
                     var attribute = method.GetCustomAttribute(typeof(CommandAttribute)) as CommandAttribute;
-                    if(attribute != null)
+                    if (attribute != null)
                     {
                         var command = new CommandBuilder(new Command(attribute.commandName))
                             .Alias(attribute.commandAlias);
-                        
+
                         command.Do(method);
 
                         //Set Command Type
@@ -337,7 +341,7 @@ namespace qtbot.CommandPlugin
 
                         //Time Delay
                         var cooldownA = method.GetCustomAttribute(typeof(CooldownAttribute)) as CooldownAttribute;
-                        if(cooldownA != null)
+                        if (cooldownA != null)
                         {
                             if (cooldownA.Cooldown == Cooldowns.Seconds)
                                 command.SecondDelay(cooldownA.Time);
@@ -349,7 +353,7 @@ namespace qtbot.CommandPlugin
 
                         //Args
                         var argA = method.GetCustomAttribute(typeof(ArgsAttribute)) as ArgsAttribute;
-                        if(argA != null)
+                        if (argA != null)
                         {
                             if (argA.argType == ArgsType.ArgsAtLeast)
                                 command.ArgsAtLeast(argA.First);

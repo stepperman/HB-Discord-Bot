@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using qtbot.Experience;
 
 namespace qtbot.BotTools
 {
@@ -13,8 +14,11 @@ namespace qtbot.BotTools
         public DateTime ayyScoreDateReached = DateTime.Now.AddDays(-1);
         public string safesearch = "medium";
 
-        //Regular User settings
+        //XP settings
         public bool RegularUsersEnabled = false;
         public int month = -1;
+
+        public List<ulong> IgnoreChannels { get; set; }
+        public List<Rank> ServerRanks { get; set; }
     }
 }

@@ -11,29 +11,27 @@ namespace qtbot.Experience
 {
     class ExperienceController
     {
-        public const int minXP = 8;
-        public const int maxXP = 60;
-        public const int XPPerChar = 1;
-        public const int RoleUpdateRate = 50;
-        public const double MessageCooldown = 0.7; //in minutes
-        
-        public static ulong[] IgnoreChannels =
-        {
-            241365822671552512,
-            220282234068795404,
-            134267667245694976,
-            255347719705591809
-        };
+        private const int minXP = 8;
+        private const int maxXP = 60;
+        private const int XPPerChar = 1;
+        private const int RoleUpdateRate = 50;
+        private const double MessageCooldown = 0.7; //in minutes
 
-        public static List<Rank> ServerRanks = new List<Rank>
-        {
+        private static bool experienceSetup = false;
+
+        public static List<ulong> IgnoreChannels { get; set; }
+        public static List<Rank> ServerRanks { get; set; }
+        /*
             new Rank(20000, 277053512305737728, 99333280020566016),     //     Rank tier 1 
             new Rank(102000, 277053564747120640, 99333280020566016),    //     Rank tier 2
-            new Rank(500, 277773089289273346, 99333280020566016)        //       User roles
-        };
+            new Rank(500, 277773089289273346, 99333280020566016)        //     User roles
+        */
 
         public static async Task ReceivedMessageAsync(IMessage message)
         {
+            if (!experienceSetup)
+                SetupServer();
+
             //Check if it's in a guild channel
             var guildChannel = message.Channel as IGuildChannel;
             if (guildChannel == null)
@@ -97,6 +95,22 @@ namespace qtbot.Experience
                 db.Users.Update(user); //Update the user and save.
                 await db.SaveChangesAsync();
             }
+        }
+
+        private static void SetupServer()
+        {
+            foreach(var server in BotTools.Storage.client.Guilds)
+            {
+                var serverInfo = BotTools.Tools.GetServerInfo(server.Id);
+                
+                foreach(var rank in serverInfo.ServerRanks)
+                    ServerRanks.Add(rank);
+
+                foreach(var ignoreChnl in serverInfo.IgnoreChannels)
+                    IgnoreChannels.Add(ignoreChnl);
+            }
+
+            experienceSetup = true;
         }
 
         /// <summary>
@@ -202,7 +216,7 @@ namespace qtbot.Experience
         }
     }
 
-    class Rank
+    public class Rank
     {
         public int XP { get; set; }
         public ulong RoleID { get; set; }
