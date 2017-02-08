@@ -16,11 +16,6 @@ namespace qtbot.Modules.MultipleSelector
             MultiSelector selector = selectors.FirstOrDefault(x => x.GetUser().Id == message.Author.Id);
             if (selector == null)
                 return;
-            if (selector.canRespond == false)
-            {
-                selector.canRespond = true;
-                return;
-            }
 
             switch(message.Content.ToLower())
             {
