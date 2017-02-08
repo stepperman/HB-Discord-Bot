@@ -49,6 +49,28 @@ namespace qtbot.Modules
         public static async Task No(CommandArgs e) =>
             await BotTools.Tools.ReplyAsync(e, "pignig", false);
 
+        [Command("togglensfw"),
+            Description("Toggle NSFW on/off")]
+        public static async Task CmdToggleNSFW(CommandArgs e)
+        {
+            var channel = e.Guild.Channels.FirstOrDefault(x => 
+                string.Equals(x.Name, "nsfw", StringComparison.OrdinalIgnoreCase));
+
+            if (channel == null)
+                return;
+
+            bool hidden = channel.GetPermissionOverwrite(e.Author) == null;
+
+            if(!hidden)
+                await channel.RemovePermissionOverwriteAsync(e.Author);
+            else
+                await channel.AddPermissionOverwriteAsync(e.Author, 
+                    new OverwritePermissions(readMessages: PermValue.Allow));
+
+            string msg = !hidden ? "has now been hidden from you." : "now shows up for you.";
+            await BotTools.Tools.ReplyAsync(e, $"#{channel.Name} {msg}");
+        }
+
         public static string[] GetWelcomeReplies()
         {
             string[] reply =  {
