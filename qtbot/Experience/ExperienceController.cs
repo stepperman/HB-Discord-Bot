@@ -97,8 +97,10 @@ namespace qtbot.Experience
             }
         }
 
-        private static void SetupServer()
+        public static void SetupServer()
         {
+            IgnoreChannels = new List<ulong>();
+            ServerRanks = new List<Rank>();
             foreach(var server in BotTools.Storage.client.Guilds)
             {
                 var serverInfo = BotTools.Tools.GetServerInfo(server.Id);

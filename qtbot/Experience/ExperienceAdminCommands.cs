@@ -92,6 +92,7 @@ namespace qtbot.Experience
 
             serverinfo.ServerRanks.Add(new Rank(xp, roleId, serverId));
             Tools.SaveServerInfo();
+            ExperienceController.SetupServer();
             return;
         }
 
@@ -121,6 +122,7 @@ namespace qtbot.Experience
             var serverinfo = Tools.GetServerInfo(serverId);
             serverinfo.ServerRanks.RemoveAll(x => x.RoleID == roleId);
             Tools.SaveServerInfo();
+            ExperienceController.SetupServer();
         }
 
         [Command("roleinfo", CommandType.Admin),
