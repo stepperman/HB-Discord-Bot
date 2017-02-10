@@ -209,6 +209,85 @@ namespace qtbot
             }
         }
 
+
+        [Command("timeout", CommandType.Admin, "t"),
+            Description("toggle a time out, or time out a user for the defined time! Usage: `-t [user] [time (optional)]`"),
+            Permission(Permission.ADMIN),
+            Args(ArgsType.ArgsAtLeast)]
+        public static async Task CmdTimeout(CommandArgs e)
+        {
+            if (e.Message.MentionedUsers.Count == 0)
+                return;
+
+            double timeoutTimeMinute = 0;
+            if(double.TryParse(e.Args[e.Args.Length-1], System.Globalization.NumberStyles.Any, 
+                System.Globalization.CultureInfo.CurrentCulture, out timeoutTimeMinute))
+            {
+                if (timeoutTimeMinute <= 0)
+                    await RemoveTimeout(e);
+                else
+                    await AddTimeout(e, timeoutTimeMinute);
+            }
+            else
+            {
+                var usr = e.Message.MentionedUsers.First() as IGuildUser;
+                var role = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower() == "qttimedout");
+
+                if (usr == null || role == null)
+                    return;
+
+                if (usr.RoleIds.Any(x => x == role.Id))
+                    await RemoveTimeout(e);
+                else
+                    await AddTimeout(e);
+            }
+        }
+
+        private static async Task RemoveTimeout(CommandArgs e, bool mention = true)
+        {
+            var usr = e.Message.MentionedUsers.First() as IGuildUser;
+
+            var role = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower() == "qttimedout");
+
+            if (usr == null || role == null ||
+                !usr.RoleIds.Any(x => x == role.Id))
+                return;
+
+            var roles = usr.RoleIds.ToList();
+            roles.Remove(role.Id);
+            await usr.ModifyAsync(x => x.RoleIds = roles.ToArray());
+
+            if(mention)
+                await e.ReplyAsync($"Removed {usr.Mention}'s timeout.");
+        }
+
+        private static async Task AddTimeout(CommandArgs e, double time = -1)
+        {
+            var usr = e.Message.MentionedUsers.First() as IGuildUser;
+
+            var role = e.Guild.Roles.FirstOrDefault(x => x.Name.ToLower() == "qttimedout");
+
+            if (usr == null || role == null ||
+                usr.RoleIds.Any(x => x == role.Id))
+                return;
+
+            var roles = usr.RoleIds.ToList();
+            roles.Add(role.Id);
+            await usr.ModifyAsync(x => x.RoleIds = roles.ToArray());
+
+            if(time > 0)
+            {
+                await e.ReplyAsync($"Timed out {usr.Mention} for {time} minute(s).");
+                await Task.Delay(TimeSpan.FromMinutes(time));
+                await RemoveTimeout(e, false);
+            }
+            else
+            {
+                await e.ReplyAsync($"Timed out {usr.Mention} indefinitely.");
+            }
+            
+        }
+
         [Command("permission remove", CommandType.Admin, "pr"),
             Permission(Permission.OWNER),
             Description("Remove the assigned permission from a role.")]

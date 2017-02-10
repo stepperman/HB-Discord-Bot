@@ -12,7 +12,6 @@ namespace qtbot
     {
         public static DiscordSocketClient Client { get; private set; }
         public static CommandsPlugin _commands;
-        public static Modules.OldTimeout timeout;
 
         public async Task StartAsync()
         {
@@ -56,7 +55,6 @@ namespace qtbot
             {
                 await Client.LoginAsync(TokenType.Bot, (string)BotTools.Storage.programInfo.bot_token);
                 await Client.ConnectAsync();
-                timeout = new Modules.OldTimeout(Client);
                 BotTools.Storage.client = Client;
             }
             catch (Exception ex) { Console.WriteLine(ex); }

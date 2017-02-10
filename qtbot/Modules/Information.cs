@@ -71,6 +71,25 @@ namespace qtbot.Modules
             await BotTools.Tools.ReplyAsync(e, $"#{channel.Name} {msg}");
         }
 
+        [Command("donate", CommandType.User, "patreon", "donation"),
+            Description("show the link of patreon page.")]
+        public static async Task CmdDonateMessage(CommandArgs e)
+        {
+            string longText = "Stepper is a hard working Dutch boy working out " +
+                "of a shack on the edge of stormy mountain. " +
+                "Donating to his one true passion of bot " +
+                "making will help him buy bread for his " +
+                "5 starving children to last through the harsh weather in the Netherlands. /s\n" +
+                "If you donate, the only reward you'll get right now is a thank you in #announcements." +
+                "And if you have any feedback or ideas for new commands, your command will be discussed by the admins," +
+                "and added if we find the idea good or fun. After having the bot go down 5 times and breaking the whole server.";
+
+            if (e.ArgText.ToLower() == "extra")
+                await e.ReplyAsync(longText);
+            else
+                await e.ReplyAsync("Would you be so kind to donate? It'll mean a lot to me 💖. https://www.patreon.com/qtbot");
+        }
+
         public static string[] GetWelcomeReplies()
         {
             string[] reply =  {
