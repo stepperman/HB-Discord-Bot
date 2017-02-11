@@ -18,7 +18,7 @@
     <PackageReference Include="HtmlAgilityPack.NetCore">
       <Version>1.5.0.1</Version>
     </PackageReference>
-    <PackageReference Include="Magick.NET.Core-Q16">
+    <PackageReference Include="Magick.NET.Core-Q8">
       <Version>7.0.4.700</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
