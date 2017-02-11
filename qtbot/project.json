@@ -16,7 +16,7 @@
   "System.Collections.Specialized": "4.3.0",
   "Microsoft.EntityFrameworkCore.Design":"1.1.0",
   "Microsoft.EntityFrameworkCore.Sqlite":"1.1.0",
-  "Magick.NET.Core-Q16","7.0.4.700"
+  "Magick.NET.Core-Q16":"7.0.4.700"
   },
 
   "frameworks": {
