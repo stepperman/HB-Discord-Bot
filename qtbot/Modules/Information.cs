@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using qtbot.CommandPlugin;
 using Discord;
 using qtbot.CommandPlugin.Attributes;
+using Discord.WebSocket;
 
 namespace qtbot.Modules
 {
@@ -73,22 +74,8 @@ namespace qtbot.Modules
 
         [Command("donate", CommandType.User, "patreon", "donation"),
             Description("show the link of patreon page.")]
-        public static async Task CmdDonateMessage(CommandArgs e)
-        {
-            string longText = "Stepper is a hard working Dutch boy working out " +
-                "of a shack on the edge of stormy mountain. " +
-                "Donating to his one true passion of bot " +
-                "making will help him buy bread for his " +
-                "5 starving children to last through the harsh weather in the Netherlands. /s\n" +
-                "If you donate, the only reward you'll get right now is a thank you in #announcements." +
-                "And if you have any feedback or ideas for new commands, your command will be discussed by the admins," +
-                "and added if we find the idea good or fun. After having the bot go down 5 times and breaking the whole server.";
-
-            if (e.ArgText.ToLower() == "extra")
-                await e.ReplyAsync(longText);
-            else
+        public static async Task CmdDonateMessage(CommandArgs e) =>
                 await e.ReplyAsync("Would you be so kind to donate? It'll mean a lot to me 💖. https://www.patreon.com/qtbot");
-        }
 
         public static string[] GetWelcomeReplies()
         {
@@ -100,29 +87,64 @@ namespace qtbot.Modules
                 "My god! A new person! Hooray! Welcome, {0}.",
                 "{0} doesn't even deserve a welcome. They deserve a party.",
                 "🐸 OH SHIT IT {0} WHADDUP!",
-                "Hi {0}, and welcome to the Weeaboo chat.",
                 "Everyone welcome {0}, they're better at sex than anyone, now all they needs is a partner. You up for it?",
                 "{0}, 👉 👌 😉",
-                "{0}, 🍆 👌🏿 😫",
-                "Hi {0}! Have I seen you somewhere around before? Probably not, I haven't seen someone so beautiful in quite some time!",
                 "I'm excited!! Everyone, someone new just joined! It's {0}! They seem nice!",
-                "I hope you'll enjoy your stay here, {0}. I'll try to improve it.",
-                "Good day {0}! Or night. I don't know timezones, enjoy your stay.",
-                "I think I'm in love with {0}, actually no. I'm pre-programmed to say this, sorry ;(.",
-                "Hi {0}. I used to make mean remarks when someone joined. I promised I changed but it's still hard. You mind if I do it one more time?",
-                "I've never felt so good in my life! {0} has joined!!"
+                "hey {0} welcome to the server now donate to my patreon or fuck off",
+                "special",
+                "I'm not even going to welcome {0}"
             };
 
             return reply;
         }
 
+        public static async Task PerformSpecialWelcome(IUser user, ITextChannel channel)
+        {
+            var typing = channel.EnterTypingState();
+            await Task.Delay(100);
+            typing.Dispose();
+            await channel.SendMessageAsync("wow");
+
+            typing = channel.EnterTypingState();
+            await Task.Delay(400);
+            typing.Dispose();
+            await channel.SendMessageAsync($"welcome, {user.Mention}");
+
+            typing = channel.EnterTypingState();
+            await Task.Delay(800);
+            typing.Dispose();
+            await channel.SendMessageAsync("you've managed to find this place");
+
+            typing = channel.EnterTypingState();
+            await Task.Delay(100);
+            typing.Dispose();
+            await channel.SendMessageAsync("its...");
+
+            typing = channel.EnterTypingState();
+            await Task.Delay(300);
+            typing.Dispose();
+            await channel.SendMessageAsync("eh");
+        }
+
+        [Command("specialwelcome", CommandType.Admin)]
+        public static async Task CmdSpecialWelcome(CommandArgs e)
+            => await PerformSpecialWelcome(e.Message.MentionedUsers.ToList()[0], e.Channel);
+
         public static async Task WelcomeUserAsync (Discord.WebSocket.DiscordSocketClient client, Discord.WebSocket.SocketUser u, ulong ServerID)
         {
             //Welcoming people.
             string[] replies = GetWelcomeReplies();
-            string reply = String.Format(replies[RandomNumber.Next(replies.Length)], u.Mention);
+            string _tempreply = replies[RandomNumber.Next(replies.Length)];
+
             ITextChannel channelToAnswerIn = client.GetChannel(BotTools.Tools.GetServerInfo(ServerID).welcomingChannel) as ITextChannel;
 
+            if (_tempreply.Equals("special"))
+            {
+                await PerformSpecialWelcome(u, channelToAnswerIn);
+                return;
+            }
+
+            string reply = String.Format(_tempreply, u.Mention);
             try
             {
                 if (channelToAnswerIn != null)
