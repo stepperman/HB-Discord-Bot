@@ -84,7 +84,7 @@ namespace qtbot.Modules
                 "Someone new? Awesome! Welcome {0}!",
                 "Everyone, welcome {0}! They're new here!",
                 "Oh, how nice, someone new! Hello {0}!",
-                "My god! A new person! Hooray! Welcome, {0}.",
+                "My god! A new person! Hooray! Welcome, {0}.", 
                 "{0} doesn't even deserve a welcome. They deserve a party.",
                 "🐸 OH SHIT IT {0} WHADDUP!",
                 "Everyone welcome {0}, they're better at sex than anyone, now all they needs is a partner. You up for it?",
@@ -101,27 +101,27 @@ namespace qtbot.Modules
         public static async Task PerformSpecialWelcome(IUser user, ITextChannel channel)
         {
             var typing = channel.EnterTypingState();
-            await Task.Delay(100);
+            await Task.Delay(TimeSpan.FromSeconds(0.1));
             typing.Dispose();
             await channel.SendMessageAsync("wow");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(400);
+            await Task.Delay(TimeSpan.FromSeconds(0.4));
             typing.Dispose();
             await channel.SendMessageAsync($"welcome, {user.Mention}");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(800);
+            await Task.Delay(TimeSpan.FromSeconds(0.8));
             typing.Dispose();
             await channel.SendMessageAsync("you've managed to find this place");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(100);
+            await Task.Delay(TimeSpan.FromSeconds(0.12));
             typing.Dispose();
             await channel.SendMessageAsync("its...");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(300);
+            await Task.Delay(TimeSpan.FromSeconds(0.3));
             typing.Dispose();
             await channel.SendMessageAsync("eh");
         }
