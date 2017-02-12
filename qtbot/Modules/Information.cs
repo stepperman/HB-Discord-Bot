@@ -101,27 +101,27 @@ namespace qtbot.Modules
         public static async Task PerformSpecialWelcome(IUser user, ITextChannel channel)
         {
             var typing = channel.EnterTypingState();
-            await Task.Delay(TimeSpan.FromSeconds(0.1));
+            await Task.Delay(TimeSpan.FromSeconds(0.4));
             typing.Dispose();
             await channel.SendMessageAsync("wow");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(TimeSpan.FromSeconds(0.4));
+            await Task.Delay(TimeSpan.FromSeconds(1.4));
             typing.Dispose();
             await channel.SendMessageAsync($"welcome, {user.Mention}");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(TimeSpan.FromSeconds(0.8));
+            await Task.Delay(TimeSpan.FromSeconds(2));
             typing.Dispose();
             await channel.SendMessageAsync("you've managed to find this place");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(TimeSpan.FromSeconds(0.12));
+            await Task.Delay(TimeSpan.FromSeconds(0.4));
             typing.Dispose();
             await channel.SendMessageAsync("its...");
 
             typing = channel.EnterTypingState();
-            await Task.Delay(TimeSpan.FromSeconds(0.3));
+            await Task.Delay(TimeSpan.FromSeconds(3));
             typing.Dispose();
             await channel.SendMessageAsync("eh");
         }
