@@ -108,7 +108,7 @@ namespace qtbot.Modules
             typing = channel.EnterTypingState();
             await Task.Delay(TimeSpan.FromSeconds(1.4));
             typing.Dispose();
-            await channel.SendMessageAsync($"welcome, {user.Mention}");
+            await channel.SendMessageAsync($"welcome, {user.Mention}"); 
 
             typing = channel.EnterTypingState();
             await Task.Delay(TimeSpan.FromSeconds(2));
@@ -117,7 +117,7 @@ namespace qtbot.Modules
 
             typing = channel.EnterTypingState();
             await Task.Delay(TimeSpan.FromSeconds(0.4));
-            typing.Dispose();
+            typing.Dispose(); 
             await channel.SendMessageAsync("its...");
 
             typing = channel.EnterTypingState();
