@@ -38,7 +38,8 @@ namespace qtbot.Experience
                 return;
 
             if (IgnoreChannels.Contains(guildChannel.Id) || 
-                message.Author.Id == BotTools.Storage.client.CurrentUser.Id)
+                message.Author.Id == BotTools.Storage.client.CurrentUser.Id ||
+                message.Author.IsBot)
                 return;
 
             using (var db = new ExperienceContext())

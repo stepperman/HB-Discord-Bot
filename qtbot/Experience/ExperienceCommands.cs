@@ -75,7 +75,7 @@ namespace qtbot.Experience
                     if (taggedUser)
                         await Tools.ReplyAsync(e, $"User {e.Message.MentionedUsers.ToList()[0].Username} doesn't have any stats.");
                     else
-                        await Tools.ReplyAsync(e, "You don't have any stats."); //This should be impossible actually...
+                        await Tools.ReplyAsync(e, "You don't have any stats.");
 
                     return;
                 }
@@ -90,6 +90,10 @@ namespace qtbot.Experience
         public static async Task BuildEmbed(CommandArgs e, ExperienceUser user, ExperienceContext db)
         {
             EmbedBuilder embed = new EmbedBuilder();
+
+            if (RandomNumber.Next(3) == 0)
+                await e.Guild.DownloadUsersAsync();
+
             var serverUser = await e.Channel.GetUserAsync(user.UserID);
 
             if (serverUser == null)
@@ -102,6 +106,12 @@ namespace qtbot.Experience
                     await Tools.ReplyAsync(e, "I couldn't find user with the ID of " + user.UserID + ". Fatal error");
                     return;
                 }
+            }
+
+            if(serverUser.IsBot)
+            {
+                await e.ReplyAsync("Bots do not have stats.");
+                return;
             }
 
             embed.WithTitle(serverUser.Nickname == null ? serverUser.Username : serverUser.Nickname)
