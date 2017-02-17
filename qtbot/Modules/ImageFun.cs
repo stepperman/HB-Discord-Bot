@@ -23,7 +23,7 @@ namespace qtbot.Modules
         [Command("magick")]
         public static async Task CmdMagickImg(CommandArgs e)
         {
-            await e.Channel.TriggerTypingAsync();
+            var msg = await e.ReplyAsync("Processing.. this might take a while.");
             QtNet net = new QtNet(e.ArgText);
             var image = await net.GetByteArrayAsync(); 
             ImageBlob blob = new ImageBlob();
@@ -43,6 +43,7 @@ namespace qtbot.Modules
             if (blob.buffer == null || imageBuffer.Length == 0 || result != 0)
             {
                 await e.ReplyAsync("Something went wrong with image processing! Error code: " + result);
+                await msg.DeleteAsync();
                 return;
             }
 
@@ -51,7 +52,8 @@ namespace qtbot.Modules
                 memStream.Position = 0;
                 if (memStream.Length == 0)
                     return;
-                
+
+                await msg.DeleteAsync();
                 await e.Channel.SendFileAsync(memStream, "magick.png");
             }
         }

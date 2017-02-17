@@ -29,7 +29,7 @@ namespace qtbot.Experience
 
         public static async Task ReceivedMessageAsync(IMessage message)
         {
-            return; //TODO: REMOVE LATER SWEAR TO GOD.
+            //return; //TODO: REMOVE LATER SWEAR TO GOD.
 
             if (!experienceSetup)
                 SetupServer();
