@@ -16,7 +16,7 @@ namespace qtbot.Modules
         private static extern int liquidresizeimage(
             [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
 
-        [DllImport("LocalFiles/libs/libMagickQt", EntryPoint = "liquidresizeimage", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("libMagickQt.so", EntryPoint = "liquidresizeimage", CallingConvention = CallingConvention.Cdecl)]
         private static extern int linuxliquidresizeimage(
             [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
 
