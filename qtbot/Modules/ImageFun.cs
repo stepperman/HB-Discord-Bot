@@ -23,7 +23,6 @@ namespace qtbot.Modules
             [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
 
         [Command("magick"),
-            Args(ArgsType.ArgsAtLeast),
             Description("Perform some magick with the associated image!")]
         public static async Task CmdMagickImg(CommandArgs e)
         {
