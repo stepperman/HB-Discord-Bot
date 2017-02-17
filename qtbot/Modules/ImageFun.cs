@@ -1,4 +1,5 @@
-﻿using qtbot.CommandPlugin;
+﻿using Discord;
+using qtbot.CommandPlugin;
 using qtbot.CommandPlugin.Attributes;
 using QtNetHelper;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace qtbot.Modules
@@ -20,11 +22,26 @@ namespace qtbot.Modules
         private static extern int linuxliquidresizeimage(
             [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
 
-        [Command("magick")]
+        [Command("magick"),
+            Args(ArgsType.ArgsAtLeast),
+            Description("Perform some magick with the associated image!")]
         public static async Task CmdMagickImg(CommandArgs e)
         {
-            var msg = await e.ReplyAsync("Processing.. this might take a while.");
-            QtNet net = new QtNet(e.ArgText);
+            IMessage msg = null;
+            bool silent = IsSilent(e);
+
+            if (!silent)
+                msg = await e.ReplyAsync("Processing.. this might take a while.");
+            else
+                await e.Message.DeleteAsync();
+            string link = await GetImageData(e);
+
+            if (string.IsNullOrEmpty(link))
+            {
+                await e.ReplyAsync("Couldn't find any images.");
+                return;
+            }
+            QtNet net = new QtNet(link);
             var image = await net.GetByteArrayAsync(); 
             ImageBlob blob = new ImageBlob();
 
@@ -53,9 +70,52 @@ namespace qtbot.Modules
                 if (memStream.Length == 0)
                     return;
 
-                await msg.DeleteAsync();
+                if (msg != null)
+                    await msg.DeleteAsync();
                 await e.Channel.SendFileAsync(memStream, "magick.png");
             }
+        }
+
+        public static bool IsSilent(CommandArgs e)
+        {
+            if (e.Args.Length == 0)
+                return false;
+
+            if (e.Args[e.Args.Length - 1] == "-s")
+                return true;
+            return false;
+        }
+
+        public static async Task<string> GetImageData(CommandArgs e)
+        {
+            if(e.Args.Length != 0 && e.Args[0] != "-s")
+                return e.Args[0];
+
+            else if(e.Message.Attachments.Count != 0)
+            {
+                var attachments = e.Message.Attachments.ToList();
+                string[] filenames = { ".png", ".jpeg", ".jpg", ".bmp" };
+                if (filenames.Any(x => attachments[0].Filename.ToLower().EndsWith(x)))
+                    return attachments[0].Url;
+            }
+            else
+            {
+                var messages = e.Channel.GetMessagesAsync();
+                var msg = await messages.Flatten();
+                
+                foreach(var message in msg)
+                {
+                    if (message.Attachments.Count != 0)
+                    {
+                        var attachments = message.Attachments.ToList();
+                        string[] filenames = { ".png", ".jpeg", ".jpg", ".bmp" };
+                        if (filenames.Any(x => attachments[0].Filename.ToLower().EndsWith(x)))
+                            return attachments[0].Url;
+                    }
+                }
+            }
+
+            return null;
         }
 
         [StructLayout(LayoutKind.Sequential)]
