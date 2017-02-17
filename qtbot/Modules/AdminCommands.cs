@@ -483,7 +483,7 @@ namespace qtbot
 
 
                         userRoles.Add(roleToGive.Id);
-                        try { await (user as IGuildUser).ModifyAsync(z => z.RoleIds = new Optional<ulong[]>(userRoles.ToArray())); }
+                        try { await (user as IGuildUser).ModifyAsync(z => z.RoleIds = userRoles); }
                         catch (Exception)
                         {
                             Console.WriteLine($"Couldn't edit {user.Username}");
@@ -511,7 +511,7 @@ namespace qtbot
                         }
 
                         userRoles.RemoveAll(x => x == roleToGive.Id);
-                        try { await (user as IGuildUser).ModifyAsync(x => x.RoleIds = new Optional<ulong[]>(userRoles.ToArray())); }
+                        try { await (user as IGuildUser).ModifyAsync(x => x.RoleIds = userRoles); }
                         catch (Exception)
                         {
                             Console.WriteLine($"Couldn't edit {user.Username}");
@@ -588,7 +588,7 @@ namespace qtbot
                 imageStream.Dispose();
                 memoryStream.Position = 0;
 
-                await Storage.client.CurrentUser.ModifyAsync(x => x.Avatar = new Discord.API.Image(memoryStream));
+                await Storage.client.CurrentUser.ModifyAsync(x => x.Avatar = new Image(memoryStream));
             }
             catch (Exception) { }
         }

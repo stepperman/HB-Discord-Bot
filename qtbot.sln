@@ -1,20 +1,64 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25928.0
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qtbot", "qtbot\qtbot.csproj", "{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}"
+EndProject
+Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "dotnet", "C:\Program Files\dotnet\dotnet.exe", "{105ADB86-F921-4D75-99B1-99E6FB4CAADE}"
+	ProjectSection(DebuggerProjectSystem) = preProject
+		PortSupplier = 00000000-0000-0000-0000-000000000000
+		Executable = C:\Program Files\dotnet\dotnet.exe
+		RemoteMachine = DESKTOP-4J3DFS7
+		StartingDirectory = D:\game dev\!Visual Studio\dotnetcool
+		Arguments = "D:\game dev\!Visual Studio\qtbot\qtbot\bin\Debug\netcoreapp1.0\qtbot.dll"
+		Environment = Default
+		LaunchingEngine = 00000000-0000-0000-0000-000000000000
+		UseLegacyDebugEngines = No
+		LaunchSQLEngine = No
+		AttachLaunchAction = No
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MagickQT", "..\MagickQT\MagickQT\MagickQT.vcxproj", "{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Debug|x64.Build.0 = Debug|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Debug|x86.Build.0 = Debug|Any CPU
 		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Release|x64.ActiveCfg = Release|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Release|x64.Build.0 = Release|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Release|x86.ActiveCfg = Release|Any CPU
+		{7E1B3FD5-0487-410D-AADC-CCFA6F6147E2}.Release|x86.Build.0 = Release|Any CPU
+		{105ADB86-F921-4D75-99B1-99E6FB4CAADE}.Debug|Any CPU.ActiveCfg = Release|x64
+		{105ADB86-F921-4D75-99B1-99E6FB4CAADE}.Debug|x64.ActiveCfg = Release|x64
+		{105ADB86-F921-4D75-99B1-99E6FB4CAADE}.Debug|x86.ActiveCfg = Release|x64
+		{105ADB86-F921-4D75-99B1-99E6FB4CAADE}.Release|Any CPU.ActiveCfg = Release|x64
+		{105ADB86-F921-4D75-99B1-99E6FB4CAADE}.Release|x64.ActiveCfg = Release|x64
+		{105ADB86-F921-4D75-99B1-99E6FB4CAADE}.Release|x86.ActiveCfg = Release|x64
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Debug|x64.ActiveCfg = Debug|x64
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Debug|x64.Build.0 = Debug|x64
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Debug|x86.ActiveCfg = Debug|Win32
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Debug|x86.Build.0 = Debug|Win32
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Release|Any CPU.ActiveCfg = Release|Win32
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Release|x64.ActiveCfg = Release|x64
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Release|x64.Build.0 = Release|x64
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Release|x86.ActiveCfg = Release|Win32
+		{0EE7538B-A62E-4A72-BD9B-8D0D0D71A4B0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

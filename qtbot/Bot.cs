@@ -5,6 +5,8 @@ using Discord;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using qtbot.CommandPlugin;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace qtbot
 {
@@ -15,6 +17,8 @@ namespace qtbot
 
         public async Task StartAsync()
         {
+            Console.WriteLine(RuntimeInformation.FrameworkDescription.ToString());
+
             var client = new DiscordSocketClient();
             Bot.Client = client;
             Bot.Client.Log += Client_Log;
