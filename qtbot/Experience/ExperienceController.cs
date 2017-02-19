@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace qtbot.Experience
@@ -29,7 +30,8 @@ namespace qtbot.Experience
 
         public static async Task ReceivedMessageAsync(IMessage message)
         {
-            //return; //TODO: REMOVE LATER SWEAR TO GOD.
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return; //TODO: REMOVE LATER SWEAR TO GOD.
 
             if (!experienceSetup)
                 SetupServer();

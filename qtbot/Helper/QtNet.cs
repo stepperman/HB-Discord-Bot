@@ -32,6 +32,12 @@ namespace QtNetHelper
             
         }
 
+        public async Task<bool> IsImage()
+        {
+            var req = (HttpWebRequest)HttpWebRequest.Create(GetUrl());
+            using (var response = await req.GetResponseAsync())
+                return response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+        }
 
         public async Task<byte[]> GetByteArrayAsync()
         {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace qtbot.Modules
         private static extern int liquidresizeimage(
             [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
 
-        [DllImport("libMagickQT", EntryPoint = "liquidresizeimage", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("MagickQT", EntryPoint = "liquidresizeimage", CallingConvention = CallingConvention.Cdecl)]
         private static extern int linuxliquidresizeimage(
             [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
 
@@ -75,6 +76,26 @@ namespace qtbot.Modules
             }
         }
 
+        [Command("bigemoji", CommandType.User, "e"),
+            Description("Get the emoji, but BIG!")]
+        public static async Task CmdBigEmoji(CommandArgs e)
+        {
+            Emoji em;
+            var tags = e.Message.Tags.ToList();
+            if (tags.Count == 0)
+                return;
+
+            var emoji = tags.FirstOrDefault(x => x.Type == TagType.Emoji);
+            if (emoji == null)
+                return;
+            em = (Emoji)emoji.Value;
+
+            var net = new QtNet(em.Url);
+            var b = await net.GetByteArrayAsync();
+            using (Stream m = new MemoryStream(b))
+                await e.Channel.SendFileAsync(m, "emoji.png");
+        }
+
         public static bool IsSilent(CommandArgs e)
         {
             if (e.Args.Length == 0)
@@ -87,16 +108,19 @@ namespace qtbot.Modules
 
         public static async Task<string> GetImageData(CommandArgs e)
         {
-            if(e.Args.Length != 0 && e.Args[0] != "-s")
-                return e.Args[0];
-
-            else if(e.Message.Attachments.Count != 0)
+            if(e.Message.Attachments.Count != 0)
             {
                 var attachments = e.Message.Attachments.ToList();
-                string[] filenames = { ".png", ".jpeg", ".jpg", ".bmp" };
-                if (filenames.Any(x => attachments[0].Filename.ToLower().EndsWith(x)))
-                    return attachments[0].Url;
+                var net = new QtNet(attachments[0].Url);
+                foreach(var at in attachments)
+                {
+                    net.BaseUrl = at.Url;
+                    if (await net.IsImage())
+                        return at.Url; 
+                }
             }
+            else if (e.Args.Length != 0 && e.Args[0] != "-s")
+                return e.Args[0];
             else
             {
                 var messages = e.Channel.GetMessagesAsync();
@@ -107,9 +131,28 @@ namespace qtbot.Modules
                     if (message.Attachments.Count != 0)
                     {
                         var attachments = message.Attachments.ToList();
-                        string[] filenames = { ".png", ".jpeg", ".jpg", ".bmp" };
-                        if (filenames.Any(x => attachments[0].Filename.ToLower().EndsWith(x)))
-                            return attachments[0].Url;
+                        var net = new QtNet(attachments[0].Url);
+                        foreach (var at in attachments)
+                        {
+                            net.BaseUrl = at.Url;
+                            if (await net.IsImage())
+                                return at.Url;
+                        }
+                    }
+                    else
+                    {
+                        var net = new QtNet("temp");
+                        var parts = message.Content.Split(' ');
+                        string[] webstarts = { "http", "https", "www" };
+                        foreach (var part in parts)
+                        {
+                            if (webstarts.Any(x => part.StartsWith(x, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                net.BaseUrl = part;
+                                if (await net.IsImage())
+                                    return part;
+                            }
+                        }
                     }
                 }
             }
