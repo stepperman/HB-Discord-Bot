@@ -28,9 +28,9 @@ namespace qtbot.Modules
         public static async Task CmdMagickImg(CommandArgs e)
         {
             IMessage msg = null;
-            bool silent = IsSilent(e);
             string[] Args = e.Args;
             double delta_x = GetRigidity(ref Args);
+            bool silent = IsSilent(e);
 
             if (!silent)
                 msg = await e.ReplyAsync("Processing.. this might take a while.");
@@ -135,12 +135,12 @@ namespace qtbot.Modules
                 await e.Channel.SendFileAsync(m, "emoji.png");
         }
 
-        public static bool IsSilent(CommandArgs e)
+        public static bool IsSilent(string[] Args)
         {
-            if (e.Args.Length == 0)
+            if (Args.Length == 0)
                 return false;
 
-            if (e.Args[e.Args.Length - 1] == "-s")
+            if (Args[e.Args.Length - 1] == "-s")
                 return true;
             return false;
         }
