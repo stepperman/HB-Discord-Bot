@@ -21,7 +21,7 @@ namespace qtbot.Modules
 
         [DllImport("MagickQT", EntryPoint = "liquidresizeimage", CallingConvention = CallingConvention.Cdecl)]
         private static extern int linuxliquidresizeimage(
-            [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
+            [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size, [In] double delta_x);
 
         [Command("magick"),
             Description("Perform some magick with the associated image!")]
@@ -54,7 +54,7 @@ namespace qtbot.Modules
             if (windows)
                 result = liquidresizeimage(ref blob, image, (UInt64)image.Length, delta_x);
             else // If not Windows, we assume Linux.
-                result = linuxliquidresizeimage(ref blob, image, (UInt64)image.Length);
+                result = linuxliquidresizeimage(ref blob, image, (UInt64)image.Length, delta_x);
 
 
             byte[] imageBuffer = new byte[blob.size];
