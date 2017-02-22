@@ -17,7 +17,7 @@ namespace qtbot.Modules
     {
         [DllImport("LocalFiles/libs/MagickQT", EntryPoint = "liquidresizeimage", CallingConvention = CallingConvention.Cdecl)]
         private static extern int liquidresizeimage(
-            [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size);
+            [In, Out] ref ImageBlob imageBlob, [In] byte[] data, [In] UInt64 size, [In] double delta_x);
 
         [DllImport("MagickQT", EntryPoint = "liquidresizeimage", CallingConvention = CallingConvention.Cdecl)]
         private static extern int linuxliquidresizeimage(
@@ -29,12 +29,15 @@ namespace qtbot.Modules
         {
             IMessage msg = null;
             bool silent = IsSilent(e);
+            string[] Args = e.Args;
+            double delta_x = GetRigidity(ref Args);
 
             if (!silent)
                 msg = await e.ReplyAsync("Processing.. this might take a while.");
             else
                 await e.Message.DeleteAsync();
-            string link = await GetImageData(e);
+
+            string link = await GetImageData(e.Message, Args, e.Channel);
 
             if (string.IsNullOrEmpty(link))
             {
@@ -49,7 +52,7 @@ namespace qtbot.Modules
 
             int result = -1;
             if (windows)
-                result = liquidresizeimage(ref blob, image, (UInt64)image.Length);
+                result = liquidresizeimage(ref blob, image, (UInt64)image.Length, delta_x);
             else // If not Windows, we assume Linux.
                 result = linuxliquidresizeimage(ref blob, image, (UInt64)image.Length);
 
@@ -59,8 +62,15 @@ namespace qtbot.Modules
 
             if (blob.buffer == null || imageBuffer.Length == 0 || result != 0)
             {
+                if(result == 3000)
+                {
+                    await e.ReplyAsync("Jesus, that image is too fucking big! Keep it under 3000 pixels in both width and height!");
+                    if(!silent) await msg.DeleteAsync();
+                    return;
+                }
+
                 await e.ReplyAsync("Something went wrong with image processing! Error code: " + result);
-                await msg.DeleteAsync();
+                if(!silent) await msg.DeleteAsync();
                 return;
             }
 
@@ -74,6 +84,35 @@ namespace qtbot.Modules
                     await msg.DeleteAsync();
                 await e.Channel.SendFileAsync(memStream, "magick.png");
             }
+        }
+
+        public static double GetRigidity(ref string[] Args)
+        {
+            double rigidity = 0;
+            List<string> args = new List<string>(Args);
+            int?[] deletPos = new int?[2];
+
+            for(int i = 0; i<args.Count; i++)
+            {
+                if(args[i] == "--delta" || args[i] == "-d")
+                {
+                    deletPos[0] = i;
+                    if (i + 1 != args.Count && double.TryParse(args[i], out rigidity))
+                        deletPos[2] = i;
+                    else
+                        rigidity = 0;
+                }
+            }
+
+            if(deletPos[0] != null)
+                args.RemoveAt((int)deletPos[0]);
+
+            if(deletPos[1] != null)
+                args.RemoveAt((int)deletPos[0]);
+
+            Args = args.ToArray();
+
+            return rigidity;
         }
 
         [Command("bigemoji", CommandType.User, "e"),
@@ -106,11 +145,11 @@ namespace qtbot.Modules
             return false;
         }
 
-        public static async Task<string> GetImageData(CommandArgs e)
+        public static async Task<string> GetImageData(IMessage msgcontext, string[] Args, ITextChannel channel)
         {
-            if(e.Message.Attachments.Count != 0)
+            if(msgcontext.Attachments.Count != 0)
             {
-                var attachments = e.Message.Attachments.ToList();
+                var attachments = msgcontext.Attachments.ToList();
                 var net = new QtNet(attachments[0].Url);
                 foreach(var at in attachments)
                 {
@@ -119,11 +158,11 @@ namespace qtbot.Modules
                         return at.Url; 
                 }
             }
-            else if (e.Args.Length != 0 && e.Args[0] != "-s")
-                return e.Args[0];
+            else if (Args.Length != 0 && Args[0] != "-s")
+                return Args[0];
             else
             {
-                var messages = e.Channel.GetMessagesAsync();
+                var messages = channel.GetMessagesAsync();
                 var msg = await messages.Flatten();
                 
                 foreach(var message in msg)
