@@ -97,8 +97,8 @@ namespace qtbot.Modules
                 if(args[i] == "--delta" || args[i] == "-d")
                 {
                     deletPos[0] = i;
-                    if (i + 1 != args.Count && double.TryParse(args[i], out rigidity))
-                        deletPos[2] = i;
+                    if (i + 1 != args.Count && double.TryParse(args[i+1], out rigidity))
+                        deletPos[1] = i;
                     else
                         rigidity = 0;
                 }
