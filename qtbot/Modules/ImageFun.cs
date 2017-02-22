@@ -30,7 +30,7 @@ namespace qtbot.Modules
             IMessage msg = null;
             string[] Args = e.Args;
             double delta_x = GetRigidity(ref Args);
-            bool silent = IsSilent(e);
+            bool silent = IsSilent(Args);
 
             if (!silent)
                 msg = await e.ReplyAsync("Processing.. this might take a while.");
@@ -140,7 +140,7 @@ namespace qtbot.Modules
             if (Args.Length == 0)
                 return false;
 
-            if (Args[e.Args.Length - 1] == "-s")
+            if (Args[Args.Length - 1] == "-s")
                 return true;
             return false;
         }
