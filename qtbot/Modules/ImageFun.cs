@@ -112,7 +112,8 @@ namespace qtbot.Modules
 
             Args = args.ToArray();
 
-            return rigidity;
+
+            return rigidity<0?0:rigidity>100?100:rigidity;
         }
 
         [Command("bigemoji", CommandType.User, "e"),
