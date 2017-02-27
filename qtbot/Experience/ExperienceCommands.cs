@@ -87,7 +87,7 @@ namespace qtbot.Experience
             if (!int.TryParse(e.Args[0], out index) 
                 || index < 1 || index > possibleranks.Count)
                 return;
-            index--;
+            index -= 1;
             var user = e.Author as IGuildUser;
             if (user == null)
                 return;
