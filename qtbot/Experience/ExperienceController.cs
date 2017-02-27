@@ -22,11 +22,6 @@ namespace qtbot.Experience
 
         public static List<ulong> IgnoreChannels { get; set; }
         public static List<Rank> ServerRanks { get; set; }
-        /*
-            new Rank(20000, 277053512305737728, 99333280020566016),     //     Rank tier 1 
-            new Rank(102000, 277053564747120640, 99333280020566016),    //     Rank tier 2
-            new Rank(500, 277773089289273346, 99333280020566016)        //     User roles
-        */
 
         public static async Task ReceivedMessageAsync(IMessage message)
         {
