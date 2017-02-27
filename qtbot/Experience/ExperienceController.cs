@@ -49,7 +49,7 @@ namespace qtbot.Experience
                 }
 
                 // If the user has sent a message before the cooldown was up, just return.
-                if ((DateTime.Now - user.LastMessage).TotalMinutes < MessageCooldown || user.Excluded)
+                if ((DateTime.Now - user.LastMessage).TotalMinutes < MessageCooldown || user.ExcludeFromStats)
                     return;
 
                 // Add XP
@@ -136,7 +136,7 @@ namespace qtbot.Experience
             if (role == null)
                 return;
 
-            await message.Channel.SendMessageAsync($"{message.Author.Mention} just ranked up! You can now redeem **{role.Name}**. Congratulations!");
+            await message.Channel.SendMessageAsync($"{message.Author.Mention} just ranked up! You can now equip **{role.Name}**. You can equip it with `/equip`.");
         }
 
         private static int getMessageXP(int messageCount)

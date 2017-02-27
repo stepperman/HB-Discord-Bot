@@ -48,7 +48,7 @@ namespace qtbot.Experience
             }
         }
 
-        [Command("redeem"),
+        [Command("equip", alias: "redeem"),
             Description("Redeem a rank on tis server.")]
         public static async Task CmdRedeemRank(CommandArgs e)
         {
@@ -64,18 +64,18 @@ namespace qtbot.Experience
                 }
 
                 var possibleranks = db.Users_Redeem
-                    .Where(x => x.ServerID == e.Guild.Id)
-                    .OrderByDescending(x => x.NeededXP)
+                    .Where(x => x.ServerID == e.Guild.Id && x.UserID == e.Author.Id)
+                    .OrderBy(x => x.NeededXP)
                     .ToList();
 
                 if (possibleranks.Count == 0)
                 {
-                    await e.ReplyAsync("You have no roles to redeem.");
+                    await e.ReplyAsync("You have no ranks to equip.");
                     return;
                 }
                 
                 if (e.Args.Length == 0)
-                    await ListPossibleRoles(serverinfo.ServerRanks, e);
+                    await ListPossibleRoles(possibleranks, e);
                 else
                     await SelectRole(possibleranks, serverinfo.ServerRanks, e);
             }
@@ -83,9 +83,14 @@ namespace qtbot.Experience
 
         private static async Task SelectRole(List<UserRoleRedeem> possibleranks, List<Rank> rank, CommandArgs e)
         {
-            int index;
-            if (!int.TryParse(e.Args[0], out index) 
-                || index < 1 || index > possibleranks.Count)
+            bool skip = false;
+
+            if (e.Args[0] == "remove")
+                skip = true;
+
+            int index = -1;
+            if (!skip && (!int.TryParse(e.Args[0], out index) 
+                || index < 1 || index > possibleranks.Count))
                 return;
             index -= 1;
             var user = e.Author as IGuildUser;
@@ -94,21 +99,27 @@ namespace qtbot.Experience
 
             var roleId = user.RoleIds.ToList();
             rank.ForEach(x => { if (roleId.Contains(x.RoleID)) roleId.Remove(x.RoleID); });
-            roleId.Add(possibleranks[index].RoleID);
+
+            if(!skip)
+                roleId.Add(possibleranks[index].RoleID);
 
             await user.ModifyAsync(x => x.RoleIds = roleId.ToArray());
-            await e.ReplyAsync("Redeemed!");
+            if (!skip)
+            {
+                var newrole = e.Guild.GetRole(possibleranks[index].RoleID);
+                await e.ReplyAsync($"Equipped {newrole.Name}.");
+            }
         }
 
-        private static async Task ListPossibleRoles(List<Rank> ranks, CommandArgs e)
+        private static async Task ListPossibleRoles(List<UserRoleRedeem> ranks, CommandArgs e)
         {
             StringBuilder b = new StringBuilder();
-            b.Append("```");
+            b.Append("Type `/equip {number}` to redeem any rank in this list!\n```Golo\n");
 
             for(int i = 0; i < ranks.Count; i++)
             {
                 var role = e.Guild.GetRole(ranks[i].RoleID);
-                b.AppendLine($"#{i + 1, -4} {role.Name, -10}");
+                b.AppendLine($"🡢 {i + 1, -2} {role.Name, -10} Required XP: {ranks[i].NeededXP}");
             }
             b.Append("```");
             await e.ReplyAsync(b.ToString());
@@ -136,7 +147,7 @@ namespace qtbot.Experience
                 else
                     user = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && x.ServerID == e.Guild.Id);
 
-                if(user == null || user.Excluded)
+                if(user == null || user.ExcludeFromStats)
                 {
                     if (taggedUser)
                         await Tools.ReplyAsync(e, $"User {e.Message.MentionedUsers.ToList()[0].Username} doesn't have any stats.");
@@ -257,7 +268,7 @@ namespace qtbot.Experience
             return null;
         }
 
-        [Command("excludefromstats"),
+        [Command("toggle exclude"),
             Description("Exclude yourself from stat collection, and from the top list.")]
         public static async Task CmdXPExclude(CommandArgs e)
         {
@@ -265,11 +276,11 @@ namespace qtbot.Experience
             {
                 var user = db.Users.FirstOrDefault(x => x.UserID == e.Author.Id && e.Guild.Id == x.ServerID);
                 if(user != null)
-                    user.Excluded = !user.Excluded;
+                    user.ExcludeFromStats = !user.ExcludeFromStats;
                 db.Users.Update(user);
                 await db.SaveChangesAsync();
 
-                string newSetting = user.Excluded ? "excluded" : "included";
+                string newSetting = user.ExcludeFromStats ? "excluded" : "included";
                 await Tools.ReplyAsync(e, $"You are now {newSetting} from stats collection");
             }
         }
@@ -283,7 +294,7 @@ namespace qtbot.Experience
                 if (i >= users.Count)
                     break;
 
-                if (users[i].Excluded)
+                if (users[i].ExcludeFromStats)
                     continue;
 
                 var serveruser = await guild.GetUserAsync(users[i].UserID);

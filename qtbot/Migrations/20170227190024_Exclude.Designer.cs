@@ -8,9 +8,10 @@ using qtbot.Experience;
 namespace qtbot.Migrations
 {
     [DbContext(typeof(ExperienceContext))]
-    partial class ExperienceContextModelSnapshot : ModelSnapshot
+    [Migration("20170227190024_Exclude")]
+    partial class Exclude
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
