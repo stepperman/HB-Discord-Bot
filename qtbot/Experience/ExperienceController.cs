@@ -81,7 +81,7 @@ namespace qtbot.Experience
                         if (user.FullXP < rank.XP)
                             continue;
 
-                        redeemableroles.Add(new UserRoleRedeem()
+                        db.Users_Redeem.Add(new UserRoleRedeem()
                         {
                             RoleID = rank.RoleID,
                             ServerID = rank.ServerRole,
