@@ -48,6 +48,72 @@ namespace qtbot.Experience
             }
         }
 
+        [Command("redeem"),
+            Description("Redeem a rank on tis server.")]
+        public static async Task CmdRedeemRank(CommandArgs e)
+        {
+            using (ExperienceContext db = new ExperienceContext())
+            {
+
+                var serverinfo = Tools.GetServerInfo(e.Guild.Id);
+
+                if (serverinfo.ServerRanks.Count == 0)
+                {
+                    await e.ReplyAsync("There aren't any ranks on this server!");
+                    return;
+                }
+
+                var possibleranks = db.Users_Redeem
+                    .Where(x => x.ServerID == e.Guild.Id)
+                    .OrderByDescending(x => x.NeededXP)
+                    .ToList();
+
+                if (possibleranks.Count == 0)
+                {
+                    await e.ReplyAsync("You have no roles to redeem.");
+                    return;
+                }
+                
+                if (e.Args.Length == 0)
+                    await ListPossibleRoles(serverinfo.ServerRanks, e);
+                else
+                    await SelectRole(possibleranks, serverinfo.ServerRanks, e);
+            }
+        }
+
+        private static async Task SelectRole(List<UserRoleRedeem> possibleranks, List<Rank> rank, CommandArgs e)
+        {
+            int index;
+            if (!int.TryParse(e.Args[0], out index) 
+                || index < 1 || index > possibleranks.Count)
+                return;
+            index--;
+            var user = e.Author as IGuildUser;
+            if (user == null)
+                return;
+
+            var roleId = user.RoleIds.ToList();
+            rank.ForEach(x => { if (roleId.Contains(x.RoleID)) roleId.Remove(x.RoleID); });
+            roleId.Add(possibleranks[index].RoleID);
+
+            await user.ModifyAsync(x => x.RoleIds = roleId.ToArray());
+            await e.ReplyAsync("Redeemed!");
+        }
+
+        private static async Task ListPossibleRoles(List<Rank> ranks, CommandArgs e)
+        {
+            StringBuilder b = new StringBuilder();
+            b.Append("```");
+
+            for(int i = 0; i < ranks.Count; i++)
+            {
+                var role = e.Guild.GetRole(ranks[i].RoleID);
+                b.AppendLine($"#{i + 1, -4} {role.Name, -10}");
+            }
+            b.Append("```");
+            await e.ReplyAsync(b.ToString());
+        }
+
         private static int GetPage(string text)
         {
             int page = 0;

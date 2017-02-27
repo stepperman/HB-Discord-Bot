@@ -15,6 +15,7 @@ namespace qtbot.Experience
     public class ExperienceContext : DbContext
     {
         public DbSet<ExperienceUser> Users { get; set; }
+        public DbSet<UserRoleRedeem> Users_Redeem { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -36,5 +37,17 @@ namespace qtbot.Experience
         public int DisplayXP { get; set; }
         public int FullXP { get; set; }
         public bool Excluded { get; set; }
+    }
+
+    [Table("users_redeemable_roles")]
+    public class UserRoleRedeem
+    {
+        [Key]
+        public int PrimaryKey { get; set; }
+
+        public ulong UserID { get; set; }
+        public ulong ServerID { get; set; }
+        public ulong RoleID { get; set; }
+        public int NeededXP { get; set; }
     }
 }

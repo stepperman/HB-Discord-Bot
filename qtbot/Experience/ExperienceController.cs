@@ -25,9 +25,6 @@ namespace qtbot.Experience
 
         public static async Task ReceivedMessageAsync(IMessage message)
         {
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return; //TODO: REMOVE LATER SWEAR TO GOD.
-
             if (!experienceSetup)
                 SetupServer();
 
@@ -36,14 +33,14 @@ namespace qtbot.Experience
             if (guildChannel == null)
                 return;
 
-            if (IgnoreChannels.Contains(guildChannel.Id) || 
+            if ((IgnoreChannels.Count != 0) && IgnoreChannels.Contains(guildChannel.Id) || 
                 message.Author.Id == BotTools.Storage.client.CurrentUser.Id ||
                 message.Author.IsBot)
                 return;
 
             using (var db = new ExperienceContext())
             {
-                //Check if the user is in the database, if not, add him.
+                // Check if the user is in the database, if not, add him.
                 var user = db.Users.FirstOrDefault(x => x.UserID == message.Author.Id && x.ServerID == guildChannel.Guild.Id);
                 if(user == null)
                 {
@@ -51,44 +48,47 @@ namespace qtbot.Experience
                     return; // return since no messages have to be sent anymore.
                 }
 
-                //If the user has sent a message before the cooldown was up, just return.
+                // If the user has sent a message before the cooldown was up, just return.
                 if ((DateTime.Now - user.LastMessage).TotalMinutes < MessageCooldown || user.Excluded)
                     return;
 
-                //Add XP
+                // Add XP
                 var xp = getMessageXP(message.Content.Length);
                 user.FullXP += xp;
                 user.DisplayXP += xp;
                 user.LastMessage = DateTime.Now;
 
-                //Check and see if the tier 3 roles should be edited.
-                await UpdateRoles(db, guildChannel.Guild.Id);
 
-                //Try to see if this user is eligible for a new tier rank.
-                var dRanks = ServerRanks
-                    .Where(x => x.ServerRole == guildChannel.Guild.Id)
-                    .OrderByDescending(x => x.XP)
-                    .ToList() ;
-
-                for(int i =0; i<dRanks.Count; i++)
+                if (ServerRanks.Count != 0)
                 {
-                    //If this user's XP is higher than the rank needed, give him the role. 
-                    //(Unless he already has it)
-                    if(user.FullXP > dRanks[i].XP)
+                    // Try to see if this user is eligible for a new tier rank.
+                    var dRanks = ServerRanks
+                        .Where(x => x.ServerRole == guildChannel.Guild.Id)
+                        .OrderByDescending(x => x.XP)
+                        .ToList();
+
+                    var redeemableroles = db.Users_Redeem
+                        .Where(x => x.UserID == message.Author.Id && x.ServerID == guildChannel.Guild.Id)
+                        .ToList();
+
+                    foreach (var rank in dRanks)
                     {
-                        var serverUser = await guildChannel.Guild.GetUserAsync(user.UserID);
-                        if (serverUser.RoleIds.Contains(dRanks[i].RoleID))
+                        //If the role is already redeemable, continue.
+                        if (redeemableroles.Any(x => x.RoleID == rank.RoleID))
                             continue;
 
-                        var roles = serverUser.RoleIds.ToList();
-                        roles.Add(dRanks[i].RoleID);
 
-                        try
+                        if (user.FullXP < rank.XP)
+                            continue;
+
+                        redeemableroles.Add(new UserRoleRedeem()
                         {
-                            await serverUser.ModifyAsync(x => x.RoleIds = roles.ToArray());
-                            await AnnounceNewRole(message, dRanks[i].RoleID);
-                        }
-                        catch(Exception) { }
+                            RoleID = rank.RoleID,
+                            ServerID = rank.ServerRole,
+                            UserID = message.Author.Id,
+                            NeededXP = rank.XP
+                        });
+                        await AnnounceNewRole(message, rank.RoleID);
                     }
                 }
 
@@ -136,70 +136,7 @@ namespace qtbot.Experience
             if (role == null)
                 return;
 
-            await message.Channel.SendMessageAsync($"{message.Author.Mention} just ranked up! You've now reached **{role.Name}**. Congratulations!");
-        }
-
-        /// <summary>
-        /// This will give the 10 most active people of the month a special rank.
-        /// </summary>
-        private static async Task UpdateRoles(ExperienceContext db, ulong ServerId)
-        {
-
-            var serverInfo = BotTools.Tools.GetServerInfo(ServerId);
-            if (!serverInfo.RegularUsersEnabled || ServerId == 99333280020566016)
-                return;
-
-            //Return if the month is not NEW
-            if (DateTime.Now.Month == serverInfo.month)
-                return;
-
-            serverInfo.month = DateTime.Now.Month;
-            BotTools.Tools.SaveServerInfo(); //update & save the new month. 
-
-            var top10users = db.Users
-                .OrderByDescending(x => x.DisplayXP)
-                .Where(x=>x.ServerID == ServerId)
-                .Take(10)
-                .ToList();
-
-            ulong specialRole = 277054080839450625;
-
-            foreach (var user in db.Users.ToList())
-            {
-                var serverUser = BotTools.Storage.client.GetGuild(ServerId).GetUser(user.UserID);
-
-                //If the user is not in the top 10, but has the tier 3 role, remove it.
-                if(!top10users.Contains(user) && serverUser.RoleIds.Contains(specialRole))
-                {
-                    var x = serverUser.RoleIds.ToList();
-                    x.Remove(specialRole);
-                    try
-                    {
-                        await serverUser.ModifyAsync(z => z.RoleIds = x.ToArray());
-                    }
-                    catch (Exception) { }
-                }
-
-                //If the user is in the top 10, check to see if he already has the role,
-                //then add him.
-                if (top10users.Contains(user))
-                {
-                    //If the user already has the role, there is no need to add it again.
-                    if (serverUser.RoleIds.Contains(specialRole))
-                        return;
-                    var roles = serverUser.RoleIds.ToList();
-                    roles.Add(specialRole); //add the new role to the role id list.
-                    try
-                    { 
-                        await serverUser.ModifyAsync(z => z.RoleIds = roles.ToArray());
-                    }
-                    catch (Exception) { }
-            }
-
-                //reset the display XP for this month.
-                user.LastResettedXP = DateTime.Now;
-                user.DisplayXP = 0;
-            }
+            await message.Channel.SendMessageAsync($"{message.Author.Mention} just ranked up! You can now redeem **{role.Name}**. Congratulations!");
         }
 
         private static int getMessageXP(int messageCount)
