@@ -2,6 +2,5 @@
 
 class Program
 {
-    static void Main(string[] args)
-       => new qtbot.Bot().StartAsync().GetAwaiter().GetResult();
+    static void Main(string[] args) { return; // goodbye bot. }
 }
